@@ -9,6 +9,7 @@ import 'package:samsar/views/auth/mobile/login/login_view.dart';
 import 'package:samsar/views/home/home_view.dart';
 import 'package:samsar/widgets/custom_snackbar/custom_snackbar.dart';
 import 'package:samsar/widgets/loading_dialog/loading_dialog.dart';
+import 'package:samsar/utils/error_message_mapper.dart';
 
 
 class AuthController extends GetxController {
@@ -51,6 +52,7 @@ class AuthController extends GetxController {
         if (loginModel.data?.user != null && loginModel.data?.tokens?.accessToken != null) {
           user.value = loginModel.data!.user;
           accessToken.value = loginModel.data!.tokens!.accessToken!;
+          await _storage.write(key: 'user_email', value: user.value?.email ?? "");
           print('✅ Session restored successfully');
           print('👤 User: ${user.value?.name}');
           print('🔑 Token: ${accessToken.value.substring(0, 10)}...');
@@ -116,18 +118,27 @@ class AuthController extends GetxController {
       Get.back(); // Close dialog
 
       if (result.apiError != null) {
-        showCustomSnackbar(
-          result.apiError?.errorResponse?.error?.message ?? "Unexpected error occured",
-          true
-        );
+        String errorMessage = "Unexpected error occurred";
+        
+        // Extract error code and message
+        final errorCode = result.apiError?.errorResponse?.error?.code;
+        final originalMessage = result.apiError?.errorResponse?.error?.message;
+        
+        // Handle rate limiting and other specific errors
+        if (originalMessage != null && originalMessage.contains("Rate limit exceeded")) {
+          final retryTime = ErrorMessageMapper.extractRetryTime(originalMessage);
+          errorMessage = ErrorMessageMapper.getErrorMessage('RATE_LIMIT_EXCEEDED', retryAfter: retryTime);
+        } else {
+          errorMessage = ErrorMessageMapper.getErrorMessage(errorCode);
+        }
+        
+        showCustomSnackbar(errorMessage, true);
         return;
       }
 
       if (result.apiError?.fastifyErrorResponse != null) {
-        showCustomSnackbar(
-          result.apiError?.fastifyErrorResponse?.message ?? "Unexpected error occurred", 
-          true,
-        );
+        final message = result.apiError?.fastifyErrorResponse?.message ?? "Validation error";
+        showCustomSnackbar(ErrorMessageMapper.getErrorMessage('VALIDATION_ERROR') + ": $message", true);
         return;
       }
 
@@ -154,6 +165,7 @@ class AuthController extends GetxController {
 
 
       await _storage.write(key: 'samsar_user_data', value: jsonEncode(loginModel.toJson()));
+      await _storage.write(key: 'user_email', value: user.value?.email ?? "");
 
 
       Get.offAll(() => const HomeView());
@@ -187,30 +199,20 @@ class AuthController extends GetxController {
 
       if (result.apiError?.errorResponse != null) {
         final errorCode = result.apiError?.errorResponse?.error?.code;
-        final errorMessage = result.apiError?.errorResponse?.error?.message ?? 'Registration failed';
+        final originalMessage = result.apiError?.errorResponse?.error?.message ?? 'Registration failed';
         
-        // Handle specific error cases with user-friendly messages
-        switch (errorCode) {
-          case 'USER_ALREADY_VERIFIED':
-            showCustomSnackbar('user_already_verified'.tr, true);
-            break;
-          case 'REGISTRATION_RATE_LIMITED':
-            final retryAfter = result.apiError?.errorResponse?.error?.retryAfter;
-            if (retryAfter != null) {
-              showCustomSnackbar('registration_rate_limited'.trParams({'seconds': retryAfter.toString()}), true);
-            } else {
-              showCustomSnackbar('registration_rate_limited'.trParams({'seconds': '60'}), true);
-            }
-            break;
-          case 'EMAIL_SEND_FAILED':
-            showCustomSnackbar('email_send_failed'.tr, true);
-            break;
-          case 'DATABASE_ERROR':
-            showCustomSnackbar('database_error'.tr, true);
-            break;
-          default:
-            showCustomSnackbar(errorMessage, true);
+        String errorMessage;
+        
+        // Handle rate limiting first
+        if (originalMessage.contains("Rate limit exceeded")) {
+          final retryTime = ErrorMessageMapper.extractRetryTime(originalMessage);
+          errorMessage = ErrorMessageMapper.getErrorMessage('RATE_LIMIT_EXCEEDED', retryAfter: retryTime);
+        } else {
+          // Use error mapper for other errors
+          errorMessage = ErrorMessageMapper.getErrorMessage(errorCode);
         }
+        
+        showCustomSnackbar(errorMessage, true);
         return;
       }
 

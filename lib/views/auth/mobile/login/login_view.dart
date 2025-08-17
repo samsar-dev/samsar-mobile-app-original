@@ -5,6 +5,7 @@ import 'package:samsar/controllers/auth/auth_controller.dart';
 import 'package:samsar/views/auth/mobile/register/register_view.dart';
 import 'package:samsar/widgets/app_button/app_button.dart';
 import 'package:samsar/widgets/input_field/input_field.dart';
+import 'package:samsar/widgets/forgot_password_dialog.dart';
 
 class LoginView extends StatelessWidget {
   LoginView({super.key});
@@ -137,7 +138,7 @@ class LoginView extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {
-                    
+                    _showForgotPasswordDialog(context);
                   },
                   child: Text(
                     "forgot_password".tr,
@@ -200,6 +201,16 @@ class LoginView extends StatelessWidget {
           validator: validator
         ),
       ],
+    );
+  }
+
+  void _showForgotPasswordDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const ForgotPasswordDialog();
+      },
     );
   }
 }

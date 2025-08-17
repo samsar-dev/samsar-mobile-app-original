@@ -151,7 +151,7 @@ class TrendingListingController extends GetxController {
     // Apply main category filter (vehicles/real_estate)
     if (selectedCategory.value.isNotEmpty) {
       filtered = filtered.where((item) {
-        final matches = item.category?.toLowerCase() == selectedCategory.value.toLowerCase();
+        final matches = item.mainCategory?.toLowerCase() == selectedCategory.value.toLowerCase();
         return matches;
       }).toList();
       print('  After category filter: ${filtered.length} items');

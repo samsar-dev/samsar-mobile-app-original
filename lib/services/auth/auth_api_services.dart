@@ -1,11 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
-
 import 'package:dio/dio.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:samsar/constants/api_route_constants.dart';
-import 'package:samsar/models/api_error.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:samsar/models/api_response.dart';
+import 'package:samsar/models/api_error.dart';
+import 'package:samsar/constants/api_route_constants.dart';
 
 class AuthApiServices {
   final Dio _dio = Dio(
@@ -19,6 +19,23 @@ class AuthApiServices {
       responseType: ResponseType.json,
     ),
   );
+  
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  
+  // Helper method to get access token from secure storage
+  Future<String?> _getAccessToken() async {
+    try {
+      final raw = await _storage.read(key: "samsar_user_data");
+      if (raw != null) {
+        final json = jsonDecode(raw);
+        return json['data']?['tokens']?['accessToken'];
+      }
+      return null;
+    } catch (e) {
+      print('Error getting access token: $e');
+      return null;
+    }
+  }
 
   Future<ApiResponse<Map<String, dynamic>>> loginService(String email, String password) async {
     try {
@@ -315,8 +332,7 @@ class AuthApiServices {
   Future<ApiResponse<Map<String, dynamic>>> sendEmailChangeVerificationService(String newEmail) async {
     try {
       // Get the access token from storage
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken');
+      final token = await _getAccessToken();
       
       print('🔧 sendEmailChangeVerification: Checking authentication');
       print('🔧 sendEmailChangeVerification: Token exists: ${token != null}');
@@ -393,8 +409,7 @@ class AuthApiServices {
   Future<ApiResponse<Map<String, dynamic>>> changeEmailWithVerificationService(String verificationCode) async {
     try {
       // Get the access token from storage
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken');
+      final token = await _getAccessToken();
       
       if (token == null) {
         return ApiResponse.failure(ApiError.fromMessage('Authentication required. Please log in again.'));
@@ -434,6 +449,196 @@ class AuthApiServices {
         return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
       }
       return ApiResponse.failure(ApiError.fromMessage('Failed to change email'));
+    } catch (e) {
+      return ApiResponse.failure(ApiError.fromMessage('An unexpected error occurred: $e'));
+    }
+  }
+
+  // Send forgot password verification code
+  Future<ApiResponse<Map<String, dynamic>>> forgotPasswordService(String email) async {
+    try {
+      print('🔍 forgotPassword: Making request to $forgotPasswordRoute');
+      print('🔧 forgotPassword: Request data = {"email": "$email"}');
+      
+      final response = await _dio.post(
+        forgotPasswordRoute,
+        data: {
+          "email": email,
+        },
+      );
+
+      print('📥 forgotPassword: Response status ${response.statusCode}');
+      print('📥 forgotPassword: Response data ${response.data}');
+
+      if (response.statusCode == 200) {
+        return ApiResponse.success(response.data as Map<String, dynamic>);
+      } else {
+        return ApiResponse.failure(ApiError.fromJson(response.data));
+      }
+    } on DioException catch (dioError) {
+      print('❌ forgotPassword: DioException ${dioError.message}');
+      print('❌ forgotPassword: Status code ${dioError.response?.statusCode}');
+      print('❌ forgotPassword: Response data ${dioError.response?.data}');
+      
+      if (dioError.response != null && dioError.response?.data != null) {
+        return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
+      }
+      return ApiResponse.failure(ApiError.fromMessage('Failed to send password reset email'));
+    } catch (e) {
+      return ApiResponse.failure(ApiError.fromMessage('An unexpected error occurred: $e'));
+    }
+  }
+
+  // Reset password with verification code (forgot password flow)
+  Future<ApiResponse<Map<String, dynamic>>> resetPasswordService({
+    required String email,
+    required String verificationCode,
+    required String newPassword,
+  }) async {
+    try {
+      print('🔍 resetPassword: Making request to $changePasswordRoute');
+      print('🔧 resetPassword: Request data = {"email": "$email", "verificationCode": "$verificationCode", "newPassword": "[HIDDEN]"}');
+      
+      final response = await _dio.post(
+        changePasswordRoute,
+        data: {
+          "email": email,
+          "verificationCode": verificationCode,
+          "newPassword": newPassword,
+        },
+      );
+
+      print('📥 resetPassword: Response status ${response.statusCode}');
+      print('📥 resetPassword: Response data ${response.data}');
+
+      if (response.statusCode == 200) {
+        return ApiResponse.success(response.data as Map<String, dynamic>);
+      } else {
+        return ApiResponse.failure(ApiError.fromJson(response.data));
+      }
+    } on DioException catch (dioError) {
+      print('❌ resetPassword: DioException ${dioError.message}');
+      print('❌ resetPassword: Status code ${dioError.response?.statusCode}');
+      print('❌ resetPassword: Response data ${dioError.response?.data}');
+      
+      if (dioError.response != null && dioError.response?.data != null) {
+        return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
+      }
+      return ApiResponse.failure(ApiError.fromMessage('Failed to reset password'));
+    } catch (e) {
+      return ApiResponse.failure(ApiError.fromMessage('An unexpected error occurred: $e'));
+    }
+  }
+
+  // Change password (authenticated user)
+  Future<ApiResponse<Map<String, dynamic>>> changePasswordService({
+    required String currentPassword,
+    required String newPassword,
+    required String verificationCode,
+  }) async {
+    try {
+      // Get the access token from storage
+      final token = await _getAccessToken();
+      
+      if (token == null) {
+        return ApiResponse.failure(ApiError.fromMessage('Authentication required. Please log in again.'));
+      }
+      
+      print('🔍 changePassword: Making request to $changePasswordRoute');
+      print('🔑 changePassword: Using token ${token.substring(0, 20)}...');
+      print('🔧 changePassword: Request data = {"currentPassword": "[HIDDEN]", "newPassword": "[HIDDEN]", "verificationCode": "$verificationCode"}');
+      
+      final response = await _dio.post(
+        changePasswordRoute,
+        data: {
+          "currentPassword": currentPassword,
+          "newPassword": newPassword,
+          "verificationCode": verificationCode,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        ),
+      );
+
+      print('📥 changePassword: Response status ${response.statusCode}');
+      print('📥 changePassword: Response data ${response.data}');
+
+      if (response.statusCode == 200) {
+        return ApiResponse.success(response.data as Map<String, dynamic>);
+      } else {
+        return ApiResponse.failure(ApiError.fromJson(response.data));
+      }
+    } on DioException catch (dioError) {
+      print('❌ changePassword: DioException ${dioError.message}');
+      print('❌ changePassword: Status code ${dioError.response?.statusCode}');
+      print('❌ changePassword: Response data ${dioError.response?.data}');
+      
+      if (dioError.response != null && dioError.response?.data != null) {
+        return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
+      }
+      return ApiResponse.failure(ApiError.fromMessage('Failed to change password'));
+    } catch (e) {
+      return ApiResponse.failure(ApiError.fromMessage('An unexpected error occurred: $e'));
+    }
+  }
+
+  // Send password change verification code (for authenticated users)
+  Future<ApiResponse<Map<String, dynamic>>> sendPasswordChangeVerificationService({
+    required String currentPassword,
+  }) async {
+    try {
+      // Get the access token from storage
+      final token = await _getAccessToken();
+      
+      if (token == null) {
+        return ApiResponse.failure(ApiError.fromMessage('No access token found'));
+      }
+
+      // Get user email from secure storage
+      final userEmail = await _storage.read(key: 'user_email');
+      if (userEmail == null) {
+        return ApiResponse.failure(ApiError.fromMessage('User email not found'));
+      }
+
+      print('🔍 sendPasswordChangeVerification: Making request to send-password-change-verification');
+      print('🔧 sendPasswordChangeVerification: Request data = {"email": "$userEmail", "currentPassword": "[HIDDEN]"}');
+      
+      final response = await _dio.post(
+        sendPasswordChangeVerificationRoute,
+        data: {
+          'email': userEmail,
+          'currentPassword': currentPassword,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        ),
+      );
+
+      print('📥 sendPasswordChangeVerification: Response status ${response.statusCode}');
+      print('📥 sendPasswordChangeVerification: Response data ${response.data}');
+
+      if (response.statusCode == 200) {
+        return ApiResponse.success(response.data as Map<String, dynamic>);
+      } else {
+        return ApiResponse.failure(ApiError.fromJson(response.data));
+      }
+    } on DioException catch (dioError) {
+      print('❌ sendPasswordChangeVerification: DioException ${dioError.message}');
+      print('❌ sendPasswordChangeVerification: Status code ${dioError.response?.statusCode}');
+      print('❌ sendPasswordChangeVerification: Response data ${dioError.response?.data}');
+      
+      if (dioError.response != null && dioError.response?.data != null) {
+        return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
+      }
+      return ApiResponse.failure(ApiError.fromMessage('Failed to send password change verification'));
     } catch (e) {
       return ApiResponse.failure(ApiError.fromMessage('An unexpected error occurred: $e'));
     }

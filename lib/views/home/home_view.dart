@@ -623,20 +623,95 @@ class _HomePageContentState extends State<_HomePageContent> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Show category selection flow
-              if (selectedMainCategory == null)
-                _buildMainCategorySelection()
-              else if (selectedSubCategory == null)
-                _buildSubCategorySelection()
-              else if (selectedListingAction == null)
-                _buildListingActionSelection()
-              else if (showFilters)
+              // Show category selection flow or the listings based on selection
+              if (selectedMainCategory == null) ...[
+                _buildMainCategorySelection(),
+                const SizedBox(height: 24),
+                _buildListingsHeader(),
+                const SizedBox(height: 16),
+                _buildListingsView(), // Show all listings by default
+              ] else if (selectedSubCategory == null) ...[
+                _buildSubCategorySelection(),
+              ] else if (selectedListingAction == null) ...[
+                _buildListingActionSelection(),
+              ] else if (showFilters) ...[
                 _buildListingsWithFilters(),
+              ]
             ],
           ),
         ),
       )),
     );
+  }
+
+  Widget _buildListingsHeader() {
+    return Text(
+      'all_listings'.tr,
+      style: TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        color: _themeController.isDarkMode.value ? Colors.white : Colors.black87,
+      ),
+    );
+  }
+
+  Widget _buildListingsView() {
+    return Obx(() {
+      if (listingController.isLoading.value && listingController.listings.isEmpty) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      if (listingController.listings.isEmpty) {
+        return Center(
+          child: Text(
+            'no_listings_found'.tr,
+            style: TextStyle(
+              color: _themeController.isDarkMode.value ? Colors.grey[400] : Colors.grey[600],
+              fontSize: 16,
+            ),
+          ),
+        );
+      }
+
+      // Use a ListView for single column layout like inside the category navigation
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: listingController.listings.length,
+        itemBuilder: (context, index) {
+          final item = listingController.listings[index];
+          final ImageProvider imageProvider = (item.images.isNotEmpty && item.images.first.isNotEmpty)
+              ? NetworkImage(item.images.first)
+              : const AssetImage('lib/assets/images/vehicle_placeholder.png');
+
+          return FutureBuilder(
+            future: listing_card.loadLibrary(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                // Ensure all required fields have default values to avoid null errors
+                return listing_card.ListingCard(
+                  listingId: item.id ?? '',
+                  title: item.title ?? 'No Title',
+                  description: item.description ?? 'No description available.',
+                  price: item.price?.toInt() ?? 0,
+                  subCategory: item.subCategory ?? 'General',
+                  listingAction: item.listingAction ?? 'N/A',
+                  imageUrl: imageProvider,
+                  year: item.year ?? item.yearBuilt,
+                  mileage: item.mileage?.toString(),
+                  fuelType: item.fuelType?.toString(),
+                  transmission: item.transmission?.toString(),
+                  isDarkTheme: _themeController.isDarkMode.value,
+                );
+              } else {
+                // Show a placeholder while the card is loading
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
+          );
+        },
+      );
+    });
   }
 
   Widget _buildMainCategorySelection() {
@@ -1134,7 +1209,7 @@ class _HomePageContentState extends State<_HomePageContent> {
                                 listingId: listing.id ?? index.toString(),
                                 title: listing.title ?? 'title_not_available'.tr,
                                 imageUrl: listing.images.isNotEmpty 
-                                    ? NetworkImage(listing.images.first.url ?? '') 
+                                    ? NetworkImage(listing.images.first) 
                                     : const AssetImage('assets/images/placeholder.png') as ImageProvider,
                                 description: listing.description ?? 'description_not_available'.tr,
                                 subCategory: listing.subCategory ?? selectedSubCategory ?? 'not_specified'.tr,

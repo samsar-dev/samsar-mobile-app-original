@@ -22,6 +22,15 @@ const String sendEmailChangeVerificationRoute = "$_baseUrl/api/auth/send-email-c
 //post route to change email with verification code body requires verificationCode (protected)
 const String changeEmailWithVerificationRoute = "$_baseUrl/api/auth/change-email-with-verification";
 
+//post route to send forgot password verification code body requires email
+const String forgotPasswordRoute = "$_baseUrl/api/auth/forgot-password";
+
+//post route to send password change verification code body requires email and currentPassword (protected)
+const String sendPasswordChangeVerificationRoute = "$_baseUrl/api/auth/send-password-change-verification";
+
+//post route to change password with verification code body requires newPassword, verificationCode, email (for reset) or currentPassword (for change)
+const String changePasswordRoute = "$_baseUrl/api/auth/change-password";
+
 //get route to get user details
 dynamic userProfileRoute(String id) => "$_baseUrl/api/users/public-profile/$id";
 

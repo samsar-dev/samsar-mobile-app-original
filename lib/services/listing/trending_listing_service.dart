@@ -19,8 +19,8 @@ class TrendingListingService {
     int limit = 10,
   }) async {
     try {
-      // Use trending endpoint (Railway backend doesn't have the new filter parameters yet)
-      const String listingsEndpoint = "https://samsar-backend-production.up.railway.app/api/listings/trending";
+      // Use main listings endpoint since trending endpoint doesn't exist
+      const String listingsEndpoint = "https://samsar-backend-production.up.railway.app/api/listings";
       
       // Trending endpoint doesn't accept parameters, so we'll do client-side filtering
       Map<String, dynamic> queryParams = {};
@@ -33,16 +33,17 @@ class TrendingListingService {
       final response = await _dio.get(listingsEndpoint);
 
       if (response.statusCode == 200) {
-        print('✅ TRENDING SERVICE SUCCESS');
-        print('  Items count: ${response.data['data']['items'].length}');
+        print('✅ LISTINGS SERVICE SUCCESS');
+        print('  Items count: ${response.data['data'].length}');
         
-        // Print all item titles and years for debugging
-        final items = response.data['data']['items'] as List;
-        for (int i = 0; i < items.length; i++) {
-          final item = items[i];
-          print('  Item $i: ${item['title']} - year: ${item['year']}, yearBuilt: ${item['yearBuilt']}');
-        }
-        return ApiResponse.success(response.data as Map<String, dynamic>);
+        // Transform the response to match expected format
+        final transformedData = {
+          'data': {
+            'items': response.data['data']
+          }
+        };
+        
+        return ApiResponse.success(transformedData);
       } else {
         print('❌ TRENDING SERVICE ERROR: ${response.statusCode}');
         return ApiResponse.failure(ApiError.fromJson(response.data));

@@ -7,6 +7,7 @@ import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/widgets/app_button/app_button.dart';
 import 'package:samsar/widgets/image_holder/image_holder.dart';
 import 'package:samsar/widgets/email_change_dialog.dart';
+import 'package:samsar/widgets/change_password_dialog.dart';
 
 class ProfileView extends StatefulWidget {
   final String name;
@@ -201,6 +202,21 @@ class _ProfileViewState extends State<ProfileView> {
                       isEditing = !isEditing;
                     });
                   },
+                ),
+
+                const SizedBox(height: 16),
+
+                // Change Password Button
+                AppButton(
+                  widthSize: 0.55,
+                  heightSize: 0.06,
+                  buttonColor: Colors.orange,
+                  text: "change_password".tr,
+                  textColor: whiteColor,
+                  textSize: 20,
+                  onPressed: () {
+                    _showChangePasswordDialog();
+                  },
                 )
 
               ],
@@ -392,6 +408,16 @@ class _ProfileViewState extends State<ProfileView> {
             }
           },
         );
+      },
+    );
+  }
+
+  void _showChangePasswordDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const ChangePasswordDialog();
       },
     );
   }

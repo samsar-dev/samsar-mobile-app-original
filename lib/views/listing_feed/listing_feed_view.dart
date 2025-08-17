@@ -40,9 +40,9 @@ class _ListingFeedViewState extends State<ListingFeedView> {
     // Use the original keys for comparison, not the translated values
     final isVehiclesTab = selectedIndex == 0; // First tab is vehicles, second is real estate
     if (isVehiclesTab) {
-      controller.selectedCategory("vehicles");
+      controller.setCategory("vehicles");
     } else {
-      controller.selectedCategory("real_estate");
+      controller.setCategory("real_estate");
     }
   }
 
@@ -247,14 +247,14 @@ class _ListingFeedViewState extends State<ListingFeedView> {
             itemBuilder: (context, index) {
               if (index < controller.listings.length) {
                 final item = controller.listings[index];
-                final hasValidImage = item.images.isNotEmpty && (item.images[0].url?.isNotEmpty ?? false);
+                final hasValidImage = item.images.isNotEmpty && item.images[0].isNotEmpty;
 
                 return GestureDetector(
                   onTap: () => Get.to(() => ListingDetail(listingId: item.id!)),
                   child: ListingCard(
                     title: item.title ?? "no_title".tr,
                     imageUrl: hasValidImage
-                        ? NetworkImage(item.images[0].url!)
+                        ? NetworkImage(item.images[0])
                         : carError,
                     description: item.description ?? '',
                     listingAction: item.listingAction ?? '',
