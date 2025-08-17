@@ -67,6 +67,11 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
   Future<void> _loadPage(int index) async {
     if (_pageLoaded[index] == true) return;
 
+    // Wait for session restoration to complete before checking authentication
+    while (!_authController.isSessionReady) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+
     Widget? page;
     switch (index) {
       case 0:
@@ -75,7 +80,8 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
       case 1:
         // Favourites - show placeholder if not authenticated
         if (_authController.isAuthenticated) {
-          page = const Center(child: Text('Favourites - Coming Soon'));
+          await favourites.loadLibrary();
+          page = favourites.FavouriteListings();
         } else {
           page = const AuthRequiredPlaceholder(
             featureKey: 'favourites_feature',
@@ -93,7 +99,8 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
       case 2:
         // Create Listing - show placeholder if not authenticated
         if (_authController.isAuthenticated) {
-          page = const Center(child: Text('Create Listing - Coming Soon'));
+          await create_listing.loadLibrary();
+          page = create_listing.CreateListingView();
         } else {
           page = const AuthRequiredPlaceholder(
             featureKey: 'create_listing_feature',
@@ -111,7 +118,8 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
       case 3:
         // Chats - show placeholder if not authenticated
         if (_authController.isAuthenticated) {
-          page = const Center(child: Text('Chats - Coming Soon'));
+          await chat.loadLibrary();
+          page = chat.ChatListView();
         } else {
           page = const AuthRequiredPlaceholder(
             featureKey: 'messages',
@@ -129,7 +137,8 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
       case 4:
         // Profile - show placeholder if not authenticated
         if (_authController.isAuthenticated) {
-          page = const Center(child: Text('Profile - Coming Soon'));
+          await profile.loadLibrary();
+          page = profile.ProfileAndSettings();
         } else {
           page = const AuthRequiredPlaceholder(
             featureKey: 'profile',
