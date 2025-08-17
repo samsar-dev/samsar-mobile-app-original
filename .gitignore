@@ -80,3 +80,39 @@ build/
 **/apk/
 **/dex/
 **/out/
+
+# Windows
+windows/flutter/ephemeral
+windows/runner/Debug/
+windows/runner/Release/
+windows/runner/Profile/
+
+# Linux
+linux/flutter/ephemeral # Xcode
+.xcworkspace/
+build/
+*.hmap
+*.xcent
+*.xcscmblueprint
+*.xcscheme
+
+.pub-cache/
+
+
+# Logs and packages
+*.log
+.packages /android/gradle/wrapper/gradle-wrapper.jar
+
+
+# iOS
+ios/Pods/
+ios/Runner.xcworkspace
+ios/Runner.xcodeproj/project.xcworkspace/
+ios/Runner.xcodeproj/xcuserdata/
+
+
+# macOS
+macos/Pods/
+macos/Runner.xcworkspace
+macos/Runner.xcodeproj/project.xcworkspace/
+macos/Runner.xcodeproj/xcuserdata/
