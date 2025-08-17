@@ -15,6 +15,7 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   String selectedTimezone = 'UTC +5:30 (IST)';
+  bool _isInitialized = false;
 
   final List<String> timezones = [
     'UTC -8:00 (PST)',
@@ -32,8 +33,31 @@ class _SettingsState extends State<Settings> {
   @override
   void initState() {
     super.initState();
-    // Fetch settings on first load only
-    _settingsController.getSettingsController();
+    _initializeSettings();
+  }
+
+  Future<void> _initializeSettings() async {
+    if (_isInitialized) return;
+    
+    try {
+      print('🔧 Initializing settings screen...');
+      // Ensure settings are loaded with proper error handling
+      await _settingsController.getSettingsController();
+      
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+        });
+      }
+      print('✅ Settings screen initialized successfully');
+    } catch (e) {
+      print('❌ Error initializing settings: $e');
+      if (mounted) {
+        setState(() {
+          _isInitialized = true; // Still mark as initialized to prevent infinite loading
+        });
+      }
+    }
   }
 
   @override
@@ -56,8 +80,26 @@ class _SettingsState extends State<Settings> {
         centerTitle: true,
       ),
       body: Obx(() {
-        if (_settingsController.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+        // Show loading indicator while initializing or while settings controller is loading
+        if (!_isInitialized || _settingsController.isLoading.value) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(
+                  color: _themeController.isDarkMode.value ? Colors.white : blueColor,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'loading_settings'.tr,
+                  style: TextStyle(
+                    color: _themeController.isDarkMode.value ? Colors.white70 : Colors.black54,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          );
         }
 
         return SingleChildScrollView(

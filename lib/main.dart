@@ -5,6 +5,7 @@ import 'package:samsar/controllers/features/theme_controller.dart';
 import 'package:samsar/controllers/features/language_controller.dart';
 import 'package:samsar/translations/app_translations.dart';
 import 'package:samsar/views/spalsh_screen/splash_screen_view.dart';
+import 'package:samsar/routes/app_routes.dart';
 
 
 void main() {
@@ -129,7 +130,8 @@ class MyApp extends StatelessWidget {
             );
           },
           // Routes configuration - using basic route setup
-          // getPages: AppRoutes.appRoutes(),
+          getPages: AppRoutes.appRoutes(),
+          initialRoute: '/',
           home: SplashScreenView()
         );
       }

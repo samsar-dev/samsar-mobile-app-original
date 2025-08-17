@@ -17,6 +17,7 @@ class AuthController extends GetxController {
 
   final Rxn<User> user = Rxn<User>();
   final RxString accessToken = ''.obs;
+  final RxBool isSessionRestored = false.obs;
 
   final RxBool isLoading = false.obs;
   final RxBool registerLoading = false.obs;
@@ -27,12 +28,23 @@ class AuthController extends GetxController {
     _restoreSession();
   }
 
+  // Helper method to check if user is authenticated
+  bool get isAuthenticated {
+    return user.value != null && accessToken.value.isNotEmpty;
+  }
+
+  // Helper method to check if session restoration is complete
+  bool get isSessionReady {
+    return isSessionRestored.value;
+  }
+
   Future<void> _restoreSession() async {
     try {
+      print('🔄 Starting session restoration...');
       final raw = await _storage.read(key: "samsar_user_data");
       
       if (raw != null) {
-        print('🔄 Restoring user session...');
+        print('📱 Found stored session data');
         final json = jsonDecode(raw);
         final loginModel = LoginModel.fromJson(json);
 
@@ -41,16 +53,33 @@ class AuthController extends GetxController {
           accessToken.value = loginModel.data!.tokens!.accessToken!;
           print('✅ Session restored successfully');
           print('👤 User: ${user.value?.name}');
+          print('🔑 Token: ${accessToken.value.substring(0, 10)}...');
           print('🖼️ Profile Picture: ${user.value?.profilePicture}');
         } else {
           print('❌ Invalid session data structure');
+          await _clearInvalidSession();
         }
       } else {
-        print('ℹ️ No stored session found');
+        print('ℹ️ No stored session found - user needs to login');
       }
     } catch (e) {
       print('❌ Failed to restore session: $e');
-      // Don't throw exception, just log the error
+      await _clearInvalidSession();
+    } finally {
+      // Always mark session restoration as complete
+      isSessionRestored.value = true;
+      print('🏁 Session restoration completed. Authenticated: ${isAuthenticated}');
+    }
+  }
+
+  Future<void> _clearInvalidSession() async {
+    try {
+      await _storage.delete(key: "samsar_user_data");
+      user.value = null;
+      accessToken.value = '';
+      print('🧹 Cleared invalid session data');
+    } catch (e) {
+      print('❌ Error clearing invalid session: $e');
     }
   }
 
@@ -464,7 +493,7 @@ class AuthController extends GetxController {
       final userData = jsonDecode(token);
       final accessToken = userData['data']['tokens']['accessToken'];
       
-      print('🔍 Fetching user profile from: ${getUserProfileRoute}');
+      print('🔍 Fetching user profile from: $getUserProfileRoute');
       print('🔑 Using access token: ${accessToken.substring(0, 20)}...');
       
       final response = await _authApiServices.getUserProfile(accessToken);

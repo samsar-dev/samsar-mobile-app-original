@@ -8,6 +8,12 @@ import 'package:samsar/views/home/home_view.dart';
 
 class AppRoutes {
   static appRoutes() => [
+    // Root route
+    GetPage(
+      name: '/',
+      page: () => HomeView(),
+    ),
+    
     // Public routes (no authentication required)
     GetPage(
       name: RouteNames.loginView,

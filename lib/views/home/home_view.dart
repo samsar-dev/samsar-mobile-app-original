@@ -16,7 +16,8 @@ import 'package:samsar/views/chats/chat_list_view.dart' deferred as chat;
 import 'package:samsar/views/listing_features/create_listing/create_listing_view.dart' deferred as create_listing;
 import 'package:samsar/views/listing_features/favourite_listings/favourite_listings.dart' deferred as favourites;
 import 'package:samsar/views/profile_and_settings/profile_and_settings.dart' deferred as profile;
-import 'package:samsar/views/listing_feed/listing_feed_view.dart' deferred as listing_feed;
+import 'package:samsar/views/listing_feed/listing_feed_view.dart';
+import 'package:samsar/views/placeholders/auth_required_placeholder.dart';
 import 'package:samsar/widgets/listing_card/listing_card.dart' deferred as listing_card;
 
 class HomeView extends StatefulWidget {
@@ -68,21 +69,80 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
 
     Widget? page;
     switch (index) {
+      case 0:
+        page = const ListingFeedView();
+        break;
       case 1:
-        await favourites.loadLibrary();
-        page = favourites.FavouriteListings(key: const ValueKey(1));
+        // Favourites - show placeholder if not authenticated
+        if (_authController.isAuthenticated) {
+          page = const Center(child: Text('Favourites - Coming Soon'));
+        } else {
+          page = const AuthRequiredPlaceholder(
+            featureKey: 'favourites_feature',
+            icon: Icons.favorite,
+            descriptionKey: 'favourites_desc',
+            benefitKeys: [
+              'save_unlimited',
+              'organize_categories',
+              'price_notifications',
+              'quick_access',
+            ],
+          );
+        }
         break;
       case 2:
-        await create_listing.loadLibrary();
-        page = create_listing.CreateListingView();
+        // Create Listing - show placeholder if not authenticated
+        if (_authController.isAuthenticated) {
+          page = const Center(child: Text('Create Listing - Coming Soon'));
+        } else {
+          page = const AuthRequiredPlaceholder(
+            featureKey: 'create_listing_feature',
+            icon: Icons.add_circle,
+            descriptionKey: 'create_listing_desc',
+            benefitKeys: [
+              'list_free',
+              'photo_tools',
+              'reach_buyers',
+              'secure_payment',
+            ],
+          );
+        }
         break;
       case 3:
-        await chat.loadLibrary();
-        page = chat.ChatListView();
+        // Chats - show placeholder if not authenticated
+        if (_authController.isAuthenticated) {
+          page = const Center(child: Text('Chats - Coming Soon'));
+        } else {
+          page = const AuthRequiredPlaceholder(
+            featureKey: 'messages',
+            icon: Icons.chat,
+            descriptionKey: 'messages_desc',
+            benefitKeys: [
+              'realtime_messaging',
+              'share_photos',
+              'negotiate_safely',
+              'translation',
+            ],
+          );
+        }
         break;
       case 4:
-        await profile.loadLibrary();
-        page = profile.ProfileAndSettings();
+        // Profile - show placeholder if not authenticated
+        if (_authController.isAuthenticated) {
+          page = const Center(child: Text('Profile - Coming Soon'));
+        } else {
+          page = const AuthRequiredPlaceholder(
+            featureKey: 'profile',
+            icon: Icons.person,
+            descriptionKey: 'profile_desc',
+            benefitKeys: [
+              'track_listings',
+              'purchase_history',
+              'account_settings',
+              'build_reputation',
+            ],
+          );
+        }
         break;
     }
 
@@ -95,7 +155,7 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
   }
 
   void setPageIndex(int index) async {
-    // Define which tabs require authentication
+    // Define which tabs require authentication for full functionality
     // 0: Home (ListingFeedView) - Public
     // 1: Favourites - Requires Auth
     // 2: Create Listing - Requires Auth
@@ -104,16 +164,7 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
     
     List<int> protectedTabs = [1, 2, 3, 4];
     
-    if (protectedTabs.contains(index)) {
-      // Check if user is authenticated
-      if (_authController.user.value == null || _authController.accessToken.isEmpty) {
-        // User is not authenticated, redirect to login
-        Get.toNamed(RouteNames.loginView);
-        return;
-      }
-    }
-    
-    // Load page if not already loaded
+    // Always allow navigation to the tab first
     await _loadPage(index);
     
     if (mounted) {
@@ -121,6 +172,114 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
         _currIndex = index;
       });
     }
+    
+    // After navigation, check if authentication is needed for protected tabs
+    if (protectedTabs.contains(index)) {
+      // Wait for session restoration to complete if not already done
+      if (!_authController.isSessionReady) {
+        print('⏳ Waiting for session restoration to complete...');
+        // Show subtle loading indicator
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+                SizedBox(width: 12),
+                Text('Checking authentication...'),
+              ],
+            ),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.blue.shade600,
+          ),
+        );
+        
+        // Wait for session restoration
+        while (!_authController.isSessionReady) {
+          await Future.delayed(const Duration(milliseconds: 100));
+        }
+      }
+      
+      // Show user-friendly login prompt if not authenticated
+      if (!_authController.isAuthenticated) {
+        print('🔐 User not authenticated, showing login prompt');
+        _showLoginPrompt(index);
+      } else {
+        print('✅ User authenticated, full access granted');
+      }
+    }
+  }
+  
+  void _showLoginPrompt(int tabIndex) {
+    final tabNames = ['Home', 'Favourites', 'Create Listing', 'Chats', 'Profile'];
+    final tabName = tabNames[tabIndex];
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.login, color: Colors.blue),
+            SizedBox(width: 12),
+            Text('Login Required'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'To access $tabName, you need to sign in to your account.',
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 12),
+            Text(
+              'Benefits of signing in:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            ...[
+              '• Save your favorite listings',
+              '• Create and manage your listings',
+              '• Chat with other users',
+              '• Personalized recommendations',
+            ].map((benefit) => Padding(
+              padding: EdgeInsets.only(bottom: 4),
+              child: Text(benefit),
+            )),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // Navigate back to home tab
+              setState(() {
+                _currIndex = 0;
+              });
+            },
+            child: Text('Maybe Later'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Get.toNamed(RouteNames.loginView);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+            child: Text('Sign In'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -331,8 +490,7 @@ class _HomePageContentState extends State<_HomePageContent> {
   }
 
   void _navigateToFullListingView() async {
-    await listing_feed.loadLibrary();
-    Get.to(() => listing_feed.ListingFeedView());
+    // Navigate to full listing view - implementation pending
   }
 
   List<CategoryItem> _getCurrentSubCategories() {

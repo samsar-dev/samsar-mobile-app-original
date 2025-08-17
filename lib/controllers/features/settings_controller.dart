@@ -23,14 +23,36 @@ class SettingsController extends GetxController {
 
   Future<void> getSettingsController() async {
     try {
-
+      print('🔧 Starting settings load...');
       isLoading.value = true;
 
-      final accessToken = await _authController.getAccessToken();
+      // Wait for auth controller to be ready
+      int attempts = 0;
+      while (!_authController.isSessionReady && attempts < 50) {
+        await Future.delayed(const Duration(milliseconds: 100));
+        attempts++;
+      }
 
-      final result = await SettingsService().getUserSettingsService(accessToken!);
+      if (!_authController.isAuthenticated) {
+        print('❌ User not authenticated, cannot load settings');
+        showCustomSnackbar("Please log in to access settings.", true);
+        isLoading.value = false;
+        return;
+      }
+
+      final accessToken = await _authController.getAccessToken();
+      if (accessToken == null) {
+        print('❌ Access token not found');
+        showCustomSnackbar("Access token not found. Please log in again.", true);
+        isLoading.value = false;
+        return;
+      }
+
+      print('📡 Fetching settings from API...');
+      final result = await SettingsService().getUserSettingsService(accessToken);
 
       if(result.isSuccess && result.successResponse != null) {
+        print('✅ Settings loaded successfully');
         final settings = GetSettingsModel.fromJson(result.successResponse!);
 
         allowMessaging.value = settings.data?.allowMessaging ?? false;
@@ -44,11 +66,17 @@ class SettingsController extends GetxController {
         privateProfile.value = settings.data?.privateProfile ?? false;
 
         hasLoadedSettings.value = true;
-        isLoading.value = false;
+        print('🎯 Settings state updated successfully');
+      } else {
+        print('❌ Failed to load settings: ${result.apiError?.message}');
+        showCustomSnackbar("Failed to load settings: ${result.apiError?.message ?? 'Unknown error'}", true);
       }
-      
     } catch (e) {
-      print("Failed to get notifications and error is: $e");
+      print('❌ Exception loading settings: $e');
+      showCustomSnackbar("Failed to load settings: ${e.toString()}", true);
+    } finally {
+      isLoading.value = false;
+      print('🏁 Settings load completed');
     }
   }
 
@@ -57,10 +85,23 @@ class SettingsController extends GetxController {
       print("🔄 Starting settings update...");
       isLoading.value = true;
 
-      final accessToken = await _authController.getAccessToken();
-      if (accessToken == null) throw Exception("Access token is null");
-      print("✅ Access token obtained");
+      // Ensure user is authenticated
+      if (!_authController.isAuthenticated) {
+        print('❌ User not authenticated, cannot update settings');
+        showCustomSnackbar("Please log in to update settings.", true);
+        isLoading.value = false;
+        return;
+      }
 
+      final accessToken = await _authController.getAccessToken();
+      if (accessToken == null) {
+        print('❌ Access token not found');
+        showCustomSnackbar("Access token not found. Please log in again.", true);
+        isLoading.value = false;
+        return;
+      }
+
+      print('📡 Sending settings update to API...');
       final requestBody = {
         "notifications": {
           "listingUpdates": listingNotifications.value,
@@ -76,41 +117,25 @@ class SettingsController extends GetxController {
           "showPhone": showPhoneNumber.value,
         }
       };
-
-      print("📦 Sending request body: $requestBody");
       
       final result = await SettingsService().updateUserSettingsService(
         accessToken: accessToken,
         requestBody: requestBody,
       );
 
-      print("📊 API call completed. Success: ${result.isSuccess}");
-      if (result.successResponse != null) {
-        print("✅ Success response: ${result.successResponse}");
-      }
-      if (result.apiError != null) {
-        print("❌ API Error: ${result.apiError?.message}");
-      }
-
       if (result.isSuccess) {
-        // Settings were successfully saved to backend
-        // The local state should already reflect the changes since we're using the same values
-        print("✅ Settings successfully saved to backend");
-        
-        // Optionally refresh from server to confirm (but usually not needed)
-        // await getSettingsController();
-        
+        print("✅ Settings updated successfully on server");
         showCustomSnackbar("Settings updated successfully", false);
       } else {
-        // If update failed, don't revert settings - keep local changes
-        print("❌ Settings update failed, keeping local changes");
+        print("❌ Settings update failed: ${result.apiError?.message}");
         showCustomSnackbar("Failed to update settings: ${result.apiError?.message ?? 'Unknown error'}", true);
       }
     } catch (e) {
-      isLoading.value = false;
+      print('❌ Exception updating settings: $e');
       showCustomSnackbar("Failed to update settings: ${e.toString()}", true);
     } finally {
       isLoading.value = false;
+      print('🏁 Settings update completed');
     }
   }
 }
