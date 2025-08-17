@@ -1,0 +1,17 @@
+gradle-app.setting
+/gradle/wrapper/gradle-wrapper.jar
+/local.properties
+GeneratedPluginRegistrant.java
+.cxx/
+
+# Gradle
+.gradle/
+/captures/
+/gradlew
+/gradlew.bat
+
+# Remember to never publicly share your keystore.
+# See https://flutter.dev/to/reference-keystore
+key.properties
+**/*.keystore
+**/*.jks

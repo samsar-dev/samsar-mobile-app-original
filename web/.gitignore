@@ -1,0 +1,51 @@
+# Build and dependency directories
+build/
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+
+# Flutter/Dart specific
+.flutter-plugins
+.flutter-plugins-dependencies
+.flutter/
+
+# Debug and coverage
+coverage/
+*.log
+
+# Editor specific
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Build output
+build/web/
+*.js
+*.js.map
+*.dart.js
+*.js.flutter.js
+*.part.js
+.ddc/
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+*.reflectable.dart
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
