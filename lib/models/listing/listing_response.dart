@@ -1,18 +1,18 @@
-class TrendingListings {
-    TrendingListings({
+class ListingResponse {
+    ListingResponse({
         required this.success,
         required this.data,
         required this.status,
     });
 
     final bool? success;
-    final TrendingData? data;
+    final ListingData? data;
     final int? status;
 
-    factory TrendingListings.fromJson(Map<String, dynamic> json){ 
-        return TrendingListings(
+    factory ListingResponse.fromJson(Map<String, dynamic> json){ 
+        return ListingResponse(
             success: json["success"],
-            data: json["data"] == null ? null : TrendingData.fromJson(json["data"]),
+            data: json["data"] == null ? null : ListingData.fromJson(json["data"]),
             status: json["status"],
         );
     }
@@ -29,21 +29,21 @@ class TrendingListings {
     }
 }
 
-class TrendingData {
-    TrendingData({
+class ListingData {
+    ListingData({
         required this.items,
     });
 
     final List<Item> items;
 
-    factory TrendingData.fromJson(Map<String, dynamic> json){ 
+    factory ListingData.fromJson(Map<String, dynamic> json){ 
         // Backend returns data as direct array, not nested in items
         if (json["data"] is List) {
-            return TrendingData(
+            return ListingData(
                 items: List<Item>.from(json["data"].map((x) => Item.fromJson(x))),
             );
         } else {
-            return TrendingData(
+            return ListingData(
                 items: json["items"] == null ? [] : List<Item>.from(json["items"]!.map((x) => Item.fromJson(x))),
             );
         }

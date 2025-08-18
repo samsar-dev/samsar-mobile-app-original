@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
 import 'package:samsar/controllers/features/filter_controller.dart';
-import 'package:samsar/models/listing/trending/trending_listings.dart';
-import 'package:samsar/services/listing/trending_listing_service.dart';
+import 'package:samsar/models/listing/listing_response.dart';
+import 'package:samsar/services/listing/listing_service.dart';
 
-class TrendingListingController extends GetxController {
-  final TrendingListingService _service = TrendingListingService();
+class ListingController extends GetxController {
+  final ListingService _service = ListingService();
   late final FilterController _filterController;
   
   @override
@@ -59,13 +59,13 @@ class TrendingListingController extends GetxController {
     print('  minPrice: $minPrice, maxPrice: $maxPrice');
     print('  page: $_page, limit: $_limit');
 
-    final response = await _service.getTrendingListingsService();
+    final response = await _service.getListingsService();
 
     if (response.successResponse != null) {
       try {
         print('📝 RAW API RESPONSE: ${response.successResponse}');
-        final trending = TrendingListings.fromJson(response.successResponse!);
-        final newItems = trending.data?.items ?? [];
+        final listingResponse = ListingResponse.fromJson(response.successResponse!);
+        final newItems = listingResponse.data?.items ?? [];
 
         // Apply client-side filtering since Railway backend doesn't support the new filters yet
         final filtered = _applyAllFilters(newItems);
@@ -77,7 +77,7 @@ class TrendingListingController extends GetxController {
           print('  $i: ${filtered[i].title} (${filtered[i].year ?? 'no year'})');
         }
 
-        // Trending endpoint returns all items at once, so no more pages
+        // Endpoint returns all items at once, so no more pages
         hasMore.value = false;
       } catch (e) {
         print('❌ JSON PARSING ERROR: $e');

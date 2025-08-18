@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/controllers/features/search_controller.dart';
-import 'package:samsar/controllers/listing/trending_listing_controller.dart';
+import 'package:samsar/controllers/listing/listing_controller.dart';
 import 'package:samsar/models/search/search_query.dart';
 import 'package:samsar/views/listing_features/listing_detail/listing_detail.dart';
 import 'package:samsar/views/notifications/notification_view.dart';
@@ -19,7 +19,7 @@ class ListingFeedView extends StatefulWidget {
 }
 
 class _ListingFeedViewState extends State<ListingFeedView> {
-  final TrendingListingController controller = Get.put(TrendingListingController());
+  final ListingController controller = Get.put(ListingController());
   final TextEditingController _searchController = TextEditingController();
   final SearchModuleController _searchModuleController = Get.put(SearchModuleController());
 

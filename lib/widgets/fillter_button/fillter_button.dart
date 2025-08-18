@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/controllers/features/filter_controller.dart';
-import 'package:samsar/controllers/listing/trending_listing_controller.dart';
+import 'package:samsar/controllers/listing/listing_controller.dart';
 
 class FillterButton extends StatefulWidget {
   final String? currentCategory;
@@ -22,23 +22,23 @@ class FillterButton extends StatefulWidget {
 
 class _FillterButtonState extends State<FillterButton> {
   late final FilterController _filterController;
-  late final TrendingListingController _trendingController;
+  late final ListingController _listingController;
   
   @override
   void initState() {
     super.initState();
     // Initialize controllers after widget is built
     _filterController = Get.find<FilterController>();
-    _trendingController = Get.find<TrendingListingController>();
+    _listingController = Get.find<ListingController>();
   }
   
   void _applyFilters() {
-    print('🏠 APPLY FILTERS TO TRENDING LISTINGS ONLY');
+    print('🏠 APPLY FILTERS TO HOME LISTINGS ONLY');
     print('  Filters will only affect the home page listings, not search results');
     
-    // Apply filters only to trending listings (home page)
-    print('📋 Updating trending listings with filters...');
-    _trendingController.applyFilters();
+    // Apply filters only to home page listings
+    print('📋 Updating home page listings with filters...');
+    _listingController.applyFilters();
     
     // Notify parent if callback provided
     if (widget.onFiltersApplied != null) {
@@ -47,7 +47,7 @@ class _FillterButtonState extends State<FillterButton> {
       widget.onFiltersApplied!(summary);
     }
     
-    print('✅ _applyFilters completed - only trending listings updated');
+    print('✅ _applyFilters completed - only home page listings updated');
   }
 
   @override

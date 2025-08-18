@@ -6,8 +6,8 @@ import 'package:samsar/models/auth/login_model.dart';
 import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/widgets/app_button/app_button.dart';
 import 'package:samsar/widgets/image_holder/image_holder.dart';
-import 'package:samsar/widgets/email_change_dialog.dart';
-import 'package:samsar/widgets/change_password_dialog.dart';
+import 'package:samsar/views/auth/mobile/email_change/email_change_view.dart';
+import 'package:samsar/views/auth/mobile/password_change/password_change_view.dart';
 
 class ProfileView extends StatefulWidget {
   final String name;
@@ -362,63 +362,49 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  void _showEmailChangeDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return EmailChangeDialog(
-          currentEmail: emailController.text,
-          onEmailChanged: (String newEmail) {
-            setState(() {
-              emailController.text = newEmail;
-            });
-            // Update the user data in auth controller
-            final authController = Get.find<AuthController>();
-            if (authController.user.value != null) {
-              // Create a new user object with updated email since email is final
-              final currentUser = authController.user.value!;
-              final updatedUser = User(
-                id: currentUser.id,
-                email: newEmail,
-                username: currentUser.username,
-                role: currentUser.role,
-                createdAt: currentUser.createdAt,
-                updatedAt: currentUser.updatedAt,
-                phone: currentUser.phone,
-                profilePicture: currentUser.profilePicture,
-                bio: currentUser.bio,
-                name: currentUser.name,
-                dateOfBirth: currentUser.dateOfBirth,
-                street: currentUser.street,
-                city: currentUser.city,
-                allowMessaging: currentUser.allowMessaging,
-                listingNotifications: currentUser.listingNotifications,
-                messageNotifications: currentUser.messageNotifications,
-                loginNotifications: currentUser.loginNotifications,
-                showEmail: currentUser.showEmail,
-                showOnlineStatus: currentUser.showOnlineStatus,
-                showPhoneNumber: currentUser.showPhoneNumber,
-                privateProfile: currentUser.privateProfile,
-              );
-              authController.user.value = updatedUser;
-              
-              // The UI will be updated when the parent widget rebuilds
-              // since the email is passed as a parameter from the parent
-            }
-          },
+  void _showEmailChangeDialog() async {
+    final result = await Get.to(() => EmailChangeView(
+      currentEmail: emailController.text,
+    ));
+    
+    if (result != null && result is String) {
+      setState(() {
+        emailController.text = result;
+      });
+      // Update the user data in auth controller
+      final authController = Get.find<AuthController>();
+      if (authController.user.value != null) {
+        // Create a new user object with updated email since email is final
+        final currentUser = authController.user.value!;
+        final updatedUser = User(
+          id: currentUser.id,
+          email: result,
+          username: currentUser.username,
+          role: currentUser.role,
+          createdAt: currentUser.createdAt,
+          updatedAt: currentUser.updatedAt,
+          phone: currentUser.phone,
+          profilePicture: currentUser.profilePicture,
+          bio: currentUser.bio,
+          name: currentUser.name,
+          dateOfBirth: currentUser.dateOfBirth,
+          street: currentUser.street,
+          city: currentUser.city,
+          allowMessaging: currentUser.allowMessaging,
+          listingNotifications: currentUser.listingNotifications,
+          messageNotifications: currentUser.messageNotifications,
+          loginNotifications: currentUser.loginNotifications,
+          showEmail: currentUser.showEmail,
+          showOnlineStatus: currentUser.showOnlineStatus,
+          showPhoneNumber: currentUser.showPhoneNumber,
+          privateProfile: currentUser.privateProfile,
         );
-      },
-    );
+        authController.user.value = updatedUser;
+      }
+    }
   }
 
   void _showChangePasswordDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const ChangePasswordDialog();
-      },
-    );
+    Get.to(() => const PasswordChangeView());
   }
 }

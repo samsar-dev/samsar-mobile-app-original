@@ -141,7 +141,7 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            "Enter 6-digit OTP",
+            "Enter 6-digit OTP".tr,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: whiteColor),
           ),
           const SizedBox(height: 16),
@@ -149,21 +149,21 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
             widthMultiplier: 0.9,
             controllers: otpDigits
           ),
-          const SizedBox(height: 250),
+          const SizedBox(height: 20),
 
          
           AppButton(
             widthSize: 0.5,
             heightSize: 0.06,
-            text: "Verify",
+            text: "Verify".tr,
             textColor: whiteColor,
             buttonColor: blueColor,
             onPressed: () {
               final otp = getFullOtp(otpDigits);
              
               if (otp.length == 6) {
-                Navigator.pop(context); // Close the bottom sheet
-                widget.onVerify(otp);          // Pass the OTP to parent
+                widget.onVerify(otp);          // Pass the OTP to parent first
+                Navigator.pop(context); // Then close the bottom sheet
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text("Please enter a valid 6-digit OTP")),
@@ -174,7 +174,7 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
 
           SizedBox(height: MediaQuery.of(context).size.height * 0.03,),
 
-          ResendCodeSection()
+          ResendCodeSection(onResend: widget.onResend)
         ],
       ),
     );
@@ -186,7 +186,9 @@ String getFullOtp(List<TextEditingController> controllers) {
 }
 
 class ResendCodeSection extends StatefulWidget {
-  const ResendCodeSection({super.key});
+  final VoidCallback onResend;
+  
+  const ResendCodeSection({super.key, required this.onResend});
 
   @override
   State<ResendCodeSection> createState() => _ResendCodeSectionState();
@@ -248,11 +250,11 @@ Widget build(BuildContext context) {
       child: _resendEnabled
           ? TextButton(
               onPressed: () {
-                print("Code has been sent again on your email");
+                widget.onResend();
                 _startTimer();
               },
               child: Text(
-                "Resend code",
+                "Resend code".tr,
                 style: TextStyle(
                   color: blueColor,
                   fontWeight: FontWeight.bold,

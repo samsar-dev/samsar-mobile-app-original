@@ -2,10 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:samsar/models/api_error.dart';
 import 'package:samsar/models/api_response.dart';
 
-class TrendingListingService {
+class ListingService {
   final Dio _dio = Dio();
 
-  Future<ApiResponse<Map<String, dynamic>>> getTrendingListingsService({
+  Future<ApiResponse<Map<String, dynamic>>> getListingsService({
     String? mainCategory,
     String? subCategory,
     String? listingAction,
@@ -19,14 +19,14 @@ class TrendingListingService {
     int limit = 10,
   }) async {
     try {
-      // Use main listings endpoint since trending endpoint doesn't exist
+      // Use main listings endpoint
       const String listingsEndpoint = "https://samsar-backend-production.up.railway.app/api/listings";
       
-      // Trending endpoint doesn't accept parameters, so we'll do client-side filtering
+      // Build query parameters
       Map<String, dynamic> queryParams = {};
       
       // Debug logging
-      print('🌐 TRENDING SERVICE API CALL:');
+      print('🌐 LISTING SERVICE API CALL:');
       print('  Endpoint: $listingsEndpoint');
       print('  Query params: $queryParams');
       
@@ -45,12 +45,12 @@ class TrendingListingService {
         
         return ApiResponse.success(transformedData);
       } else {
-        print('❌ TRENDING SERVICE ERROR: ${response.statusCode}');
+        print('❌ LISTING SERVICE ERROR: ${response.statusCode}');
         return ApiResponse.failure(ApiError.fromJson(response.data));
       }
 
     } on DioException catch (dioError) {
-      print('❌ TRENDING SERVICE DIO ERROR: ${dioError.message}');
+      print('❌ LISTING SERVICE DIO ERROR: ${dioError.message}');
       if (dioError.response != null && dioError.response?.data != null) {
         return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
       }
@@ -62,7 +62,7 @@ class TrendingListingService {
         ),
       );
     } catch (e) {
-      print('❌ TRENDING SERVICE GENERAL ERROR: $e');
+      print('❌ LISTING SERVICE GENERAL ERROR: $e');
       return ApiResponse.failure(
         ApiError(
           fastifyErrorResponse: null,

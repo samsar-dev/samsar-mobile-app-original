@@ -62,8 +62,8 @@ dynamic editListingRoute(String id) => "$_baseUrl/api/listings/$id";
 //post create listing route to add listing it is protected route
 dynamic createListingRoute = "$_baseUrl/api/listings";
 
-//get route to fetch trending listings it is not protected
-const String trendingListingRoute = "$_baseUrl/api/listings/trending";
+//get route to fetch listings it is not protected
+const String listingRoute = "$_baseUrl/api/listings";
 
 //get route to fetch the settings of the user it is protected route
 const String getSettingsRoute = "$_baseUrl/api/users/settings";

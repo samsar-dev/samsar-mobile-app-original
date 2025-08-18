@@ -52,8 +52,10 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        width: width * 0.95,
-        height: height * 0.75,
+        constraints: BoxConstraints(
+          maxHeight: height * 0.8,
+          maxWidth: width * 0.9,
+        ),
         decoration: BoxDecoration(
           color: whiteColor,
           borderRadius: BorderRadius.circular(20),
@@ -91,13 +93,18 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             
             // Content
             Expanded(
-              child: PageView(
-                controller: _pageController,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  _buildPasswordStep(),
-                  _buildVerificationStep(),
-                ],
+              child: SingleChildScrollView(
+                child: SizedBox(
+                  height: height * 0.6,
+                  child: PageView(
+                    controller: _pageController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      _buildPasswordStep(),
+                      _buildVerificationStep(),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
@@ -259,30 +266,32 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             ),
             const SizedBox(height: 8),
             
-            OtpField(
-              widthMultiplier: 0.8,
-              controllers: _otpControllers,
+            Center(
+              child: OtpField(
+                widthMultiplier: 0.9,
+                controllers: _otpControllers,
+              ),
             ),
             
             const SizedBox(height: 20),
             
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.blue[50],
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.blue[200]!),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: blueColor),
-                  const SizedBox(width: 12),
+                  Icon(Icons.info_outline, color: blueColor, size: 18),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       "verification_code_sent_to_email".tr,
                       style: TextStyle(
                         color: blueColor,
-                        fontSize: 14,
+                        fontSize: 12,
                       ),
                     ),
                   ),

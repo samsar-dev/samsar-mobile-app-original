@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/controllers/auth/auth_controller.dart';
 import 'package:samsar/controllers/features/location_controller.dart';
-import 'package:samsar/controllers/listing/trending_listing_controller.dart';
+import 'package:samsar/controllers/listing/listing_controller.dart';
 import 'package:samsar/controllers/features/filter_controller.dart';
 import 'package:samsar/controllers/features/theme_controller.dart';
 import 'package:samsar/routes/route_names.dart';
@@ -19,6 +19,7 @@ import 'package:samsar/views/profile_and_settings/profile_and_settings.dart' def
 import 'package:samsar/views/listing_feed/listing_feed_view.dart';
 import 'package:samsar/views/placeholders/auth_required_placeholder.dart';
 import 'package:samsar/widgets/listing_card/listing_card.dart' deferred as listing_card;
+import 'package:samsar/widgets/filters/simple_filters.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -395,7 +396,7 @@ class _HomePageContentState extends State<_HomePageContent> {
   bool showFilters = false;
   
   // Controllers for listings and filters
-  late TrendingListingController listingController;
+  late ListingController listingController;
   late FilterController filterController;
   late ThemeController _themeController;
   
@@ -404,10 +405,15 @@ class _HomePageContentState extends State<_HomePageContent> {
     super.initState();
     // Initialize controllers
     _themeController = Get.find<ThemeController>();
-    // Initialize FilterController BEFORE TrendingListingController
-    // because TrendingListingController depends on FilterController in its onInit()
+    // Initialize FilterController BEFORE ListingController
+    // because ListingController depends on FilterController in its onInit()
     filterController = Get.put(FilterController());
-    listingController = Get.put(TrendingListingController());
+    listingController = Get.put(ListingController());
+    
+    // Load all listings by default on home page
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadAllListings();
+    });
   }
 
   // Main categories - Only Real Estate and Vehicles with professional icons
@@ -500,6 +506,16 @@ class _HomePageContentState extends State<_HomePageContent> {
 
   void _navigateToFullListingView() async {
     // Navigate to full listing view - implementation pending
+  }
+
+  void _loadAllListings() {
+    // Load all listings without any category filters
+    listingController.fetchListings();
+  }
+
+  void _applySimplifiedFilters() {
+    // Apply only the simplified filters and reload listings
+    listingController.applyFilters();
   }
 
   List<CategoryItem> _getCurrentSubCategories() {
@@ -626,6 +642,10 @@ class _HomePageContentState extends State<_HomePageContent> {
               // Show category selection flow or the listings based on selection
               if (selectedMainCategory == null) ...[
                 _buildMainCategorySelection(),
+                const SizedBox(height: 24),
+                SimpleFilters(
+                  onFiltersChanged: _applySimplifiedFilters,
+                ),
                 const SizedBox(height: 24),
                 _buildListingsHeader(),
                 const SizedBox(height: 16),
@@ -1316,6 +1336,7 @@ class _HomePageContentState extends State<_HomePageContent> {
         return actionId.tr;
     }
   }
+
 }
 
 // ============================================================================
