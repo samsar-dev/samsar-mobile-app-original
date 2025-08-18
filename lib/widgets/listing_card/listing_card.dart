@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:samsar/constants/color_constants.dart';
+import 'package:samsar/views/listing_features/listing_detail/listing_detail.dart';
 
 // ignore: must_be_immutable
 class ListingCard extends StatelessWidget {
@@ -35,45 +37,31 @@ class ListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
-    return SizedBox(
-      width: double.infinity,
-      height: screenHeight * 0.25,
-      child: Card(
-        color: whiteColor,
-        elevation: 4,
-        child: Row(
-          children: [
-
-            Hero(
-              tag: "listing_picture_${listingId}",
-              child: imageSection(
-                context, 
-                screenWidth, 
-                screenHeight, 
-                imageUrl, 
-                subCategory, 
-                listingAction
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => ListingDetail(listingId: listingId));
+      },
+      child: SizedBox(
+        width: double.infinity,
+        height: screenHeight * 0.25,
+        child: Card(
+          color: whiteColor,
+          elevation: 4,
+          child: Row(
+            children: [
+              Hero(
+                  tag: "listing_picture_${listingId}",
+                  child: imageSection(context, screenWidth, screenHeight,
+                      imageUrl, subCategory, listingAction)),
+              Expanded(
+                child: detailSection(context, screenWidth, screenHeight,
+                    title, description, price),
               )
-            ),
-
-            Expanded(
-              child: detailSection(
-                context, 
-                screenWidth, 
-                screenHeight,
-                title, 
-                description, 
-                price
-              ),
-            )
-
-           
-            
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -120,38 +108,49 @@ class ListingCard extends StatelessWidget {
   }
 
   Widget detailSection(BuildContext context, double screenWidth, double screenHeight, String title, String description, int price) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: TextStyle(
-          color: blackColor,
-          fontWeight: FontWeight.bold,
-          fontSize: screenWidth * 0.04
-        ),),
-
-        const SizedBox(height: 8,),
-
-        Text(description, style: TextStyle(
-           fontSize: screenWidth * 0.035,
-           color: Colors.black87,
+    return Padding(
+      padding: EdgeInsets.all(screenWidth * 0.02),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, 
+            style: TextStyle(
+              color: blackColor,
+              fontWeight: FontWeight.bold,
+              fontSize: screenWidth * 0.04
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          softWrap: true,
-          maxLines: 2,
-          overflow: TextOverflow.visible,
-        ),
 
-        const SizedBox(height: 12,),
+          const SizedBox(height: 6,),
 
-        infoGrid(screenWidth),
+          Text(description, 
+            style: TextStyle(
+               fontSize: screenWidth * 0.032,
+               color: Colors.black87,
+            ),
+            softWrap: true,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
 
-        const SizedBox(height: 14,),
+          const SizedBox(height: 8,),
 
-        Text("\$$price", style: TextStyle(
-          color: blueColor,
-          fontWeight: FontWeight.bold
-        ),)
-      ],
+          infoGrid(screenWidth),
+
+          const SizedBox(height: 8,),
+
+          Text("\$${price}", 
+            style: TextStyle(
+              color: blueColor,
+              fontWeight: FontWeight.bold,
+              fontSize: screenWidth * 0.04
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -171,13 +170,21 @@ class ListingCard extends StatelessWidget {
 
   Widget _infoTag(String info, IconData icon) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: blueColor, size: 18,),
-        const SizedBox(width: 4,),
-        Text(info, style: TextStyle(
-          color: blackColor,
-          fontWeight: FontWeight.bold
-        ),)
+        Icon(icon, color: blueColor, size: 16,),
+        const SizedBox(width: 3,),
+        Flexible(
+          child: Text(info, 
+            style: TextStyle(
+              color: blackColor,
+              fontWeight: FontWeight.w500,
+              fontSize: 11,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        )
       ],
     );
   }
@@ -229,13 +236,18 @@ class ListingCard extends StatelessWidget {
   for (int i = 0; i < infoItems.length; i += 2) {
     rows.add(
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(child: infoItems[i]),
-            const SizedBox(width: 16),
-            Expanded(child: infoItems[i + 1]),
+            Expanded(
+              flex: 1,
+              child: infoItems[i]
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              flex: 1,
+              child: i + 1 < infoItems.length ? infoItems[i + 1] : const SizedBox(),
+            ),
           ],
         ),
       ),

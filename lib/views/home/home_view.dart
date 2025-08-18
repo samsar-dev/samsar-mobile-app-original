@@ -20,6 +20,7 @@ import 'package:samsar/views/listing_feed/listing_feed_view.dart';
 import 'package:samsar/views/placeholders/auth_required_placeholder.dart';
 import 'package:samsar/widgets/listing_card/listing_card.dart' deferred as listing_card;
 import 'package:samsar/widgets/filters/simple_filters.dart';
+import 'package:samsar/widgets/filters/schemas/filter_schema_manager.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -393,7 +394,7 @@ class _HomePageContentState extends State<_HomePageContent> {
   String? selectedMainCategory;
   String? selectedSubCategory;
   String? selectedListingAction;
-  bool showFilters = false;
+  bool showAdvancedFilters = false;
   
   // Controllers for listings and filters
   late ListingController listingController;
@@ -405,10 +406,19 @@ class _HomePageContentState extends State<_HomePageContent> {
     super.initState();
     // Initialize controllers
     _themeController = Get.find<ThemeController>();
-    // Initialize FilterController BEFORE ListingController
-    // because ListingController depends on FilterController in its onInit()
-    filterController = Get.put(FilterController());
-    listingController = Get.put(ListingController());
+    
+    // Use Get.find if controller already exists, otherwise create new one
+    try {
+      filterController = Get.find<FilterController>();
+    } catch (e) {
+      filterController = Get.put(FilterController(), permanent: true);
+    }
+    
+    try {
+      listingController = Get.find<ListingController>();
+    } catch (e) {
+      listingController = Get.put(ListingController(), permanent: true);
+    }
     
     // Load all listings by default on home page
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -462,7 +472,12 @@ class _HomePageContentState extends State<_HomePageContent> {
       selectedMainCategory = categoryId;
       selectedSubCategory = null;
       selectedListingAction = null;
-      showFilters = false;
+      showAdvancedFilters = false;
+    });
+    
+    // Load listings immediately for this category
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadCategoryListings(categoryId);
     });
   }
 
@@ -470,45 +485,60 @@ class _HomePageContentState extends State<_HomePageContent> {
     setState(() {
       selectedSubCategory = subCategoryId;
       selectedListingAction = null;
-      showFilters = false;
+      showAdvancedFilters = true; // Enable advanced filters when subcategory is selected
+    });
+    
+    // Load listings immediately for this subcategory
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadSubcategoryListings(selectedMainCategory!, subCategoryId);
     });
   }
 
   void _onListingActionSelected(String actionId) {
     setState(() {
       selectedListingAction = actionId;
-      showFilters = true;
     });
     
-    // Load listings immediately when action is selected
+    // Apply listing action filter and reload
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadListingsWithFilters();
+      _applyListingActionFilter(actionId);
     });
   }
 
-  void _loadListingsWithFilters() {
-    // Set the category in the listing controller
-    listingController.selectedCategory(selectedMainCategory!);
-    
-    // Apply subcategory filter if available
-    if (selectedSubCategory != null) {
-      filterController.selectedSubcategory.value = selectedSubCategory!;
-    }
-    
-    // Apply listing action filter if available
-    if (selectedListingAction != null) {
-      filterController.selectedListingType.value = selectedListingAction!;
-    }
-    
-    // Apply filters and load listings
+  void _loadCategoryListings(String category) {
+    // Load all listings for this main category
+    listingController.selectedCategory(category);
+    filterController.selectedSubcategory.value = ''; // Clear subcategory filter
+    filterController.selectedListingType.value = ''; // Clear listing type filter
+    listingController.applyFilters();
+  }
+  
+  void _loadSubcategoryListings(String category, String subcategory) {
+    // Load listings for specific subcategory
+    listingController.selectedCategory(category);
+    filterController.selectedSubcategory.value = subcategory;
+    filterController.selectedListingType.value = ''; // Clear listing type filter
+    listingController.applyFilters();
+  }
+  
+  void _applyListingActionFilter(String action) {
+    // Apply listing action filter while keeping existing filters
+    filterController.selectedListingType.value = action;
     listingController.applyFilters();
   }
 
-  void _navigateToFullListingView() async {
-    // Navigate to full listing view - implementation pending
-  }
 
   void _loadAllListings() {
+    // Reset all category-related state and filters
+    setState(() {
+      selectedMainCategory = null;
+      selectedSubCategory = null;
+      selectedListingAction = null;
+    });
+    
+    // Reset filter controller state
+    filterController.resetFilters();
+    
     // Load all listings without any category filters
     listingController.fetchListings();
   }
@@ -538,13 +568,13 @@ class _HomePageContentState extends State<_HomePageContent> {
           // From listing action selection back to subcategory selection
           setState(() {
             selectedListingAction = null;
-            showFilters = false;
+            showAdvancedFilters = false;
           });
         } else if (selectedSubCategory != null) {
           // From subcategory selection back to main category selection
           setState(() {
             selectedSubCategory = null;
-            showFilters = false;
+            showAdvancedFilters = false;
           });
         } else if (selectedMainCategory != null) {
           // From main category selection back to home
@@ -572,7 +602,7 @@ class _HomePageContentState extends State<_HomePageContent> {
                     if (selectedListingAction != null) {
                       setState(() {
                         selectedListingAction = null;
-                        showFilters = false;
+                        showAdvancedFilters = false;
                       });
                     } else if (selectedSubCategory != null) {
                       setState(() {
@@ -617,8 +647,8 @@ class _HomePageContentState extends State<_HomePageContent> {
                   ),
                 ),
               ),
-              // Filter button
-              if (showFilters)
+              // Filter button - show when advanced filters are available
+              if (showAdvancedFilters)
                 IconButton(
                   icon: Icon(
                     Icons.filter_list,
@@ -639,7 +669,7 @@ class _HomePageContentState extends State<_HomePageContent> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Show category selection flow or the listings based on selection
+              // Show listings immediately based on selection state
               if (selectedMainCategory == null) ...[
                 _buildMainCategorySelection(),
                 const SizedBox(height: 24),
@@ -650,12 +680,8 @@ class _HomePageContentState extends State<_HomePageContent> {
                 _buildListingsHeader(),
                 const SizedBox(height: 16),
                 _buildListingsView(), // Show all listings by default
-              ] else if (selectedSubCategory == null) ...[
-                _buildSubCategorySelection(),
-              ] else if (selectedListingAction == null) ...[
-                _buildListingActionSelection(),
-              ] else if (showFilters) ...[
-                _buildListingsWithFilters(),
+              ] else ...[
+                _buildCategoryListingsWithToggles(),
               ]
             ],
           ),
@@ -793,133 +819,241 @@ class _HomePageContentState extends State<_HomePageContent> {
     );
   }
 
-  Widget _buildSubCategorySelection() {
+  Widget _buildCategoryListingsWithToggles() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildBackButton(
-          '${'back_to'.tr} ${_getMainCategoryTitle(selectedMainCategory!)}',
-          () => setState(() => selectedMainCategory = null),
-        ),
+        // Subcategory toggles at the top
+        _buildSubcategoryToggles(),
         const SizedBox(height: 16),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.orange.shade600, Colors.orange.shade800],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.orange.withValues(alpha: 0.3),
-                blurRadius: 8,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.list_alt,
-                color: Colors.white,
-                size: 28,
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  '${'select_type_of'.tr} ${_getMainCategoryTitle(selectedMainCategory!)}',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 0.5,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black26,
-                        offset: Offset(1, 1),
-                        blurRadius: 2,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+        
+        // Rent/Sale/Search toggles (only show if subcategory is selected)
+        if (selectedSubCategory != null) ...[
+          _buildListingActionToggles(),
+          const SizedBox(height: 16),
+        ],
+        
+        // Advanced filters button (only show if subcategory is selected)
+        if (showAdvancedFilters) ...[
+          _buildAdvancedFiltersButton(),
+          const SizedBox(height: 16),
+        ],
+        
+        // Listings header
+        _buildCategoryListingsHeader(),
+        const SizedBox(height: 16),
+        
+        // Listings view - always show listings
+        _buildListingsView(),
+      ],
+    );
+  }
+
+  Widget _buildSubcategoryToggles() {
+    final subcategories = _getCurrentSubCategories();
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'select_type'.tr,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: _themeController.isDarkMode.value ? Colors.white : Colors.black87,
           ),
         ),
-        const SizedBox(height: 20),
-        _buildCategoryGrid(
-          title: 'الأنواع المتاحة',
-          categories: _getCurrentSubCategories(),
-          onCategorySelected: _onSubCategorySelected,
+        const SizedBox(height: 12),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: subcategories.map((category) {
+              final isSelected = selectedSubCategory == category.id;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: FilterChip(
+                  selected: isSelected,
+                  label: Text(category.title),
+                  onSelected: (selected) {
+                    if (selected) {
+                      _onSubCategorySelected(category.id);
+                    } else {
+                      setState(() {
+                        selectedSubCategory = null;
+                        selectedListingAction = null;
+                        showAdvancedFilters = false;
+                      });
+                      _loadCategoryListings(selectedMainCategory!);
+                    }
+                  },
+                  backgroundColor: _themeController.isDarkMode.value ? Colors.grey[700] : Colors.grey[200],
+                  selectedColor: category.color.withOpacity(0.3),
+                  checkmarkColor: category.color,
+                ),
+              );
+            }).toList(),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildListingActionSelection() {
+  Widget _buildListingActionToggles() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildBackButton(
-          '${'back_to'.tr} ${_getSubCategoryTitle(selectedSubCategory!)}',
-          () => setState(() => selectedSubCategory = null),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.green.shade600, Colors.green.shade800],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.green.withValues(alpha: 0.3),
-                blurRadius: 8,
-                offset: Offset(0, 4),
-              ),
-            ],
+        Text(
+          'listing_type'.tr,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: _themeController.isDarkMode.value ? Colors.white : Colors.black87,
           ),
+        ),
+        const SizedBox(height: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
           child: Row(
-            children: [
-              Icon(
-                Icons.announcement,
-                color: Colors.white,
-                size: 28,
-              ),
-              SizedBox(width: 12),
-              Text(
-                'select_listing_type'.tr,
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  letterSpacing: 0.5,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black26,
-                      offset: Offset(1, 1),
-                      blurRadius: 2,
-                    ),
-                  ],
+            children: listingActions.map((action) {
+              final isSelected = selectedListingAction == action.id;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: FilterChip(
+                  selected: isSelected,
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        action.icon,
+                        size: 16,
+                        color: isSelected ? Colors.white : action.color,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(action.title),
+                    ],
+                  ),
+                  onSelected: (selected) {
+                    if (selected) {
+                      _onListingActionSelected(action.id);
+                    } else {
+                      setState(() {
+                        selectedListingAction = null;
+                      });
+                      _loadSubcategoryListings(selectedMainCategory!, selectedSubCategory!);
+                    }
+                  },
+                  backgroundColor: _themeController.isDarkMode.value ? Colors.grey[700] : Colors.grey[200],
+                  selectedColor: action.color,
+                  checkmarkColor: Colors.white,
                 ),
-              ),
-            ],
+              );
+            }).toList(),
           ),
-        ),
-        const SizedBox(height: 20),
-        _buildCategoryGrid(
-          title: 'أنواع الإعلانات',
-          categories: listingActions,
-          onCategorySelected: _onListingActionSelected,
         ),
       ],
     );
   }
+
+  Widget _buildAdvancedFiltersButton() {
+    return ElevatedButton.icon(
+      onPressed: () {
+        // Get dynamic filters for the selected subcategory
+        final availableFilters = FilterSchemaManager.getFilters(
+          mainCategory: selectedMainCategory!,
+          subcategory: selectedSubCategory,
+        );
+        
+        // Show advanced filters dialog with dynamic schema
+        _showAdvancedFiltersDialog(availableFilters);
+      },
+      icon: const Icon(Icons.tune),
+      label: Text('advanced_filters'.tr),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+      ),
+    );
+  }
+  
+  void _showAdvancedFiltersDialog(List<String> availableFilters) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Advanced Filters'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Available filters for ${selectedSubCategory}:'),
+              const SizedBox(height: 16),
+              ...availableFilters.map((filter) => ListTile(
+                title: Text(filter),
+                leading: Icon(Icons.filter_alt),
+                onTap: () {
+                  // TODO: Implement specific filter logic
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('$filter filter selected')),
+                  );
+                },
+              )),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryListingsHeader() {
+    String headerText = _getMainCategoryTitle(selectedMainCategory!);
+    
+    if (selectedSubCategory != null) {
+      headerText += ' - ${_getSubCategoryTitle(selectedSubCategory!)}';
+    }
+    
+    if (selectedListingAction != null) {
+      headerText += ' ${_getListingActionTitle(selectedListingAction!)}';
+    }
+    
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Text(
+            headerText,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: _themeController.isDarkMode.value ? Colors.white : Colors.black87,
+            ),
+          ),
+        ),
+        Obx(() => Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Text(
+            '${listingController.listings.length} items',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.blue,
+            ),
+          ),
+        )),
+      ],
+    );
+  }
+
+
 
   Widget _buildCategoryGrid({
     required String title,
@@ -1040,273 +1174,7 @@ class _HomePageContentState extends State<_HomePageContent> {
     );
   }
 
-  Widget _buildBackButton(String text, VoidCallback onPressed) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.arrow_back_ios, 
-            size: 16, 
-            color: _themeController.isDarkMode.value ? Colors.blue[400] : Colors.blue[600]
-          ),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: TextStyle(
-              color: _themeController.isDarkMode.value ? Colors.blue[400] : Colors.blue[700],
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-              letterSpacing: 0.3,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildListingsWithFilters() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildBackButton(
-          '${'back_to'.tr} ${_getListingActionTitle(selectedListingAction!)}',
-          () => setState(() {
-            selectedListingAction = null;
-            showFilters = false;
-          }),
-        ),
-        const SizedBox(height: 16),
-        
-        // Header with title and view results button
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.purple.shade100, Colors.purple.shade200],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.purple.shade300),
-                    ),
-                    child: Text(
-                      '${_getSubCategoryTitle(selectedSubCategory!)} ${_getListingActionTitle(selectedListingAction!)}',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.purple.shade800,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Obx(() => Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: _themeController.isDarkMode.value ? Colors.grey[700] : Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      '${listingController.listings.length} ${'listings_available'.tr}',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: _themeController.isDarkMode.value ? Colors.grey[200] : Colors.grey[800],
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  )),
-                ],
-              ),
-            ),
-            ElevatedButton(
-              onPressed: _navigateToFullListingView,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.visibility, size: 20),
-                  SizedBox(width: 8),
-                  Text(
-                    'view_results'.tr,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        
-        const SizedBox(height: 20),
-        
-        // Listings preview
-        Container(
-          constraints: const BoxConstraints(maxHeight: 400),
-          child: Obx(() {
-            if (listingController.isLoading.value) {
-              return Center(
-                child: CircularProgressIndicator(
-                  color: _themeController.isDarkMode.value ? Colors.white : blueColor,
-                ),
-              );
-            }
-            
-            if (listingController.listings.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.search_off, 
-                      size: 64, 
-                      color: _themeController.isDarkMode.value ? Colors.grey[500] : Colors.grey[400]
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'no_listings_available'.tr,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: _themeController.isDarkMode.value ? Colors.grey[300] : Colors.grey[700],
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'try_different_filters'.tr,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: _themeController.isDarkMode.value ? Colors.grey[400] : Colors.grey[600],
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-            
-            return Column(
-              children: [
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: listingController.listings.length > 6 ? 6 : listingController.listings.length,
-                  itemBuilder: (context, index) {
-                    final listing = listingController.listings[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: GestureDetector(
-                        onTap: () {
-                          // Navigate to listing detail
-                          // Get.to(() => ListingDetail(listing: listing));
-                        },
-                        child: FutureBuilder(
-                          future: listing_card.loadLibrary(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.done) {
-                              return listing_card.ListingCard(
-                                listingId: listing.id ?? index.toString(),
-                                title: listing.title ?? 'title_not_available'.tr,
-                                imageUrl: listing.images.isNotEmpty 
-                                    ? NetworkImage(listing.images.first) 
-                                    : const AssetImage('assets/images/placeholder.png') as ImageProvider,
-                                description: listing.description ?? 'description_not_available'.tr,
-                                subCategory: listing.subCategory ?? selectedSubCategory ?? 'not_specified'.tr,
-                                listingAction: listing.listingAction ?? selectedListingAction ?? 'not_specified'.tr,
-                                price: listing.price ?? 0,
-                                fuelType: listing.fuelType?.toString(),
-                                year: listing.year ?? listing.yearBuilt,
-                                transmission: listing.transmission?.toString(),
-                                mileage: listing.mileage?.toString(),
-                              );
-                            }
-                            return Container(
-                              height: 120,
-                              margin: const EdgeInsets.only(bottom: 12),
-                              decoration: BoxDecoration(
-                                color: _themeController.isDarkMode.value ? Colors.grey[700] : Colors.grey[200],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  color: _themeController.isDarkMode.value ? Colors.white : blueColor,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                
-                // Show more button if there are more listings
-                if (listingController.listings.length > 6)
-                  Center(
-                    child: TextButton(
-                      onPressed: _navigateToFullListingView,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.blue.shade100, Colors.blue.shade200],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.blue.shade300),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.expand_more, 
-                              color: _themeController.isDarkMode.value ? Colors.blue[400] : Colors.blue.shade700, 
-                              size: 20
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${'view_more'.tr} (${listingController.listings.length - 6}+)',
-                              style: TextStyle(
-                                color: _themeController.isDarkMode.value ? Colors.blue[300] : Colors.blue.shade800,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          }),
-        ),
-      ],
-    );
-  }
 
   String _getMainCategoryTitle(String categoryId) {
     // Return translated category title based on ID

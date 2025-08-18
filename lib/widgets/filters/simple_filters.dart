@@ -47,6 +47,7 @@ class SimpleFilters extends StatelessWidget {
             children: [
               // Location Filter
               Expanded(
+                flex: 1,
                 child: _buildFilterDropdown(
                   context: context,
                   title: 'location'.tr,
@@ -58,10 +59,11 @@ class SimpleFilters extends StatelessWidget {
                   themeController: themeController,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               
               // Price Filter
               Expanded(
+                flex: 1,
                 child: _buildFilterDropdown(
                   context: context,
                   title: 'price'.tr,
@@ -71,10 +73,11 @@ class SimpleFilters extends StatelessWidget {
                   themeController: themeController,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               
               // Sort Filter
               Expanded(
+                flex: 1,
                 child: _buildFilterDropdown(
                   context: context,
                   title: 'sort'.tr,
@@ -123,7 +126,7 @@ class SimpleFilters extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
           color: themeController.isDarkMode.value ? Colors.grey[700] : Colors.grey[100],
           borderRadius: BorderRadius.circular(8),
@@ -136,34 +139,38 @@ class SimpleFilters extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
                   icon,
-                  size: 16,
+                  size: 14,
                   color: themeController.isDarkMode.value ? Colors.grey[300] : Colors.grey[600],
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: themeController.isDarkMode.value ? Colors.grey[300] : Colors.grey[600],
-                    fontWeight: FontWeight.w500,
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: themeController.isDarkMode.value ? Colors.grey[300] : Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 2),
                 Icon(
                   Icons.keyboard_arrow_down,
-                  size: 16,
+                  size: 14,
                   color: themeController.isDarkMode.value ? Colors.grey[300] : Colors.grey[600],
                 ),
               ],
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               value,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: themeController.isDarkMode.value ? Colors.white : Colors.black87,
               ),

@@ -25,6 +25,8 @@ class AppTranslations extends Translations {
       'motorcycles': 'Motorcycles',
       'passenger_vehicles': 'Passenger Vehicles',
       'commercial_transport': 'Commercial Transport',
+      'passengers': 'Passengers',
+      'constructions': 'Constructions',
       'construction_vehicles': 'Construction Vehicles',
       'apartment': 'Apartment',
       'house': 'House',
@@ -125,7 +127,7 @@ class AppTranslations extends Translations {
       'distance_nearest_first': 'Distance: Nearest First',
       'select_main_category': 'Select Main Category',
       'back_to': 'Back to',
-      'select_type_of': 'Select type of',
+      'select_type': 'Select type',
       'select_listing_type': 'Select Listing Type',
       'listings_available': 'listings available',
       'view_results': 'View Results',
@@ -317,9 +319,7 @@ class AppTranslations extends Translations {
       'max_20_images': '(Maximum 20 images)',
       'title': 'Title',
       'title_hint': 'e.g., Modern Apartment with City View',
-      'price': 'Price',
       'price_hint': 'e.g., 250000',
-      'location': 'Location',
       'description': 'Description',
       'description_hint': 'مثال: شقة جميلة تقع في قلب المدينة...',
       
@@ -520,18 +520,10 @@ class AppTranslations extends Translations {
       
       // Filter
       'filter': 'Filter',
-      'sort_by': 'Sort By',
       'subcategory': 'Subcategory',
       'listing_type': 'Listing Type',
       'reset': 'Reset',
-      'apply': 'Apply',
-      
-      // Sort Options
-      'newest_first': 'Newest First',
-      'price_high_to_low': 'Price: High to Low',
-      'price_low_to_high': 'Price: Low to High',
-      'location_a_to_z': 'Location: A to Z',
-      'location_z_to_a': 'Location: Z to A',
+ 
       
       // Dropdown Hints
       'select_sort_option': 'Select Sort Option',
@@ -589,7 +581,6 @@ class AppTranslations extends Translations {
       'permanently_denied': 'permanently denied',
       
       // Location Picker
-      'select_location': 'Select Location',
       'search_location': 'Search for a location...',
       'use_current_location': 'Use Current Location',
       'search_results': 'Search Results',
@@ -861,6 +852,8 @@ class AppTranslations extends Translations {
       'motorcycles': 'دراجات نارية',
       'passenger_vehicles': 'مركبات الركاب',
       'commercial_transport': 'النقل التجاري',
+      'passengers': 'ركاب',
+      'constructions': 'بناء',
       'construction_vehicles': 'مركبات البناء',
       'apartment': 'شقة',
       'house': 'منزل',
@@ -1006,7 +999,7 @@ class AppTranslations extends Translations {
       'distance_nearest_first': 'المسافة: الأقرب أولاً',
       'select_main_category': 'اختر الفئة الرئيسية',
       'back_to': 'العودة إلى',
-      'select_type_of': 'اختر نوع',
+      'select_type': 'اختر نوع',
       'select_listing_type': 'اختر نوع الإعلان',
       'listings_available': 'إعلان متاح',
       'view_results': 'عرض النتائج',
@@ -1151,19 +1144,14 @@ class AppTranslations extends Translations {
       
       // Filter
       'filter': 'تصفية',
-      'sort_by': 'ترتيب حسب',
+ 
       'subcategory': 'الفئة الفرعية',
       'listing_type': 'نوع الإعلان',
       'year': 'السنة',
       'reset': 'إعادة تعيين',
-      'apply': 'تطبيق',
+ 
       
-      // Sort Options
-      'newest_first': 'الأحدث أولاً',
-      'price_high_to_low': 'السعر: من الأعلى إلى الأقل',
-      'price_low_to_high': 'السعر: من الأقل إلى الأعلى',
-      'location_a_to_z': 'الموقع: من أ إلى ي',
-      'location_z_to_a': 'الموقع: من ي إلى أ',
+ 
       
       // Dropdown Hints
       'selectCategory': 'اختر الفئة',
@@ -1406,8 +1394,6 @@ class AppTranslations extends Translations {
       'basic_info': 'معلومات أساسية',
       'make': 'الشركة المصنعة',
       'model': 'الموديل',
-      'price': 'السعر',
-      'location': 'الموقع',
       'description': 'الوصف',
       'engine_and_performance': 'المحرك والأداء',
       'horsepower': 'القوة الحصانية',
