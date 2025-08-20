@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:get/get.dart';
 
 class ColorPickerField extends StatelessWidget {
   final Function(Color) onColorChanged;
@@ -21,7 +22,7 @@ class ColorPickerField extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Select a color'),
+        title: Text('select_a_color'.tr),
         content: SingleChildScrollView(
           child: ColorPicker(
             pickerColor: initialColor,
@@ -33,14 +34,14 @@ class ColorPickerField extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
               onColorChanged(tempColor);
               Navigator.of(context).pop();
             },
-            child: const Text('Select'),
+            child: Text('select'.tr),
           ),
         ],
       ),

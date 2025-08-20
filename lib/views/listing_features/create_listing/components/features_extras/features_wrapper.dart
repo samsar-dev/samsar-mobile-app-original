@@ -34,6 +34,12 @@ class FeaturesWrapper extends StatelessWidget {
     final categoryUpper = category.toUpperCase();
     final subCategoryUpper = subCategory?.toUpperCase() ?? '';
     
+    print('🔍 FeaturesWrapper DEBUG:');
+    print('   📝 Raw category: "$category"');
+    print('   📝 Raw subCategory: "$subCategory"');
+    print('   📝 categoryUpper: "$categoryUpper"');
+    print('   📝 subCategoryUpper: "$subCategoryUpper"');
+    
     Widget formContent;
     
     if (categoryUpper == 'VEHICLES') {
@@ -87,7 +93,9 @@ class FeaturesWrapper extends StatelessWidget {
 
     return Column(
       children: [
-        formContent,
+        Expanded(
+          child: formContent,
+        ),
         // Navigation buttons at the bottom of form content
         _buildNavigationButtons(context),
       ],
@@ -162,7 +170,7 @@ class FeaturesWrapper extends StatelessWidget {
               width: screenWidth * 0.35,
               color: Colors.grey[300]!,
               textColor: Colors.black,
-              text: 'Previous',
+              text: 'previous'.tr,
               onPressed: onPrevious!,
             )
           else
@@ -173,7 +181,7 @@ class FeaturesWrapper extends StatelessWidget {
               width: screenWidth * 0.35,
               color: Colors.blue,
               textColor: Colors.white,
-              text: currentStep == 2 ? 'Review' : 'Next',
+              text: currentStep == 2 ? 'review'.tr : 'next'.tr,
               onPressed: onNext!,
             ),
         ],

@@ -85,7 +85,7 @@ class _AdvanceListingOptionsRealEstateState extends State<AdvanceListingOptionsR
       backgroundColor: whiteColor,
       appBar: AppBar(
         backgroundColor: whiteColor,
-        title: Text("Advanced options", style: TextStyle(color: blackColor, fontWeight: FontWeight.bold)),
+        title: Text('advanced_options'.tr, style: TextStyle(color: blackColor, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Theme(
@@ -141,38 +141,38 @@ class _AdvanceListingOptionsRealEstateState extends State<AdvanceListingOptionsR
           onStepTapped: (index) => setState(() => currentStep = index),
           steps: [
             Step(
-              title: const Text("Climate and Energy"),
+              title: Text('climate_and_energy'.tr),
               isActive: currentStep >= 0,
               state: currentStep > 0 ? StepState.complete : StepState.indexed,
               content: climateAndEnergy(screenHeight, screenWidth),
             ),
             Step(
-              title: const Text("Structure and Layout"),
+              title: Text('structure_and_layout'.tr),
               isActive: currentStep >= 1,
               state: currentStep > 1 ? StepState.complete : StepState.indexed,
               content: structureAndLayout(screenHeight, screenWidth),
             ),
             Step(
-              title: const Text("Interior Features"),
+              title: Text('interior_features'.tr),
               isActive: currentStep >= 2,
               state: currentStep > 2 ? StepState.complete : StepState.indexed,
               content: interiorFeatures(screenHeight, screenWidth),
             ),
             Step(
-              title: const Text("Living Space"),
+              title: Text('living_space'.tr),
               isActive: currentStep >= 3,
               state: currentStep > 3 ? StepState.complete : StepState.indexed,
               content: livingSpaceDetails(screenHeight, screenWidth),
             ),
             Step(
-              title: const Text("Parking and Roof"),
+              title: Text('parking_and_roof'.tr),
               isActive: currentStep >= 4,
               state: currentStep == 4 ? StepState.editing : StepState.indexed,
               content: parkingAndRoof(screenHeight, screenWidth),
             ),
 
             Step(
-              title: const Text("Community and Extras"),
+              title: Text('community_and_extras'.tr),
               isActive: currentStep >= 5,
               state: currentStep == 5 ? StepState.editing : StepState.indexed,
               content: communityAndExtras(screenHeight, screenWidth),
@@ -194,7 +194,7 @@ class _AdvanceListingOptionsRealEstateState extends State<AdvanceListingOptionsR
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: Text(
-                    "Climate and Energy",
+                    'climate_and_energy'.tr,
                     style: TextStyle(
                       color: blackColor,
                       fontWeight: FontWeight.bold,
@@ -335,7 +335,7 @@ class _AdvanceListingOptionsRealEstateState extends State<AdvanceListingOptionsR
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20),
-                  child: Text("Structure and Layout", style: TextStyle(
+                  child: Text('structure_and_layout'.tr, style: TextStyle(
                     color: blackColor,
                     fontWeight: FontWeight.bold,
                     fontSize: screenWidth * 0.08
@@ -474,7 +474,7 @@ class _AdvanceListingOptionsRealEstateState extends State<AdvanceListingOptionsR
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: Text(
-                    "Interior Features",
+                    'interior_features'.tr,
                     style: TextStyle(
                       color: blackColor,
                       fontWeight: FontWeight.bold,
@@ -739,7 +739,7 @@ class _AdvanceListingOptionsRealEstateState extends State<AdvanceListingOptionsR
               Padding(
                 padding: const EdgeInsets.only(left: 20, top: 10),
                 child: Text(
-                  "Parking and Roof",
+                  'parking_and_roof'.tr,
                   style: TextStyle(
                     color: blackColor,
                     fontWeight: FontWeight.bold,
@@ -819,7 +819,7 @@ class _AdvanceListingOptionsRealEstateState extends State<AdvanceListingOptionsR
             Padding(
                 padding: const EdgeInsets.only(left: 20, top: 10),
                 child: Text(
-                  "Community and Extras",
+                  'community_and_extras'.tr,
                   style: TextStyle(
                     color: blackColor,
                     fontWeight: FontWeight.bold,

@@ -207,7 +207,7 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
                   ),
                 ),
                 SizedBox(width: 12),
-                Text('Checking authentication...'),
+                Text('checking_authentication'.tr),
               ],
             ),
             duration: Duration(seconds: 2),
@@ -242,7 +242,7 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
           children: [
             Icon(Icons.login, color: Colors.blue),
             SizedBox(width: 12),
-            Text('Login Required'),
+            Text('login_required_dialog'.tr),
           ],
         ),
         content: Column(
@@ -279,7 +279,7 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
                 _currIndex = 0;
               });
             },
-            child: Text('Maybe Later'),
+            child: Text('maybe_later'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -290,7 +290,7 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
             ),
-            child: Text('Sign In'),
+            child: Text('sign_in'.tr),
           ),
         ],
       ),
@@ -1014,12 +1014,12 @@ class _HomePageContentState extends State<_HomePageContent> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Advanced Filters'),
+        title: Text('advanced_filters'.tr),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Available filters for ${selectedSubCategory}:'),
+              Text('available_filters_for'.tr + ' ${selectedSubCategory}:'),
               const SizedBox(height: 16),
               ...availableFilters.map((filter) => ListTile(
                 title: Text(filter),
@@ -1038,7 +1038,7 @@ class _HomePageContentState extends State<_HomePageContent> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
+            child: Text('close'.tr),
           ),
         ],
       ),

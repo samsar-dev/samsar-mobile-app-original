@@ -223,7 +223,7 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
               width: screenWidth * 0.35,
               color: Colors.grey[300]!,
               textColor: Colors.black,
-              text: 'Previous',
+              text: 'previous'.tr,
               onPressed: widget.onPrevious!,
             )
           else
@@ -234,7 +234,7 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
               width: screenWidth * 0.35,
               color: Colors.blue,
               textColor: Colors.white,
-              text: widget.currentStep == 2 ? 'Review' : 'Next',
+              text: widget.currentStep == 2 ? 'review'.tr : 'next'.tr,
               onPressed: widget.onNext!,
             ),
         ],

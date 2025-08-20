@@ -144,27 +144,27 @@ class _CreateListingViewState extends State<CreateListingView> {
                     controller: _scrollController,
                     child: Obx(() => AdvancedDetailsWrapper(
                       category: currentCategory,
-                      subCategory: currentCategory == 'vehicles' 
-                          ? _listingInputController.subCategory.value 
-                          : _listingInputController.mainCategory.value,
+                      subCategory: _listingInputController.subCategory.value,
                       currentStep: currentStep,
                       onNext: _handleNextButton,
                       onPrevious: currentStep > 0 ? _handlePreviousButton : null,
                     )),
                   ),
                   // ✅ RE-ENABLED: Features & Extras
-                  SingleChildScrollView(
-                    controller: _scrollController,
-                    child: Obx(() => FeaturesWrapper(
+                  Obx(() {
+                    print('🔍 CreateListingView passing to FeaturesWrapper:');
+                    print('   📝 currentCategory: "$currentCategory"');
+                    print('   📝 subCategory from controller: "${_listingInputController.subCategory.value}"');
+                    print('   📝 controller.mainCategory.value: "${_listingInputController.mainCategory.value}"');
+                    
+                    return FeaturesWrapper(
                       category: currentCategory,
-                      subCategory: currentCategory == 'vehicles' 
-                          ? _listingInputController.subCategory.value 
-                          : _listingInputController.mainCategory.value,
+                      subCategory: _listingInputController.subCategory.value,
                       currentStep: currentStep,
                       onNext: _handleNextButton,
                       onPrevious: currentStep > 0 ? _handlePreviousButton : null,
-                    )),
-                  ),
+                    );
+                  }),
                 ],
               ),
             ),

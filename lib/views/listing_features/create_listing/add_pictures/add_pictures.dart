@@ -26,7 +26,7 @@ class _AddPicturesState extends State<AddPictures> {
     if (_images.length >= 20) {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Maximum 20 images allowed")),
+        SnackBar(content: Text('maximum_20_images_allowed'.tr)),
       );
       return;
     }
@@ -53,21 +53,21 @@ class _AddPicturesState extends State<AddPictures> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text("Add Pictures", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text('add_pictures'.tr, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text("Select from Gallery"),
+                title: Text('select_from_gallery'.tr),
                 onTap: () => _pickImage(ImageSource.gallery),
               ),
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text("Take a Photo"),
+                title: Text('take_a_photo'.tr),
                 onTap: () async {
                   if (_images.length >= 20) {
                     Navigator.of(context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Maximum 20 images allowed")),
+                      SnackBar(content: Text('maximum_20_images_allowed'.tr)),
                     );
                     return;
                   }

@@ -165,14 +165,14 @@ class _ReviewListingState extends State<ReviewListing> {
       
       Get.dialog(
         AlertDialog(
-          title: Text("Validation Error", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          title: Text('validation_error'.tr, style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
           content: SingleChildScrollView(
             child: Text(errorMessage, style: TextStyle(fontSize: 14)),
           ),
           actions: [
             TextButton(
               onPressed: () => Get.back(),
-              child: Text("OK", style: TextStyle(color: Colors.blue)),
+              child: Text('ok'.tr, style: TextStyle(color: Colors.blue)),
             ),
           ],
         ),
@@ -186,7 +186,20 @@ class _ReviewListingState extends State<ReviewListing> {
   @override
   void initState() {
     super.initState();
-    _listingInputController = Get.find<ListingInputController>();
+    
+    // BULLETPROOF CONTROLLER ACCESS
+    try {
+      if (Get.isRegistered<ListingInputController>()) {
+        _listingInputController = Get.find<ListingInputController>();
+        print('✅ ReviewListing: Found existing controller');
+      } else {
+        print('🚨 ReviewListing: Controller not registered, creating permanent instance');
+        _listingInputController = Get.put(ListingInputController(), permanent: true);
+      }
+    } catch (e) {
+      print('🚨 ReviewListing: Error accessing controller: $e');
+      _listingInputController = Get.put(ListingInputController(), permanent: true);
+    }
     
     print('🔍 === REVIEW LISTING INIT DEBUG START ===');
     print('📱 ReviewListing initState() called');
@@ -209,6 +222,13 @@ class _ReviewListingState extends State<ReviewListing> {
     print('   ⛽ Fuel Type: "${_listingInputController.fuelType.value}"');
     print('   🔄 Transmission: "${_listingInputController.transmissionType.value}"');
     
+    // CRITICAL FIX: If controller data is empty but we have images from widget, sync them
+    if (_listingInputController.listingImage.isEmpty && widget.imageUrls.isNotEmpty) {
+      print('🔧 FIXING: Syncing images from widget to controller');
+      _listingInputController.listingImage.value = List<String>.from(widget.imageUrls);
+      print('✅ Images synced: ${_listingInputController.listingImage.length} images');
+    }
+    
     // Check for data preservation issues
     if (_listingInputController.title.value.isEmpty) {
       print('⚠️ WARNING: Title is empty in review screen!');
@@ -227,6 +247,37 @@ class _ReviewListingState extends State<ReviewListing> {
       print('⚠️ WARNING: All advanced details are empty! Advanced details may not be saving.');
     }
     
+    // CRITICAL: Check if we have ANY data at all
+    bool hasAnyData = _listingInputController.title.value.isNotEmpty ||
+                     _listingInputController.make.value.isNotEmpty ||
+                     _listingInputController.model.value.isNotEmpty ||
+                     _listingInputController.price.value > 0 ||
+                     _listingInputController.listingImage.isNotEmpty;
+                     
+    if (!hasAnyData) {
+      print('🚨 CRITICAL: NO DATA FOUND IN CONTROLLER!');
+      print('🚨 This means data is not being saved from previous steps');
+      
+      // Show error dialog to user
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.dialog(
+          AlertDialog(
+            title: Text('data_missing'.tr, style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            content: Text('no_listing_data_message'.tr),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Get.back(); // Close dialog
+                  Get.back(); // Go back to previous screen
+                },
+                child: Text('go_back'.tr, style: TextStyle(color: Colors.blue)),
+              ),
+            ],
+          ),
+        );
+      });
+    }
+    
     print('🔍 === REVIEW LISTING INIT DEBUG END ===');
   }
 
@@ -239,85 +290,104 @@ class _ReviewListingState extends State<ReviewListing> {
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-
       backgroundColor: whiteColor,
-
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-
-              AnimatedInputWrapper(
-                delayMilliseconds: 0,
-                child: ImagePlaceHolder(imageUrls: widget.imageUrls)
-              ),
-
-              SizedBox(height: screenHeight * 0.01),
-
-              Obx(
-                () {
-                  return AnimatedInputWrapper(
-                    delayMilliseconds: 100,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: screenWidth * 0.02),
-                        child: Text(
-                          _listingInputController.title.value,
-                          style: TextStyle(
-                            color: blackColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: screenWidth * 0.055,
-                          ),
-                        ),
-                      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Fixed height container for scrollable content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Column(
+                  children: [
+                    AnimatedInputWrapper(
+                      delayMilliseconds: 0,
+                      child: ImagePlaceHolder(imageUrls: widget.imageUrls)
                     ),
-                  );
-                }
-              ),
 
-              SizedBox(height: screenHeight * 0.02),
+                    SizedBox(height: screenHeight * 0.01),
 
-
-              widget.isVehicle ? 
-              vehicleWidget(screenHeight, screenWidth) :
-              realEstateWidget(screenHeight, screenWidth),
-
-             
-
-               SizedBox(height: screenHeight * 0.008,),
-
-                AppButton(
-                  widthSize: 0.65, 
-                  heightSize: 0.07, 
-                  buttonColor: blueColor,
-                  text: "Create", 
-                  textColor: whiteColor,
-                  onPressed: () {
-                    if (widget.isVehicle) {
-                      // Validate required fields before submission
-                      if (_validateRequiredFields()) {
-                        print("=== VALIDATION PASSED ===");
-                        print("All required fields are valid, proceeding with submission...");
-                        
-                        // Use the createCarModel method which includes all features and extras
-                        final carModel = _listingInputController.createVehicleModel();
-                        print("Car model created successfully: $carModel");
-                        
-                        // Lazy initialization of controller only when needed for submission
-                        _createListingController ??= Get.put(CreateListingController());
-                        _createListingController!.createCarListingController(carModel);
-                      } else {
-                        print("=== VALIDATION FAILED ===");
-                        print("Submission blocked due to validation errors");
+                    Obx(
+                      () {
+                        return AnimatedInputWrapper(
+                          delayMilliseconds: 100,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: EdgeInsets.only(left: screenWidth * 0.02),
+                              child: Text(
+                                _listingInputController.title.value.isNotEmpty 
+                                  ? _listingInputController.title.value 
+                                  : "No Title Available",
+                                style: TextStyle(
+                                  color: _listingInputController.title.value.isNotEmpty 
+                                    ? blackColor 
+                                    : Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: screenWidth * 0.055,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
                       }
-                    }
-                  },
-                ),
+                    ),
 
-              SizedBox(height: screenHeight * 0.05,),
-            ],
-          ),
+                    SizedBox(height: screenHeight * 0.02),
+
+                    // Content based on vehicle/real estate type
+                    widget.isVehicle ? 
+                    vehicleWidget(screenHeight, screenWidth) :
+                    realEstateWidget(screenHeight, screenWidth),
+
+                    SizedBox(height: screenHeight * 0.02),
+                  ],
+                ),
+              ),
+            ),
+            
+            // Fixed bottom button area
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: whiteColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: AppButton(
+                widthSize: 0.65, 
+                heightSize: 0.07, 
+                buttonColor: blueColor,
+                text: "Create", 
+                textColor: whiteColor,
+                onPressed: () {
+                  if (widget.isVehicle) {
+                    // Validate required fields before submission
+                    if (_validateRequiredFields()) {
+                      print("=== VALIDATION PASSED ===");
+                      print("All required fields are valid, proceeding with submission...");
+                      
+                      // Use the createCarModel method which includes all features and extras
+                      final carModel = _listingInputController.createVehicleModel();
+                      print("Car model created successfully: $carModel");
+                      
+                      // Lazy initialization of controller only when needed for submission
+                      _createListingController ??= Get.put(CreateListingController());
+                      _createListingController!.createCarListingController(carModel);
+                    } else {
+                      print("=== VALIDATION FAILED ===");
+                      print("Submission blocked due to validation errors");
+                    }
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -938,7 +1008,7 @@ class _ImagePlaceHolderState extends State<ImagePlaceHolder> {
         height: MediaQuery.of(context).size.width * 0.75,
         color: Colors.grey[300],
         alignment: Alignment.center,
-        child: const Text("No images selected."),
+        child: Text('no_images_selected'.tr),
       );
     }
 
@@ -965,7 +1035,7 @@ class _ImagePlaceHolderState extends State<ImagePlaceHolder> {
                       width: width,
                       height: height,
                       color: Colors.grey[300],
-                      child: const Center(child: Text('Image not found')),
+                      child: Center(child: Text('image_not_found'.tr)),
                     );
                   }
                   

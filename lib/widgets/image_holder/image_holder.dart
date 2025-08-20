@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:samsar/constants/color_constants.dart';
+import 'package:get/get.dart';
 
 
 class ImageHolder extends StatefulWidget {
@@ -119,14 +120,14 @@ class _ImageHolderState extends State<ImageHolder> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text(
-                            'Select Image',
+                          Text(
+                            'select_image'.tr,
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 20),
                           ListTile(
                             leading: const Icon(Icons.camera_alt, color: purpleColor),
-                            title: const Text('Take a Picture'),
+                            title: Text('take_a_picture'.tr),
                             onTap: () {
                               Navigator.pop(context);
                               _pickImage(ImageSource.camera);
@@ -134,7 +135,7 @@ class _ImageHolderState extends State<ImageHolder> {
                           ),
                           ListTile(
                             leading: const Icon(Icons.photo_library, color: purpleColor),
-                            title: const Text('Pick from Gallery'),
+                            title: Text('pick_from_gallery'.tr),
                             onTap: () {
                               Navigator.pop(context);
                               _pickImage(ImageSource.gallery);

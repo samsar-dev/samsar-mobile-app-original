@@ -52,7 +52,7 @@ class _ListingDetailState extends State<ListingDetail> {
 
           if(_detailController.listingDetail.value == null) {
             return Center(
-              child: Text("No data for listing is available"),
+              child: Text('no_data_for_listing'.tr),
             );
           }
 

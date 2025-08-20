@@ -43,9 +43,19 @@
 -keep class dev.fluttercommunity.plus.connectivity.** { *; }
 -dontwarn dev.fluttercommunity.plus.connectivity.**
 
-# Keep Dio HTTP client classes
+# Keep Dio HTTP client classes and networking
 -keep class dio.** { *; }
 -dontwarn dio.**
+-keep class okhttp3.** { *; }
+-dontwarn okhttp3.**
+-keep class retrofit2.** { *; }
+-dontwarn retrofit2.**
+
+# Keep networking and SSL classes
+-keep class javax.net.ssl.** { *; }
+-keep class java.security.cert.** { *; }
+-dontwarn javax.net.ssl.**
+-dontwarn java.security.cert.**
 
 # Keep Geolocator classes
 -keep class com.baseflow.geolocator.** { *; }
@@ -83,24 +93,17 @@
 -keepattributes InnerClasses
 -keepattributes EnclosingMethod
 
-# Remove unused code aggressively
--dontwarn **
--ignorewarnings
+# Network and DNS resolution
+-keep class java.net.** { *; }
+-keep class android.net.** { *; }
+-dontwarn java.net.**
+-dontwarn android.net.**
 
-# Optimize string usage
--optimizations !code/simplification/string
+# Keep DNS and hostname resolution
+-keep class java.net.InetAddress { *; }
+-keep class java.net.Inet4Address { *; }
+-keep class java.net.Inet6Address { *; }
 
-# Remove unused classes and methods
--dontshrink
--dontoptimize
-
-# Actually, enable shrinking and optimization for maximum size reduction
--dontshrink
--dontoptimize
-# Override above - we DO want shrinking and optimization
--dontwarn
--ignorewarnings
-
-# Final optimization pass
--optimizations *
--optimizationpasses 10
+# Final optimization (less aggressive)
+-optimizations !code/simplification/arithmetic
+-optimizationpasses 5

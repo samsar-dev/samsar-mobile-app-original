@@ -48,7 +48,7 @@ class EssentialDetailsWrapper extends StatelessWidget {
         break;
       default:
         formContent = Center(
-          child: Text('Unknown category: $category'),
+          child: Text('unknown_category_message'.tr + ': $category'),
         );
     }
 
@@ -76,7 +76,7 @@ class EssentialDetailsWrapper extends StatelessWidget {
               width: screenWidth * 0.35,
               color: Colors.grey[300]!,
               textColor: Colors.black,
-              text: 'Previous',
+              text: 'previous'.tr,
               onPressed: onPrevious!,
             )
           else
@@ -87,7 +87,7 @@ class EssentialDetailsWrapper extends StatelessWidget {
               width: screenWidth * 0.35,
               color: Colors.blue,
               textColor: Colors.white,
-              text: currentStep == 2 ? 'Review' : 'Next',
+              text: currentStep == 2 ? 'review'.tr : 'next'.tr,
               onPressed: onNext!,
             ),
         ],

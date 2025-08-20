@@ -166,7 +166,7 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
                 Navigator.pop(context); // Then close the bottom sheet
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Please enter a valid 6-digit OTP")),
+                  SnackBar(content: Text('please_enter_valid_otp'.tr)),
                 );
               }
             },

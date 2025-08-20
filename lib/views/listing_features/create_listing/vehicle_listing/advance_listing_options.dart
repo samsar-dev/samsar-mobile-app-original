@@ -67,7 +67,7 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
       backgroundColor: whiteColor,
       appBar: AppBar(
         backgroundColor: whiteColor,
-        title: Text("Advanced options", style: TextStyle(color: blackColor, fontWeight: FontWeight.bold)),
+        title: Text('advanced_options'.tr, style: TextStyle(color: blackColor, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Theme(

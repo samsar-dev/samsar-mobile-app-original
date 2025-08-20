@@ -66,15 +66,18 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
             
-            // Enable R8/ProGuard for maximum optimization
+            // Enable R8/ProGuard for optimization (less aggressive for networking)
             isMinifyEnabled = true
             isShrinkResources = true
             
-            // Use ProGuard rules for aggressive optimization
+            // Use ProGuard rules with networking preservation
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
+                getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"
             )
+            
+            // Ensure networking works in release builds
+            buildConfigField("boolean", "ENABLE_NETWORKING", "true")
         }
         
         debug {

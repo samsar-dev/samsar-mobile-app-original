@@ -401,6 +401,9 @@ class AppTranslations extends Translations {
       'rollover_protection': 'Rollover Protection',
       'service_records': 'Service Records',
       'operator_manual': 'Operator Manual',
+      'attachments': 'Attachments',
+      'cab_type': 'Cab Type',
+      'track_type': 'Track Type',
       
       // Real estate features
       'elevator': 'Elevator',
@@ -474,7 +477,7 @@ class AppTranslations extends Translations {
       'engine_and_performance': 'Engine & Performance',
       'horsepower': 'Horsepower',
       'enter_horsepower': 'Enter Horsepower',
-     ' horsepower_hp' : 'horsepower hp',
+      'horsepower_hp' : 'Horsepower (HP)',
 
       'vehicle_specifications': 'Vehicle Specifications',
       'drivetrain': 'Drivetrain',
@@ -574,6 +577,9 @@ class AppTranslations extends Translations {
       'price_required': 'Price is required.',
       'location_required': 'Location is required.',
       'select_property_type': 'Please select a property type',
+         'area_sqft': 'Area (sqft)',
+       'select_property_location': 'Please select a property location',
+       'select_property_condition': 'Please select a property condition',
       'add_at_least_one_image': 'Please add at least one image',
       'fill_required_fields': 'Please fill all required fields',
 
@@ -764,8 +770,11 @@ class AppTranslations extends Translations {
       'plot_size': 'Plot Size',
       'plot_size_sqm': 'Plot Size (sqm)',
       'enter_plot_size': 'Enter plot size in square meters',
+      'property_area_description': 'area description',
+
  
       'pool': 'Pool',
+      'enter_pool_details': 'Enter Pool Details',
       'office_type': 'Office Type',
       'shared': 'Shared',
       'coworking': 'Coworking',
@@ -834,10 +843,7 @@ class AppTranslations extends Translations {
       'storage_room': 'Storage Room',
       'laundry_room': 'Laundry Room',
 
-      // Construction Vehicle Features
-      'attachments': 'Attachments',
-      'cab_type': 'Cab Type',
-      'track_type': 'Track Type',
+     
 
       // Construction Vehicle Fields - using existing keys where available
       'construction_vehicle_specifications': 'Construction Vehicle Specifications',
@@ -847,6 +853,16 @@ class AppTranslations extends Translations {
       'lifting_capacity': 'Lifting Capacity',
       'reach': 'Reach',
       'working_hours': 'Working Hours',
+      'enter_operating_weight_kg': 'Enter Operating Weight (kg)',
+      'enter_bucket_capacity_m3': 'Enter Bucket Capacity (m³)',
+      'enter_lifting_capacity_kg': 'Enter Lifting Capacity (kg)',
+      'enter_reach_m': 'Enter Reach (m)',
+      'enter_working_hours': 'Enter Working Hours',
+      'construction_specifications': 'Construction Specifications',
+      'hydraulic': 'Hydraulic',
+      'rubber_tired': 'Rubber Tired',
+      'drill_rig': 'Drill Rig',
+      'forklift': 'Forklift',
 
 
       // Passenger Vehicle Fields
@@ -855,19 +871,140 @@ class AppTranslations extends Translations {
       'doors': 'Doors',
       'air_conditioning': 'Air Conditioning',
       'entertainment_system': 'Entertainment System',
+      'passenger_specifications': 'Passenger Specifications',
+      'passenger_vehicle_specifications': 'Passenger Vehicle Specifications',
+      'passenger_vehicle_specifications_info': 'Passenger capacity and comfort features are important for buyers',
+      'shuttle': 'Shuttle',
+      'no_ac': 'No AC',
 
       // Commercial Vehicle Fields
       'commercial_vehicle_details': 'Commercial Vehicle Details',
       'cargo_volume': 'Cargo Volume',
       'axles': 'Axles',
       'gvwr': 'GVWR',
+      'commercial_specifications': 'Commercial Specifications',
+      'commercial_vehicle_specifications': 'Commercial Vehicle Specifications',
+      'commercial_vehicle_specifications_info': 'Commercial vehicle specifications for business use',
+      'payload_capacity': 'Payload Capacity',
+      'towing_capacity': 'Towing Capacity',
+      'enter_payload_capacity_kg': 'Enter Payload Capacity (kg)',
+      'enter_towing_capacity_kg': 'Enter Towing Capacity (kg)',
+      'enter_cargo_volume_m3': 'Enter Cargo Volume (m³)',
+      'tow_truck': 'Tow Truck',
+      'delivery_van': 'Delivery Van',
+      'cargo_van': 'Cargo Van',
+      'fire_truck': 'Fire Truck',
 
-      // Auth Required Placeholder
-      'login_required': 'Login Required',
-      'favourites_feature': 'Favourites',
-      'create_listing_feature': 'Create Listing',
-      'messages': 'Messages',
-      'profile': 'Profile',
+      // Real Estate Advanced Details
+      'apartment_essentials': 'Apartment Essentials',
+      'house_essentials': 'House Essentials',
+      'villa_essentials': 'Villa Essentials',
+      'villa_specifications': 'Villa Specifications',
+      'villa_specifications_info': 'Villa details and luxury features',
+      'office_essentials': 'Office Essentials',
+      'store_essentials': 'Store Essentials',
+      'store_specifications': 'Store Specifications',
+      'store_specifications_info': 'Commercial store details and features',
+      'store_type': 'Store Type',
+      'land_essentials': 'Land Essentials',
+      'building_age': 'Building Age',
+      'enter_building_age_years': 'Enter Building Age (years)',
+      'building_info': 'Building Information',
+      'building_information': 'Building Information',
+      'ceiling_height': 'Ceiling Height',
+      'enter_ceiling_height_meters': 'Enter Ceiling Height (meters)',
+      'floor_area': 'Floor Area',
+      'enter_floor_area_sqm': 'Enter Floor Area (sqm)',
+      'frontage': 'Frontage',
+      'enter_frontage_meters': 'Enter Frontage (meters)',
+      'parking_spaces': 'Parking Spaces',
+      'enter_parking_spaces': 'Enter Number of Parking Spaces',
+      'energy_rating': 'Energy Rating',
+      'location_details': 'Location Details',
+      'location_views': 'Location & Views',
+      'view': 'View',
+      'orientation': 'Orientation',
+      'outdoor_features': 'Outdoor Features',
+      'physical_features': 'Physical Features',
+      'technical_details': 'Technical Details',
+      'dd_mm_yyyy': 'DD/MM/YYYY',
+      'imported': 'Imported',
+      'none': 'None',
+      'no_service_history': 'No Service History',
+      'powershift': 'Powershift',
+
+      // Navigation Buttons
+      'next': 'Next',
+      'previous': 'Previous',
+      'review': 'Review',
+      'continue': 'Continue',
+      'submit': 'Submit',
+      'go_back': 'Go Back',
+      
+      // Dialog Messages
+      'validation_error': 'Validation Error',
+      'data_missing': 'Data Missing',
+      'no_listing_data_message': 'No listing data found. Please go back and fill in the required information.',
+      
+      // Image Messages
+      'maximum_20_images_allowed': 'Maximum 20 images allowed',
+      'select_from_gallery': 'Select from Gallery',
+      'take_a_photo': 'Take a Photo',
+      'no_images_selected': 'No images selected.',
+      'image_not_found': 'Image not found',
+      
+      // Advanced Options
+      'advanced_options': 'Advanced Options',
+      'climate_and_energy': 'Climate and Energy',
+      'structure_and_layout': 'Structure and Layout',
+      'interior_features': 'Interior Features',
+      'living_space': 'Living Space',
+      'parking_and_roof': 'Parking and Roof',
+      'community_and_extras': 'Community and Extras',
+      
+      // Color Picker
+      'select_a_color': 'Select a color',
+      
+      // Image Picker
+      'select_image': 'Select Image',
+      'take_a_picture': 'Take a Picture',
+      'pick_from_gallery': 'Pick from Gallery',
+      
+      // Listings
+      'no_data_for_listing': 'No data for listing is available',
+      
+      // Connection & Auth
+      'no_internet_connection': 'No internet connection',
+      'checking_authentication': 'Checking authentication...',
+      'login_required_dialog': 'Login Required',
+      'maybe_later': 'Maybe Later',
+      'sign_in': 'Sign In',
+      
+      // Filters & Search
+      'advanced_filters': 'Advanced Filters',
+      'available_filters_for': 'Available filters for',
+      'filter_selected': 'filter selected',
+      'close': 'Close',
+      
+      // Vehicle Advanced Options
+      'engine_performance': 'Engine & Performance',
+      'condition_history': 'Condition & History',
+      'legal_documents': 'Legal & Documents',
+      'color_appearance': 'Color & Appearance',
+      
+      // Debug
+      'debug_data_summary': '🔧 DEBUG: Data Summary',
+      'controller_state': '📊 Controller State:',
+      'main_category': '📝 Main Category:',
+      'sub_category': '🚗 Sub Category:',
+      'images_count': '🖼️ Images:',
+      'title_field': '📋 Title:',
+      
+      // Validation
+      'please_enter_valid_otp': 'Please enter a valid 6-digit OTP',
+      
+      // Error Messages
+      'unknown_category_message': 'Unknown category',
       'favourites_desc': 'Save and organize your favorite listings for quick access.',
       'create_listing_desc': 'List your items and reach thousands of potential buyers.',
       'messages_desc': 'Connect directly with buyers and sellers through secure messaging.',
@@ -889,9 +1026,9 @@ class AppTranslations extends Translations {
       'purchase_history': 'View purchase history',
       'account_settings': 'Manage account settings',
       'build_reputation': 'Build your reputation',
-      'sign_in': 'Sign In',
+      'sign_in_button': 'Sign In',
       'create_account': 'Create Account',
-      'maybe_later': 'Maybe Later',
+      'maybe_later_button': 'Maybe Later',
       'continue_browsing': 'Continue browsing as guest',
 
     },
@@ -1499,6 +1636,9 @@ class AppTranslations extends Translations {
 'rollover_protection': 'حماية من الانقلاب',
 'service_records': 'سجلات الصيانة',
 'operator_manual': 'دليل التشغيل',
+'attachments': 'الإرفاقات',
+'cab_type': 'نوع الكابينة',
+'track_type': 'نوع السلاسل',
 
 // Real estate features
 'elevator': 'مصعد',
@@ -1621,6 +1761,10 @@ class AppTranslations extends Translations {
       'plot_size': 'مساحة الأرض',
       'plot_size_sqm': 'مساحة الأرض (متر مربع)',
       'enter_plot_size': 'أدخل مساحة الأرض بالمتر المربع',
+      'area_sqft': 'مساحة الأرض (قدم مربع)',
+      'property_area_description': 'مساحة العقار (قدم مربع)',
+       'select_property_location': 'موقع العقار',
+       'select_property_condition': 'الحالة العقارية', 
  
       'pool': 'مسبح',
       'office_type': 'نوع المكتب',
@@ -1636,14 +1780,56 @@ class AppTranslations extends Translations {
       'commercial': 'تجاري',
       'agricultural': 'زراعي',
       'industrial': 'صناعي',
- 
 
- 
+      // Bedrooms & Bathrooms - using existing keys
+'number_of_bedrooms': 'عدد غرف النوم',
+'number_of_bathrooms': 'عدد الحمامات',
+'year_property_built': 'سنة بناء العقار',
 
-      // Additional fields
-      'number_of_bedrooms': 'عدد غرف النوم',
-      'number_of_bathrooms': 'عدد الحمامات',
-      'year_property_built': 'سنة بناء العقار',
+// Motorcycle Features
+'stability_control': 'نظام الثبات',
+'wheelie_control': 'نظام التحكم في التوازن الأمامي',
+'launch_control': 'نظام الانطلاق السريع',
+'quick_shifter': 'ناقل حركة سريع',
+'slipper_clutch': 'قابض مانع للانزلاق',
+'riding_modes': 'أنماط القيادة',
+'suspension_adjustment': 'تعديل التعليق',
+'electronic_suspension': 'نظام تعليق إلكتروني',
+'adaptive_headlights': 'مصابيح أمامية متكيفة',
+'daytime_running_lights': 'أضواء القيادة النهارية',
+'hazard_lights': 'أضواء الطوارئ',
+'turn_signals': 'إشارات الانعطاف',
+'brake_light': 'ضوء المكابح',
+'digital_display': 'شاشة رقمية',
+'analog_gauges': 'عدادات تماثلية',
+'12v_socket': 'مقبس 12 فولت',
+'phone_mount': 'حامل الهاتف',
+'windscreen': 'زجاج أمامي',
+'adjustable_windscreen': 'زجاج أمامي قابل للتعديل',
+'hand_guards': 'واقيات يد',
+'knee_grips': 'مسكات الركبة',
+'seat_heating': 'تدفئة المقعد',
+'grip_heating': 'تدفئة المقابض',
+'storage_compartment': 'حجرة تخزين',
+'side_boxes': 'صناديق جانبية',
+'top_box': 'صندوق علوي',
+'tank_bag': 'حقيبة الخزان',
+'crash_bars': 'قضبان حماية من السقوط',
+'engine_guard': 'حماية المحرك',
+'skid_plate': 'لوح حماية سفلي',
+'chain_guard': 'حماية السلسلة',
+'disc_lock': 'قفل قرصي',
+'chain_lock': 'قفل السلسلة',
+'kick_starter': 'بدّال تشغيل يدوي',
+'electric_starter': 'تشغيل كهربائي',
+'center_stand': 'موقف مركزي',
+'side_stand': 'موقف جانبي',
+'maintenance_stand': 'موقف صيانة',
+'tool_kit': 'عدة أدوات',
+'puncture_kit': 'عدة إصلاح الإطارات',
+'first_aid_kit': 'عدة إسعافات أولية',
+
+  
 
       // Construction Vehicle Fields
       'construction_vehicle_specifications': 'مواصفات معدات البناء',
@@ -1692,6 +1878,79 @@ class AppTranslations extends Translations {
       'kitchen_area_description': 'مجهزة بمطبخ',
       'disabled_access_description': 'مجهزة لذوي الاحتياجات الخاصة',
 
+      // Navigation Buttons
+      'next': 'التالي',
+      'previous': 'السابق',
+      'review': 'مراجعة',
+      'continue': 'متابعة',
+      'submit': 'إرسال',
+      'go_back': 'العودة',
+      
+      // Dialog Messages
+      'validation_error': 'خطأ في التحقق',
+      'data_missing': 'بيانات مفقودة',
+      'no_listing_data_message': 'لم يتم العثور على بيانات الإعلان. يرجى العودة وملء المعلومات المطلوبة.',
+      
+      // Image Messages
+      'maximum_20_images_allowed': 'الحد الأقصى 20 صورة مسموح',
+      'select_from_gallery': 'اختر من المعرض',
+      'take_a_photo': 'التقط صورة',
+      'no_images_selected': 'لم يتم اختيار صور.',
+      'image_not_found': 'لم يتم العثور على الصورة',
+      
+      // Advanced Options
+      'advanced_options': 'خيارات متقدمة',
+      'climate_and_energy': 'المناخ والطاقة',
+      'structure_and_layout': 'الهيكل والتخطيط',
+      'interior_features': 'المميزات الداخلية',
+      'living_space': 'مساحة المعيشة',
+      'parking_and_roof': 'الموقف والسقف',
+      'community_and_extras': 'المجتمع والإضافات',
+      
+      // Color Picker
+      'select_a_color': 'اختر لوناً',
+      
+      // Image Picker
+      'select_image': 'اختر صورة',
+      'take_a_picture': 'التقط صورة',
+      'pick_from_gallery': 'اختر من المعرض',
+      
+      // Listings
+      'no_data_for_listing': 'لا توجد بيانات متاحة للإعلان',
+      
+      // Connection & Auth
+      'no_internet_connection': 'لا يوجد اتصال بالإنترنت',
+      'checking_authentication': 'جاري التحقق من المصادقة...',
+      'login_required_dialog': 'تسجيل الدخول مطلوب',
+      'maybe_later': 'ربما لاحقاً',
+      'sign_in': 'تسجيل الدخول',
+      
+      // Filters & Search
+      'advanced_filters': 'المرشحات المتقدمة',
+      'available_filters_for': 'المرشحات المتاحة لـ',
+      'filter_selected': 'تم اختيار المرشح',
+      'close': 'إغلاق',
+      
+      // Vehicle Advanced Options
+      'engine_performance': 'المحرك والأداء',
+      'condition_history': 'الحالة والتاريخ',
+      'legal_documents': 'الوثائق القانونية',
+      'color_appearance': 'اللون والمظهر',
+      
+      // Debug
+      'debug_data_summary': '🔧 ملخص البيانات التشخيصي',
+      'controller_state': '📊 حالة وحدة التحكم:',
+      'main_category': '📝 الفئة الرئيسية:',
+      'sub_category': '🚗 الفئة الفرعية:',
+      'images_count': '🖼️ الصور:',
+      'title_field': '📋 العنوان:',
+      
+      // Validation
+      'please_enter_valid_otp': 'يرجى إدخال رمز OTP صحيح مكون من 6 أرقام',
+      
+      // Error Messages
+      'unknown_category_message': 'فئة غير معروفة',
+      
       // Auth Required Placeholder
       'login_required': 'تسجيل الدخول مطلوب',
       'favourites_feature': 'المفضلة',
@@ -1719,9 +1978,7 @@ class AppTranslations extends Translations {
       'purchase_history': 'عرض تاريخ المشتريات',
       'account_settings': 'إدارة إعدادات الحساب',
       'build_reputation': 'بناء سمعتك',
-      'sign_in': 'تسجيل الدخول',
       'create_account': 'إنشاء حساب',
-      'maybe_later': 'ربما لاحقاً',
       'continue_browsing': 'متابعة التصفح كضيف',
 
       // Passenger Vehicle Features

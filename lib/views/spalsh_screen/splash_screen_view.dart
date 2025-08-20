@@ -53,7 +53,7 @@ class _SplashScreenViewState extends State<SplashScreenView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('No internet connection'),
+                Text('no_internet_connection'.tr),
                 ElevatedButton(
                   onPressed: () {
                     _connectivityController.checkConnectivity(); 
@@ -62,10 +62,10 @@ class _SplashScreenViewState extends State<SplashScreenView> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: blueColor
                   ),
-                  child: Text('Retry', style: TextStyle(
+                  child: Text('retry'.tr, style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: whiteColor
-                  ),),
+                    color: Colors.white
+                  )),
                 ),
               ],
             ),

@@ -55,15 +55,18 @@ class _RealEstateEssentialDetailsState extends State<RealEstateEssentialDetails>
   final List<XFile> _images = [];
   final ImagePicker _picker = ImagePicker();
   
-  // Property types with professional icons
-  final List<SelectTypeItem> propertyTypes = [
-    SelectTypeItem(title: 'apartment'.tr, icon: Icons.apartment_outlined),
-    SelectTypeItem(title: 'house'.tr, icon: Icons.home_outlined),
-    SelectTypeItem(title: 'villa'.tr, icon: Icons.villa_outlined),
-    SelectTypeItem(title: 'office'.tr, icon: Icons.business_center_outlined),
-    SelectTypeItem(title: 'land'.tr, icon: Icons.terrain_outlined),
-    SelectTypeItem(title: 'store'.tr, icon: Icons.storefront_outlined),
+  // Property types with professional icons and keys
+  final List<Map<String, dynamic>> propertyTypeData = [
+    {'key': 'APARTMENT', 'title': 'apartment'.tr, 'icon': Icons.apartment_outlined},
+    {'key': 'HOUSE', 'title': 'house'.tr, 'icon': Icons.home_outlined},
+    {'key': 'VILLA', 'title': 'villa'.tr, 'icon': Icons.villa_outlined},
+    {'key': 'OFFICE', 'title': 'office'.tr, 'icon': Icons.business_center_outlined},
+    {'key': 'LAND', 'title': 'land'.tr, 'icon': Icons.terrain_outlined},
+    {'key': 'STORE', 'title': 'store'.tr, 'icon': Icons.storefront_outlined},
   ];
+  
+  // Generate SelectTypeItem list for UI
+  late final List<SelectTypeItem> propertyTypes;
 
   // Listing action options - map display values to backend values
   final Map<String, String> listingActions = {
@@ -84,6 +87,11 @@ class _RealEstateEssentialDetailsState extends State<RealEstateEssentialDetails>
   void initState() {
     super.initState();
     _themeController = Get.put(ThemeController());
+    
+    // Initialize property types list from data
+    propertyTypes = propertyTypeData.map((data) => 
+      SelectTypeItem(title: data['title'], icon: data['icon'])
+    ).toList();
     
     // BULLETPROOF CONTROLLER ACCESS
     try {
@@ -144,28 +152,31 @@ class _RealEstateEssentialDetailsState extends State<RealEstateEssentialDetails>
       descriptionController.text = _listingInputController.description.value;
     }
     
-    // Load property type if saved (using mainCategory for property type)
-    if (_listingInputController.mainCategory.value.isNotEmpty) {
-      selectedPropertyType = _listingInputController.mainCategory.value;
-      // Ensure main category is in UPPERCASE for backend
-      _listingInputController.mainCategory.value = selectedPropertyType.toUpperCase();
+    // 🔧 CRITICAL FIX: Load property type from subCategory (not mainCategory)
+    if (_listingInputController.subCategory.value.isNotEmpty) {
+      final subCategory = _listingInputController.subCategory.value.toUpperCase();
+      print('🏠 Found subCategory: "$subCategory"');
       
       // Define the keys in the same order as the propertyTypes list
       final propertyTypeKeys = ['APARTMENT', 'HOUSE', 'VILLA', 'OFFICE', 'LAND', 'STORE'];
-      final index = propertyTypeKeys.indexWhere((key) => key == selectedPropertyType.toUpperCase());
+      final index = propertyTypeKeys.indexWhere((key) => key == subCategory);
 
       if (index != -1) {
         selectedIndex = index;
-        // The selectedPropertyType from the controller is correct, just ensure the UI is updated
-        // The `propertyTypes` list already uses .tr, so the UI will be translated correctly
+        selectedPropertyType = propertyTypes[index].title;
+        // Ensure mainCategory is REAL_ESTATE for backend
+        _listingInputController.mainCategory.value = 'REAL_ESTATE';
+        print('✅ Property type restored: $selectedPropertyType (index: $index)');
+      } else {
+        print('❌ Property type index not found for: $subCategory');
       }
+    } else {
+      print('❌ No subCategory found in controller');
     }
     
-    // Load subCategory for listing action (For Sale/For Rent)
-    if (_listingInputController.subCategory.value.isNotEmpty) {
-      // Ensure listing action is in UPPERCASE for backend
-      final action = _listingInputController.subCategory.value.toUpperCase();
-      _listingInputController.subCategory.value = action;
+    // Load listing action from listingAction field (not subCategory)
+    if (_listingInputController.listingAction.value.isNotEmpty) {
+      final action = _listingInputController.listingAction.value.toUpperCase();
       // Set display value with proper case
       listingActionController.text = action == 'FOR_SALE' ? 'for_sale'.tr : 'for_rent'.tr;
     }
@@ -382,10 +393,15 @@ class _RealEstateEssentialDetailsState extends State<RealEstateEssentialDetails>
                         setState(() {
                           selectedIndex = index;
                           selectedPropertyType = propertyTypes[index].title;
-                          // Save property type to controller immediately
-                          _listingInputController.mainCategory.value = selectedPropertyType.toUpperCase();
+                          // 🔧 CRITICAL FIX: Save property type to subCategory for advanced details wrapper
+                          // Define the keys in the same order as the propertyTypes list
+                          final propertyTypeKeys = ['APARTMENT', 'HOUSE', 'VILLA', 'OFFICE', 'LAND', 'STORE'];
+                          _listingInputController.subCategory.value = propertyTypeKeys[index];
+                          // Keep mainCategory as REAL_ESTATE for backend
+                          _listingInputController.mainCategory.value = 'REAL_ESTATE';
                         });
                         print('🏠 Property type selected: $selectedPropertyType');
+                        print('📝 Updated subCategory to: ${_listingInputController.subCategory.value}');
                         print('📝 Updated mainCategory to: ${_listingInputController.mainCategory.value}');
                       },
                       hasError: widget.showValidation && selectedIndex == -1,

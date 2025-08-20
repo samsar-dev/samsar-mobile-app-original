@@ -49,7 +49,7 @@ class MyListings extends StatelessWidget {
                     // Navigate to login screen
                     Get.offAllNamed('/login');
                   },
-                  child: const Text('Go to Login'),
+                  child: Text('go_to_login'.tr),
                 ),
               ],
             ),
