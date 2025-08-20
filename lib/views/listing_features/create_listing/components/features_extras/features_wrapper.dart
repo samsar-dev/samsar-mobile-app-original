@@ -17,10 +17,16 @@ import 'package:samsar/views/listing_features/create_listing/components/features
 class FeaturesWrapper extends StatelessWidget {
   final String category;
   final String? subCategory; // For vehicles and real estate subcategories
+  final int currentStep;
+  final VoidCallback? onNext;
+  final VoidCallback? onPrevious;
 
   const FeaturesWrapper({super.key, 
     required this.category,
     this.subCategory,
+    required this.currentStep,
+    this.onNext,
+    this.onPrevious,
   });
 
   @override
@@ -28,43 +34,64 @@ class FeaturesWrapper extends StatelessWidget {
     final categoryUpper = category.toUpperCase();
     final subCategoryUpper = subCategory?.toUpperCase() ?? '';
     
+    Widget formContent;
+    
     if (categoryUpper == 'VEHICLES') {
       switch (subCategoryUpper) {
         case 'CARS':
-          return CarFeatures();
+          formContent = CarFeatures();
+          break;
         case 'MOTORCYCLES':
-          return MotorcycleFeatures();
+          formContent = MotorcycleFeatures();
+          break;
         case 'PASSENGER_VEHICLES':
-          return PassengersFeatures();
+          formContent = PassengersFeatures();
+          break;
         case 'COMMERCIAL_TRANSPORT':
-          return CommercialsFeatures();
+          formContent = CommercialsFeatures();
+          break;
         case 'CONSTRUCTION_VEHICLES':
-          return ConstructionsFeatures();
+          formContent = ConstructionsFeatures();
+          break;
         default:
-          return _buildPlaceholder(context, 'vehicle_features_extras'.tr);
+          formContent = _buildPlaceholder(context, 'vehicle_features_extras'.tr);
       }
     } else if (categoryUpper == 'REAL_ESTATE') {
       switch (subCategoryUpper) {
         case 'APARTMENT':
-          return ApartmentsFeatures();
+          formContent = ApartmentsFeatures();
+          break;
         case 'HOUSE':
-          return HousesFeatures();
+          formContent = HousesFeatures();
+          break;
         case 'VILLA':
-          return VillasFeatures();
+          formContent = VillasFeatures();
+          break;
         case 'OFFICE':
-          return OfficesFeatures();
+          formContent = OfficesFeatures();
+          break;
         case 'LAND':
-          return LandFeatures();
+          formContent = LandFeatures();
+          break;
         case 'STORE':
-          return StoresFeatures();
+          formContent = StoresFeatures();
+          break;
         default:
-          return _buildPlaceholder(context, 'real_estate_features_extras'.tr);
+          formContent = _buildPlaceholder(context, 'real_estate_features_extras'.tr);
       }
     } else {
-      return Center(
+      formContent = Center(
         child: Text('unknown_category'.tr + ': $category'),
       );
     }
+
+    return Column(
+      children: [
+        formContent,
+        // Navigation buttons at the bottom of form content
+        _buildNavigationButtons(context),
+      ],
+    );
   }
   
   Widget _buildPlaceholder(BuildContext context, String title) {
@@ -118,6 +145,67 @@ class FeaturesWrapper extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildNavigationButtons(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    
+    return Container(
+      padding: EdgeInsets.all(16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (currentStep > 0 && onPrevious != null)
+            _buildButton(
+              width: screenWidth * 0.35,
+              color: Colors.grey[300]!,
+              textColor: Colors.black,
+              text: 'Previous',
+              onPressed: onPrevious!,
+            )
+          else
+            SizedBox(width: screenWidth * 0.35),
+          
+          if (onNext != null)
+            _buildButton(
+              width: screenWidth * 0.35,
+              color: Colors.blue,
+              textColor: Colors.white,
+              text: currentStep == 2 ? 'Review' : 'Next',
+              onPressed: onNext!,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildButton({
+    required double width,
+    required Color color,
+    required Color textColor,
+    required String text,
+    required VoidCallback onPressed,
+  }) {
+    return SizedBox(
+      width: width,
+      height: 48,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: textColor,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }

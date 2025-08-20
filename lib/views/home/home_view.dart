@@ -47,7 +47,11 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
       permanent: true,
     );
     _authController = Get.find<AuthController>();
-    _themeController = Get.put(ThemeController());
+    try {
+      _themeController = Get.find<ThemeController>();
+    } catch (e) {
+      _themeController = Get.put(ThemeController());
+    }
     
     // Initialize home page immediately
     _pages[0] = const _HomePageContent();
@@ -405,7 +409,11 @@ class _HomePageContentState extends State<_HomePageContent> {
   void initState() {
     super.initState();
     // Initialize controllers
-    _themeController = Get.find<ThemeController>();
+    try {
+      _themeController = Get.find<ThemeController>();
+    } catch (e) {
+      _themeController = Get.put(ThemeController());
+    }
     
     // Use Get.find if controller already exists, otherwise create new one
     try {
@@ -543,6 +551,25 @@ class _HomePageContentState extends State<_HomePageContent> {
     listingController.fetchListings();
   }
 
+  Future<void> _onRefresh() async {
+    // Show a brief loading indicator
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    // Refresh listings based on current state
+    if (selectedMainCategory == null) {
+      _loadAllListings();
+    } else if (selectedSubCategory != null) {
+      _loadSubcategoryListings(selectedMainCategory!, selectedSubCategory!);
+    } else {
+      _loadCategoryListings(selectedMainCategory!);
+    }
+    
+    // Apply any active listing action filter
+    if (selectedListingAction != null) {
+      _applyListingActionFilter(selectedListingAction!);
+    }
+  }
+
   void _applySimplifiedFilters() {
     // Apply only the simplified filters and reload listings
     listingController.applyFilters();
@@ -664,26 +691,34 @@ class _HomePageContentState extends State<_HomePageContent> {
             ],
           ),
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Show listings immediately based on selection state
-              if (selectedMainCategory == null) ...[
-                _buildMainCategorySelection(),
-                const SizedBox(height: 24),
-                SimpleFilters(
-                  onFiltersChanged: _applySimplifiedFilters,
-                ),
-                const SizedBox(height: 24),
-                _buildListingsHeader(),
-                const SizedBox(height: 16),
-                _buildListingsView(), // Show all listings by default
-              ] else ...[
-                _buildCategoryListingsWithToggles(),
-              ]
-            ],
+        body: RefreshIndicator(
+          onRefresh: _onRefresh,
+          color: Colors.blue,
+          backgroundColor: Colors.white,
+          strokeWidth: 2.5,
+          displacement: 40.0,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Show listings immediately based on selection state
+                if (selectedMainCategory == null) ...[
+                  _buildMainCategorySelection(),
+                  const SizedBox(height: 24),
+                  SimpleFilters(
+                    onFiltersChanged: _applySimplifiedFilters,
+                  ),
+                  const SizedBox(height: 24),
+                  _buildListingsHeader(),
+                  const SizedBox(height: 16),
+                  _buildListingsView(), // Show all listings by default
+                ] else ...[
+                  _buildCategoryListingsWithToggles(),
+                ]
+              ],
+            ),
           ),
         ),
       )),
@@ -728,7 +763,7 @@ class _HomePageContentState extends State<_HomePageContent> {
           final item = listingController.listings[index];
           final ImageProvider imageProvider = (item.images.isNotEmpty && item.images.first.isNotEmpty)
               ? NetworkImage(item.images.first)
-              : const AssetImage('lib/assets/images/vehicle_placeholder.png');
+              : const AssetImage('lib/assets/error_car_mascot.png');
 
           return FutureBuilder(
             future: listing_card.loadLibrary(),

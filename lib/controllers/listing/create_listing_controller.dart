@@ -20,21 +20,53 @@ class CreateListingController extends GetxController {
       isCreating.value = true;
       loadingDialog('Creating listing...');
 
-      print("=== CREATE LISTING CONTROLLER ===");
-      print("🚀 CREATE LISTING CONTROLLER CALLED ===");
-      print("📊 Car Details: $carModelDetails");
-      print("📝 Title: ${carModelDetails.title}");
-      print("📝 Description: ${carModelDetails.description}");
-      print("💰 Price: ${carModelDetails.price}");
-      print("🏷️ Main Category: ${carModelDetails.mainCategory}");
-      print("🚗 Sub Category: ${carModelDetails.subCategory}");
-      print("📍 Location: ${carModelDetails.location}");
-      print("📍 Latitude: ${carModelDetails.latitude}");
-      print("📍 Longitude: ${carModelDetails.longitude}");
-      print("🔧 Condition: ${carModelDetails.condition}");
-      print("📋 Listing Action: ${carModelDetails.listingAction}");
-      print("🖼️ Images count: ${carModelDetails.listingImage.length}");
-      print("🔍 Details: ${carModelDetails.details}");
+      print("\n🎯 === CREATE LISTING CONTROLLER START ===");
+      print("🚀 CREATE LISTING CONTROLLER CALLED");
+      print("📊 RECEIVED CAR MODEL DETAILS:");
+      print("  Type: ${carModelDetails.runtimeType}");
+      print("  Title: '${carModelDetails.title}'");
+      print("  Description: '${carModelDetails.description}'");
+      print("  Price: ${carModelDetails.price}");
+      print("  Main Category: '${carModelDetails.mainCategory}'");
+      print("  Sub Category: '${carModelDetails.subCategory}'");
+      print("  Location: '${carModelDetails.location}'");
+      print("  Latitude: ${carModelDetails.latitude}");
+      print("  Longitude: ${carModelDetails.longitude}");
+      print("  Condition: '${carModelDetails.condition}'");
+      print("  Listing Action: '${carModelDetails.listingAction}'");
+      print("  Seller Type: '${carModelDetails.sellerType}'");
+      print("  Images count: ${carModelDetails.listingImage.length}");
+      print("  Images paths: ${carModelDetails.listingImage}");
+      
+      print("\n🔍 ANALYZING DETAILS OBJECT:");
+      print("  Details type: ${carModelDetails.details.runtimeType}");
+      print("  Details.json type: ${carModelDetails.details.json.runtimeType}");
+      print("  Details.json keys: ${carModelDetails.details.json.keys.toList()}");
+      print("  Details.json content: ${carModelDetails.details.json}");
+      
+      if (carModelDetails.details.json.containsKey('vehicles')) {
+        final vehiclesData = carModelDetails.details.json['vehicles'] as Map<String, dynamic>?;
+        if (vehiclesData != null) {
+          print("\n🚗 VEHICLE SPECIFIC DATA FOUND:");
+          print("  vehicleType: '${vehiclesData['vehicleType']}'");
+          print("  make: '${vehiclesData['make']}'");
+          print("  model: '${vehiclesData['model']}'");
+          print("  year: '${vehiclesData['year']}'");
+          print("  mileage: '${vehiclesData['mileage']}'");
+          print("  horsepower: '${vehiclesData['horsepower']}'");
+          print("  transmission: '${vehiclesData['transmission']}'");
+          print("  fuelType: '${vehiclesData['fuelType']}'");
+          print("  exteriorColor: '${vehiclesData['exteriorColor']}'");
+          print("  bodyType: '${vehiclesData['bodyType']}'");
+          print("  driveType: '${vehiclesData['driveType']}'");
+          print("  accidentFree: '${vehiclesData['accidentFree']}'");
+          print("  features: '${vehiclesData['features']}'");
+        } else {
+          print("  ❌ vehicles data is null!");
+        }
+      } else {
+        print("  ❌ No 'vehicles' key found in details.json!");
+      }
 
       final token = await _authController.getAccessToken();
       print("🔑 Auth token: ${token != null ? 'Present' : 'Missing'}");

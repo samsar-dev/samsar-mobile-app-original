@@ -150,23 +150,27 @@ class Category {
 class Details {
     Details({
         required this.vehicles,
+        required this.realEstate,
     });
 
     final Vehicles? vehicles;
+    final RealEstate? realEstate;
 
     factory Details.fromJson(Map<String, dynamic> json){ 
         return Details(
             vehicles: json["vehicles"] == null ? null : Vehicles.fromJson(json["vehicles"]),
+            realEstate: json["realEstate"] == null ? null : RealEstate.fromJson(json["realEstate"]),
         );
     }
 
     Map<String, dynamic> toJson() => {
         "vehicles": vehicles?.toJson(),
+        "realEstate": realEstate?.toJson(),
     };
 
     @override
     String toString(){
-        return "$vehicles, ";
+        return "$vehicles, $realEstate, ";
     }
 }
 
@@ -181,7 +185,6 @@ class Vehicles {
         required this.transmissionType,
         required this.color,
         required this.condition,
-
         required this.warranty,
         required this.previousOwners,
         required this.engineSize,
@@ -208,6 +211,73 @@ class Vehicles {
         required this.serviceHistory,
         required this.registrationExpiry,
         required this.engineNumber,
+        // Missing fields from database
+        required this.abs,
+        required this.airbags,
+        required this.features,
+        required this.wheelSize,
+        required this.wheelType,
+        required this.laneAssist,
+        required this.parkingBreak,
+        required this.emissionClass,
+        required this.parkingSensor,
+        required this.fuelEfficiency,
+        required this.tractionControl,
+        required this.registrationStatus,
+        // Additional fields from user's JSON
+        required this.doors,
+        required this.seats,
+        required this.torque,
+        required this.bluetooth,
+        required this.androidAuto,
+        required this.appleCarPlay,
+        required this.parkingAidCamera,
+        // Missing fields from ListingInputController
+        required this.blindSpotMonitor,
+        required this.emergencyBraking,
+        required this.fatigueWarningSystem,
+        required this.isofix,
+        required this.emergencyCallSystem,
+        required this.speedLimited,
+        required this.tirePressureMonitoring,
+        required this.rearCamera,
+        required this.threeSixtyCamera,
+        required this.trafficSignRecognition,
+        required this.automaticHighBeam,
+        required this.lightSensor,
+        required this.hillStartAssist,
+        required this.parkingAssist,
+        required this.ledHeadlights,
+        required this.adaptiveHeadlights,
+        required this.fogLights,
+        required this.daytimeRunningLights,
+        required this.ambientLighting,
+        required this.premiumSoundSystem,
+        required this.wirelessCharging,
+        required this.usbPorts,
+        required this.onboardComputer,
+        required this.dabFmRadio,
+        required this.wifiHotspot,
+        required this.integratedStreaming,
+        required this.rearSeatEntertainment,
+        required this.centralLocking,
+        required this.immobilizer,
+        required this.alarmSystem,
+        required this.powerSteering,
+        required this.summerTires,
+        required this.payloadCapacity,
+        required this.towingCapacity,
+        required this.seatingCapacity,
+        required this.airConditioning,
+        required this.entertainmentSystem,
+        required this.cargoVolume,
+        required this.axles,
+        required this.gvwr,
+        required this.operatingWeight,
+        required this.bucketCapacity,
+        required this.liftingCapacity,
+        required this.reach,
+        required this.workingHours,
     });
 
     final String? vehicleType;
@@ -245,6 +315,73 @@ class Vehicles {
     final List<String> serviceHistory;
     final String? registrationExpiry;
     final String? engineNumber;
+    // Missing fields from database
+    final bool? abs;
+    final int? airbags;
+    final List<String> features;
+    final String? wheelSize;
+    final String? wheelType;
+    final bool? laneAssist;
+    final String? parkingBreak;
+    final String? emissionClass;
+    final String? parkingSensor;
+    final String? fuelEfficiency;
+    final bool? tractionControl;
+    final String? registrationStatus;
+    // Additional fields from user's JSON
+    final int? doors;
+    final int? seats;
+    final int? torque;
+    final bool? bluetooth;
+    final bool? androidAuto;
+    final bool? appleCarPlay;
+    final bool? parkingAidCamera;
+    // Missing fields from ListingInputController
+    final bool? blindSpotMonitor;
+    final bool? emergencyBraking;
+    final bool? fatigueWarningSystem;
+    final bool? isofix;
+    final bool? emergencyCallSystem;
+    final bool? speedLimited;
+    final bool? tirePressureMonitoring;
+    final bool? rearCamera;
+    final bool? threeSixtyCamera;
+    final bool? trafficSignRecognition;
+    final bool? automaticHighBeam;
+    final bool? lightSensor;
+    final bool? hillStartAssist;
+    final bool? parkingAssist;
+    final bool? ledHeadlights;
+    final bool? adaptiveHeadlights;
+    final bool? fogLights;
+    final bool? daytimeRunningLights;
+    final bool? ambientLighting;
+    final bool? premiumSoundSystem;
+    final bool? wirelessCharging;
+    final bool? usbPorts;
+    final bool? onboardComputer;
+    final bool? dabFmRadio;
+    final bool? wifiHotspot;
+    final bool? integratedStreaming;
+    final bool? rearSeatEntertainment;
+    final bool? centralLocking;
+    final bool? immobilizer;
+    final bool? alarmSystem;
+    final bool? powerSteering;
+    final bool? summerTires;
+    final String? payloadCapacity;
+    final String? towingCapacity;
+    final String? seatingCapacity;
+    final String? airConditioning;
+    final String? entertainmentSystem;
+    final String? cargoVolume;
+    final String? axles;
+    final String? gvwr;
+    final String? operatingWeight;
+    final String? bucketCapacity;
+    final String? liftingCapacity;
+    final String? reach;
+    final String? workingHours;
 
     factory Vehicles.fromJson(Map<String, dynamic> json){ 
         return Vehicles(
@@ -283,6 +420,73 @@ class Vehicles {
             serviceHistory: json["serviceHistory"] == null ? [] : List<String>.from(json["serviceHistory"]!.map((x) => x)),
             registrationExpiry: json["registrationExpiry"],
             engineNumber: json["engineNumber"],
+            // Missing fields from database
+            abs: json["abs"],
+            airbags: json["airbags"],
+            features: json["features"] == null ? [] : List<String>.from(json["features"]!.map((x) => x)),
+            wheelSize: json["wheelSize"],
+            wheelType: json["wheelType"],
+            laneAssist: json["laneAssist"],
+            parkingBreak: json["parkingBreak"],
+            emissionClass: json["emissionClass"],
+            parkingSensor: json["parkingSensor"],
+            fuelEfficiency: json["fuelEfficiency"],
+            tractionControl: json["tractionControl"],
+            registrationStatus: json["registrationStatus"],
+            // Additional fields from user's JSON
+            doors: json["doors"],
+            seats: json["seats"],
+            torque: json["torque"],
+            bluetooth: json["bluetooth"],
+            androidAuto: json["androidAuto"],
+            appleCarPlay: json["appleCarPlay"],
+            parkingAidCamera: json["parkingAidCamera"],
+            // Missing fields from ListingInputController
+            blindSpotMonitor: json["blindSpotMonitor"],
+            emergencyBraking: json["emergencyBraking"],
+            fatigueWarningSystem: json["fatigueWarningSystem"],
+            isofix: json["isofix"],
+            emergencyCallSystem: json["emergencyCallSystem"],
+            speedLimited: json["speedLimited"],
+            tirePressureMonitoring: json["tirePressureMonitoring"],
+            rearCamera: json["rearCamera"],
+            threeSixtyCamera: json["threeSixtyCamera"],
+            trafficSignRecognition: json["trafficSignRecognition"],
+            automaticHighBeam: json["automaticHighBeam"],
+            lightSensor: json["lightSensor"],
+            hillStartAssist: json["hillStartAssist"],
+            parkingAssist: json["parkingAssist"],
+            ledHeadlights: json["ledHeadlights"],
+            adaptiveHeadlights: json["adaptiveHeadlights"],
+            fogLights: json["fogLights"],
+            daytimeRunningLights: json["daytimeRunningLights"],
+            ambientLighting: json["ambientLighting"],
+            premiumSoundSystem: json["premiumSoundSystem"],
+            wirelessCharging: json["wirelessCharging"],
+            usbPorts: json["usbPorts"],
+            onboardComputer: json["onboardComputer"],
+            dabFmRadio: json["dabFmRadio"],
+            wifiHotspot: json["wifiHotspot"],
+            integratedStreaming: json["integratedStreaming"],
+            rearSeatEntertainment: json["rearSeatEntertainment"],
+            centralLocking: json["centralLocking"],
+            immobilizer: json["immobilizer"],
+            alarmSystem: json["alarmSystem"],
+            powerSteering: json["powerSteering"],
+            summerTires: json["summerTires"],
+            payloadCapacity: json["payloadCapacity"],
+            towingCapacity: json["towingCapacity"],
+            seatingCapacity: json["seatingCapacity"],
+            airConditioning: json["airConditioning"],
+            entertainmentSystem: json["entertainmentSystem"],
+            cargoVolume: json["cargoVolume"],
+            axles: json["axles"],
+            gvwr: json["gvwr"],
+            operatingWeight: json["operatingWeight"],
+            bucketCapacity: json["bucketCapacity"],
+            liftingCapacity: json["liftingCapacity"],
+            reach: json["reach"],
+            workingHours: json["workingHours"],
         );
     }
 
@@ -322,11 +526,257 @@ class Vehicles {
         "serviceHistory": serviceHistory.map((x) => x).toList(),
         "registrationExpiry": registrationExpiry,
         "engineNumber": engineNumber,
+        // Missing fields from database
+        "abs": abs,
+        "airbags": airbags,
+        "features": features.map((x) => x).toList(),
+        "wheelSize": wheelSize,
+        "wheelType": wheelType,
+        "laneAssist": laneAssist,
+        "parkingBreak": parkingBreak,
+        "emissionClass": emissionClass,
+        "parkingSensor": parkingSensor,
+        "fuelEfficiency": fuelEfficiency,
+        "tractionControl": tractionControl,
+        "registrationStatus": registrationStatus,
+        // Additional fields from user's JSON
+        "doors": doors,
+        "seats": seats,
+        "torque": torque,
+        "bluetooth": bluetooth,
+        "androidAuto": androidAuto,
+        "appleCarPlay": appleCarPlay,
+        "parkingAidCamera": parkingAidCamera,
+        // Missing fields from ListingInputController
+        "blindSpotMonitor": blindSpotMonitor,
+        "emergencyBraking": emergencyBraking,
+        "fatigueWarningSystem": fatigueWarningSystem,
+        "isofix": isofix,
+        "emergencyCallSystem": emergencyCallSystem,
+        "speedLimited": speedLimited,
+        "tirePressureMonitoring": tirePressureMonitoring,
+        "rearCamera": rearCamera,
+        "threeSixtyCamera": threeSixtyCamera,
+        "trafficSignRecognition": trafficSignRecognition,
+        "automaticHighBeam": automaticHighBeam,
+        "lightSensor": lightSensor,
+        "hillStartAssist": hillStartAssist,
+        "parkingAssist": parkingAssist,
+        "ledHeadlights": ledHeadlights,
+        "adaptiveHeadlights": adaptiveHeadlights,
+        "fogLights": fogLights,
+        "daytimeRunningLights": daytimeRunningLights,
+        "ambientLighting": ambientLighting,
+        "premiumSoundSystem": premiumSoundSystem,
+        "wirelessCharging": wirelessCharging,
+        "usbPorts": usbPorts,
+        "onboardComputer": onboardComputer,
+        "dabFmRadio": dabFmRadio,
+        "wifiHotspot": wifiHotspot,
+        "integratedStreaming": integratedStreaming,
+        "rearSeatEntertainment": rearSeatEntertainment,
+        "centralLocking": centralLocking,
+        "immobilizer": immobilizer,
+        "alarmSystem": alarmSystem,
+        "powerSteering": powerSteering,
+        "summerTires": summerTires,
+        "payloadCapacity": payloadCapacity,
+        "towingCapacity": towingCapacity,
+        "seatingCapacity": seatingCapacity,
+        "airConditioning": airConditioning,
+        "entertainmentSystem": entertainmentSystem,
+        "cargoVolume": cargoVolume,
+        "axles": axles,
+        "gvwr": gvwr,
+        "operatingWeight": operatingWeight,
+        "bucketCapacity": bucketCapacity,
+        "liftingCapacity": liftingCapacity,
+        "reach": reach,
+        "workingHours": workingHours,
     };
 
     @override
     String toString(){
-        return "$vehicleType, $make, $model, $year, $mileage, $fuelType, $transmissionType, $color, $condition, $warranty, $previousOwners, $engineSize, $accidentFree, $adaptiveCruiseControl, $additionalNotes, $automaticEmergencyBraking, $bodyStyle, $cruiseControl, $curtainAirbags, $customsCleared, $driveType, $frontAirbags, $horsepower, $importStatus, $kneeAirbags, $laneDepartureWarning, $laneKeepAssist, $navigationSystem, $roofType, $serviceHistoryDetails, $sideAirbags, $warrantyPeriod, $serviceHistory, $registrationExpiry, $engineNumber, ";
+        return "$vehicleType, $make, $model, $year, $mileage, $fuelType, $transmissionType, $color, $condition, $warranty, $previousOwners, $engineSize, $accidentFree, $adaptiveCruiseControl, $additionalNotes, $automaticEmergencyBraking, $bodyStyle, $cruiseControl, $curtainAirbags, $customsCleared, $driveType, $frontAirbags, $horsepower, $importStatus, $kneeAirbags, $laneDepartureWarning, $laneKeepAssist, $navigationSystem, $roofType, $serviceHistoryDetails, $sideAirbags, $warrantyPeriod, $serviceHistory, $registrationExpiry, $engineNumber, $abs, $airbags, $features, $wheelSize, $wheelType, $laneAssist, $parkingBreak, $emissionClass, $parkingSensor, $fuelEfficiency, $tractionControl, $registrationStatus, $doors, $seats, $torque, $bluetooth, $androidAuto, $appleCarPlay, $parkingAidCamera, ";
+    }
+}
+
+class RealEstate {
+    RealEstate({
+        required this.propertyType,
+        required this.bedrooms,
+        required this.bathrooms,
+        required this.totalArea,
+        required this.furnishing,
+        required this.floor,
+        required this.totalFloors,
+        required this.parking,
+        required this.yearBuilt,
+        required this.facing,
+        required this.balconies,
+        required this.garden,
+        required this.pool,
+        required this.plotSize,
+        required this.officeType,
+        required this.meetingRooms,
+        required this.zoning,
+        required this.roadAccess,
+        // Missing fields from store advanced details
+        required this.storeType,
+        required this.floorArea,
+        required this.storageArea,
+        required this.frontage,
+        required this.ceilingHeight,
+        required this.loadingDock,
+        required this.security,
+        required this.hvac,
+        required this.lighting,
+        required this.accessibility,
+        required this.businessLicense,
+        required this.footTraffic,
+        // Missing fields from villa advanced details
+        required this.balcony,
+        required this.heating,
+        required this.cooling,
+        required this.view,
+        required this.orientation,
+        required this.buildingAge,
+        required this.maintenanceFee,
+        required this.energyRating,
+    });
+
+    final String? propertyType;
+    final int? bedrooms;
+    final int? bathrooms;
+    final int? totalArea;
+    final String? furnishing;
+    final int? floor;
+    final int? totalFloors;
+    final String? parking;
+    final int? yearBuilt;
+    final String? facing;
+    final int? balconies;
+    final String? garden;
+    final String? pool;
+    final int? plotSize;
+    final String? officeType;
+    final int? meetingRooms;
+    final String? zoning;
+    final String? roadAccess;
+    // Missing fields from store advanced details
+    final String? storeType;
+    final String? floorArea;
+    final String? storageArea;
+    final String? frontage;
+    final String? ceilingHeight;
+    final String? loadingDock;
+    final String? security;
+    final String? hvac;
+    final String? lighting;
+    final String? accessibility;
+    final String? businessLicense;
+    final String? footTraffic;
+    // Missing fields from villa advanced details
+    final int? balcony;
+    final String? heating;
+    final String? cooling;
+    final String? view;
+    final String? orientation;
+    final int? buildingAge;
+    final String? maintenanceFee;
+    final String? energyRating;
+
+    factory RealEstate.fromJson(Map<String, dynamic> json){ 
+        return RealEstate(
+            propertyType: json["propertyType"],
+            bedrooms: json["bedrooms"],
+            bathrooms: json["bathrooms"],
+            totalArea: json["totalArea"],
+            furnishing: json["furnishing"],
+            floor: json["floor"],
+            totalFloors: json["totalFloors"],
+            parking: json["parking"],
+            yearBuilt: json["yearBuilt"],
+            facing: json["facing"],
+            balconies: json["balconies"],
+            garden: json["garden"],
+            pool: json["pool"],
+            plotSize: json["plotSize"],
+            officeType: json["officeType"],
+            meetingRooms: json["meetingRooms"],
+            zoning: json["zoning"],
+            roadAccess: json["roadAccess"],
+            // Missing fields from store advanced details
+            storeType: json["storeType"],
+            floorArea: json["floorArea"],
+            storageArea: json["storageArea"],
+            frontage: json["frontage"],
+            ceilingHeight: json["ceilingHeight"],
+            loadingDock: json["loadingDock"],
+            security: json["security"],
+            hvac: json["hvac"],
+            lighting: json["lighting"],
+            accessibility: json["accessibility"],
+            businessLicense: json["businessLicense"],
+            footTraffic: json["footTraffic"],
+            // Missing fields from villa advanced details
+            balcony: json["balcony"],
+            heating: json["heating"],
+            cooling: json["cooling"],
+            view: json["view"],
+            orientation: json["orientation"],
+            buildingAge: json["buildingAge"],
+            maintenanceFee: json["maintenanceFee"],
+            energyRating: json["energyRating"],
+        );
+    }
+
+    Map<String, dynamic> toJson() => {
+        "propertyType": propertyType,
+        "bedrooms": bedrooms,
+        "bathrooms": bathrooms,
+        "totalArea": totalArea,
+        "furnishing": furnishing,
+        "floor": floor,
+        "totalFloors": totalFloors,
+        "parking": parking,
+        "yearBuilt": yearBuilt,
+        "facing": facing,
+        "balconies": balconies,
+        "garden": garden,
+        "pool": pool,
+        "plotSize": plotSize,
+        "officeType": officeType,
+        "meetingRooms": meetingRooms,
+        "zoning": zoning,
+        "roadAccess": roadAccess,
+        // Missing fields from store advanced details
+        "storeType": storeType,
+        "floorArea": floorArea,
+        "storageArea": storageArea,
+        "frontage": frontage,
+        "ceilingHeight": ceilingHeight,
+        "loadingDock": loadingDock,
+        "security": security,
+        "hvac": hvac,
+        "lighting": lighting,
+        "accessibility": accessibility,
+        "businessLicense": businessLicense,
+        "footTraffic": footTraffic,
+        // Missing fields from villa advanced details
+        "balcony": balcony,
+        "heating": heating,
+        "cooling": cooling,
+        "view": view,
+        "orientation": orientation,
+        "buildingAge": buildingAge,
+        "maintenanceFee": maintenanceFee,
+        "energyRating": energyRating,
+    };
+
+    @override
+    String toString(){
+        return "$propertyType, $bedrooms, $bathrooms, $totalArea, $furnishing, $floor, $totalFloors, $parking, $yearBuilt, $facing, $balconies, $garden, $pool, $plotSize, $officeType, $meetingRooms, $zoning, $roadAccess, ";
     }
 }
 

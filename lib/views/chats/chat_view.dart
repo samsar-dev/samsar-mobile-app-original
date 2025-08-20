@@ -60,7 +60,7 @@ class _ChatViewState extends State<ChatView> {
                   return MessageBubble(
                     text: msg.content,
                     isMine: isMine,
-                    timestamp: msg.createdAt?.toLocal(),
+                    timestamp: msg.createdAt.toLocal(),
                     avatarUrl: msg.sender.profilePicture,
                   );
                 },

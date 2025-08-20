@@ -16,7 +16,12 @@ class AdvancedFilters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FilterController filterController = Get.find<FilterController>();
-    final ThemeController themeController = Get.find<ThemeController>();
+    late final ThemeController themeController;
+    try {
+      themeController = Get.find<ThemeController>();
+    } catch (e) {
+      themeController = Get.put(ThemeController());
+    }
     
     return Obx(() => Container(
       padding: const EdgeInsets.all(20),

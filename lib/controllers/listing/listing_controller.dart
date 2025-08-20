@@ -67,15 +67,22 @@ class ListingController extends GetxController {
         final listingResponse = ListingResponse.fromJson(response.successResponse!);
         final newItems = listingResponse.data?.items ?? [];
 
+        // Prevent duplicates by checking if items already exist
+        final existingIds = listings.map((item) => item.id).toSet();
+        final uniqueNewItems = newItems.where((item) => !existingIds.contains(item.id)).toList();
+        
+        print('  New items: ${newItems.length}, Unique new items: ${uniqueNewItems.length}');
+
         // Apply client-side filtering since Railway backend doesn't support the new filters yet
-        final filtered = _applyAllFilters(newItems);
+        final filtered = _applyAllFilters(uniqueNewItems);
         listings.addAll(filtered);
         
-        print('✅ FETCHED ${newItems.length} ITEMS, FILTERED TO ${filtered.length}');
+        print('✅ FETCHED ${newItems.length} ITEMS, UNIQUE: ${uniqueNewItems.length}, FILTERED TO ${filtered.length}');
         print('📝 FINAL FILTERED ITEMS BEING DISPLAYED:');
         for (int i = 0; i < filtered.length; i++) {
           print('  $i: ${filtered[i].title} (${filtered[i].year ?? 'no year'})');
         }
+        print('📊 TOTAL LISTINGS NOW: ${listings.length}');
 
         // Endpoint returns all items at once, so no more pages
         hasMore.value = false;
@@ -93,6 +100,7 @@ class ListingController extends GetxController {
   }
 
   void setCategory(String category) {
+    print('🏷️ SETTING CATEGORY: $category');
     selectedCategory.value = category;
     fetchListings(isInitial: true);
   }
@@ -100,8 +108,18 @@ class ListingController extends GetxController {
   /// Apply filters to current listings without refetching from API
   void applyFilters() {
     print('🔄 APPLYING FILTERS TO EXISTING LISTINGS');
-    // Re-fetch to get fresh data and apply filters
-    fetchListings(isInitial: true);
+    // Don't clear listings to prevent duplicates, just re-apply filters
+    if (listings.isNotEmpty) {
+      // Re-apply filters to existing data without clearing
+      final originalItems = List<Item>.from(listings);
+      listings.clear();
+      final filtered = _applyAllFilters(originalItems);
+      listings.addAll(filtered);
+      print('✅ Re-filtered ${originalItems.length} items to ${filtered.length}');
+    } else {
+      // If no listings, fetch fresh data
+      fetchListings(isInitial: true);
+    }
   }
   
   /// Convert filter sort value to backend sortBy parameter
@@ -151,7 +169,18 @@ class ListingController extends GetxController {
     // Apply main category filter (vehicles/real_estate)
     if (selectedCategory.value.isNotEmpty) {
       filtered = filtered.where((item) {
-        final matches = item.mainCategory?.toLowerCase() == selectedCategory.value.toLowerCase();
+        // Handle category mapping: API returns 'VEHICLES' but filter uses 'vehicles'
+        final itemCategory = item.mainCategory?.toLowerCase();
+        final filterCategory = selectedCategory.value.toLowerCase();
+        
+        // Map API categories to filter categories
+        String? mappedCategory;
+        if (itemCategory == 'vehicles') mappedCategory = 'vehicles';
+        else if (itemCategory == 'real_estate' || itemCategory == 'realestate') mappedCategory = 'real_estate';
+        else mappedCategory = itemCategory;
+        
+        final matches = mappedCategory == filterCategory;
+        print('    Category check: item="$itemCategory" -> mapped="$mappedCategory" vs filter="$filterCategory" = $matches');
         return matches;
       }).toList();
       print('  After category filter: ${filtered.length} items');

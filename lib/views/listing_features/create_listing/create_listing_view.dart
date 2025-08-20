@@ -19,6 +19,7 @@ class CreateListingView extends StatefulWidget {
 
 class _CreateListingViewState extends State<CreateListingView> {
   final PageController _pageController = PageController();
+  final ScrollController _scrollController = ScrollController();
   late final ListingInputController _listingInputController;
   
   int selectedIndex = 0; // 0 for Vehicle, 1 for Real Estate
@@ -28,6 +29,8 @@ class _CreateListingViewState extends State<CreateListingView> {
   // Form keys for validation
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _showValidation = false;
+  
+  // Removed field navigation system - using simple step navigation only
 
   @override
   void initState() {
@@ -52,10 +55,16 @@ class _CreateListingViewState extends State<CreateListingView> {
       print('🔧 FIXED: Initialized mainCategory to "$initialCategory" based on selectedIndex: $selectedIndex');
     }
   }
+  
+  @override
+  void dispose() {
+    // Dispose controllers
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
     final String currentCategory = selectedIndex == 0 ? 'vehicles' : 'real_estate';
     
@@ -70,59 +79,41 @@ class _CreateListingViewState extends State<CreateListingView> {
       appBar: AppBar(
         backgroundColor: whiteColor,
         elevation: 0,
-        title: Text(
-          'createListingTitle'.tr,
-          style: TextStyle(
-            color: blackColor,
-            fontWeight: FontWeight.bold,
-          ),
+        toolbarHeight: 56, // Standard AppBar height
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: blackColor),
+          onPressed: () => Navigator.of(context).pop(),
         ),
-        centerTitle: true,
       ),
       body: SafeArea(
         child: Column(
           children: [
-            SizedBox(height: screenHeight * 0.016),
-            
-            // Category selection tabs
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(tabs.length, (index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: ChoiceChip(
-                    showCheckmark: false,
-                    label: Text(tabs[index].tr),
-                    selected: selectedIndex == index,
-                    onSelected: (bool selected) {
-                      _onCategorySelected(index);
-                    },
-                    selectedColor: blueColor,
-                    labelStyle: TextStyle(
-                      color: selectedIndex == index ? Colors.white : Colors.black,
-                    ),
-                    backgroundColor: Colors.grey[200],
+            // Sticky step indicators only - always visible
+            Container(
+              decoration: BoxDecoration(
+                color: whiteColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
                   ),
-                );
-              }),
-            ),
-            
-            SizedBox(height: screenHeight * 0.016),
-            
-            // Step indicators
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildStepIndicator(0, '1', 'essentialDetailsStep'.tr),
-                  _buildStepIndicator(1, '2', 'advancedDetailsStep'.tr),
-                  _buildStepIndicator(2, '3', 'featuresExtrasStep'.tr),
                 ],
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildStepIndicator(0, '1', 'essentialDetailsStep'.tr),
+                    _buildStepIndicator(1, '2', 'advancedDetailsStep'.tr),
+                    _buildStepIndicator(2, '3', 'featuresExtrasStep'.tr),
+                  ],
+                ),
               ),
             ),
             
-            // Content
+            // Content with ScrollController
             Expanded(
               child: PageView(
                 controller: _pageController,
@@ -132,66 +123,52 @@ class _CreateListingViewState extends State<CreateListingView> {
                   });
                 },
                 children: [
-                  EssentialDetailsWrapper(
-                    category: currentCategory,
-                    formKey: _formKey,
-                    showValidation: _showValidation,
-                    onValidationChanged: (isValid) {
-                      // Handle validation state changes if needed
-                    },
+                  SingleChildScrollView(
+                    controller: _scrollController,
+                    child: EssentialDetailsWrapper(
+                      category: currentCategory,
+                      formKey: _formKey,
+                      showValidation: _showValidation,
+                      onValidationChanged: (isValid) {
+                        // Handle validation state changes if needed
+                      },
+                      currentStep: currentStep,
+                      onNext: _handleNextButton,
+                      onPrevious: currentStep > 0 ? _handlePreviousButton : null,
+                      selectedIndex: selectedIndex,
+                      onCategorySelected: _onCategorySelected,
+                    ),
                   ),
                   // ✅ RE-ENABLED: Advanced Details for testing dynamic updates
-                  Obx(() => AdvancedDetailsWrapper(
-                    category: currentCategory,
-                    subCategory: currentCategory == 'vehicles' 
-                        ? _listingInputController.subCategory.value 
-                        : _listingInputController.mainCategory.value,
-                  )),
+                  SingleChildScrollView(
+                    controller: _scrollController,
+                    child: Obx(() => AdvancedDetailsWrapper(
+                      category: currentCategory,
+                      subCategory: currentCategory == 'vehicles' 
+                          ? _listingInputController.subCategory.value 
+                          : _listingInputController.mainCategory.value,
+                      currentStep: currentStep,
+                      onNext: _handleNextButton,
+                      onPrevious: currentStep > 0 ? _handlePreviousButton : null,
+                    )),
+                  ),
                   // ✅ RE-ENABLED: Features & Extras
-                  Obx(() => FeaturesWrapper(
-                    category: currentCategory,
-                    subCategory: currentCategory == 'vehicles' 
-                        ? _listingInputController.subCategory.value 
-                        : _listingInputController.mainCategory.value,
-                  )),
+                  SingleChildScrollView(
+                    controller: _scrollController,
+                    child: Obx(() => FeaturesWrapper(
+                      category: currentCategory,
+                      subCategory: currentCategory == 'vehicles' 
+                          ? _listingInputController.subCategory.value 
+                          : _listingInputController.mainCategory.value,
+                      currentStep: currentStep,
+                      onNext: _handleNextButton,
+                      onPrevious: currentStep > 0 ? _handlePreviousButton : null,
+                    )),
+                  ),
                 ],
               ),
             ),
             
-            // Navigation buttons
-            Container(
-              padding: EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (currentStep > 0)
-                    AppButton(
-                      widthSize: 0.3,
-                      heightSize: 0.06,
-                      buttonColor: Colors.grey[300]!,
-                      text: 'previousButton'.tr,
-                      textColor: blackColor,
-                      onPressed: () {
-                        _pageController.previousPage(
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                    )
-                  else
-                    SizedBox(width: screenWidth * 0.3),
-                  
-                  AppButton(
-                    widthSize: 0.3,
-                    heightSize: 0.06,
-                    buttonColor: blueColor,
-                    text: currentStep == 2 ? 'reviewButton'.tr : 'nextButton'.tr,
-                    textColor: whiteColor,
-                    onPressed: _handleNextButton,
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
@@ -261,6 +238,8 @@ class _CreateListingViewState extends State<CreateListingView> {
   
   void _handleNextButton() {
     print('🔄 _handleNextButton() called - currentStep: $currentStep');
+    
+    // Handle step navigation
     print('📊 Controller state before navigation:');
     print('   📝 mainCategory: "${_listingInputController.mainCategory.value}"');
     print('   🚗 subCategory: "${_listingInputController.subCategory.value}"');
@@ -289,6 +268,17 @@ class _CreateListingViewState extends State<CreateListingView> {
       _nextStep();
     }
   }
+  
+  void _handlePreviousButton() {
+    print('🔄 _handlePreviousButton() called - currentStep: $currentStep');
+    
+    // Handle step navigation
+    _pageController.previousPage(
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+  
   
   void _nextStep() {
     print('🔄 _nextStep() called - currentStep: $currentStep');

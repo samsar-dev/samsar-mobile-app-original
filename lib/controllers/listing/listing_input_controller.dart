@@ -38,6 +38,8 @@ class ListingInputController extends GetxController {
   RxString importStatus = "".obs;
   RxString registrationExpiry = "".obs;
   RxString engineSize = "".obs;
+  RxString exteriorColor = "".obs;
+  RxString interiorColor = "".obs;
 
   // Truck-specific fields
   RxString payloadCapacity = "".obs;
@@ -105,8 +107,6 @@ class ListingInputController extends GetxController {
   RxString accessibility = "".obs;
   RxString businessLicense = "".obs;
   RxString footTraffic = "".obs;
-
-  RxString exteriorColor = "".obs;
 
   //features and extras
   RxInt noOfAirbags = 0.obs;
@@ -292,6 +292,7 @@ class ListingInputController extends GetxController {
     String registrationExpiry = '',
     String engineSize = '',
     String exteriorColor = '',
+    String interiorColor = '',
   }) {
     this.bodyType.value = bodyType;
     this.driveType.value = driveType;
@@ -308,6 +309,7 @@ class ListingInputController extends GetxController {
     this.registrationExpiry.value = registrationExpiry;
     this.engineSize.value = engineSize;
     this.exteriorColor.value = exteriorColor;
+    this.interiorColor.value = interiorColor;
   }
 
 
@@ -404,6 +406,27 @@ class ListingInputController extends GetxController {
 
   // Method to create CarModel from collected data
   vehicle_listing.VehicleModel createVehicleModel() {
+    print("\n🏗️ === CREATING VEHICLE MODEL ====");
+    print("📋 INPUT DATA COLLECTION:");
+    print("  title: '${title.value}'");
+    print("  description: '${description.value}'");
+    print("  price: ${price.value}");
+    print("  make: '${make.value}'");
+    print("  model: '${model.value}'");
+    print("  year: ${year.value}");
+    print("  mileage: '${mileage.value}'");
+    print("  horsepower: '${horsepower.value}'");
+    print("  transmissionType: '${transmissionType.value}'");
+    print("  fuelType: '${fuelType.value}'");
+    print("  exteriorColor: '${exteriorColor.value}'");
+    print("  bodyType: '${bodyType.value}'");
+    print("  driveType: '${driveType.value}'");
+    print("  condition: '${condition.value}'");
+    print("  sellerType: '${sellerType.value}'");
+    print("  location: '${location.value}'");
+    print("  mainCategory: '${mainCategory.value}'");
+    print("  subCategory: '${subCategory.value}'");
+    
     // Create features list from all the boolean features
     List<String> featuresList = [];
     if (selectedFeatures.contains('airbags')) featuresList.add("Airbags");
@@ -450,65 +473,88 @@ class ListingInputController extends GetxController {
     if (isPowerSteering.value) featuresList.add("Power Steering");
     if (isSummerTires.value) featuresList.add("Summer Tires");
 
-    // Create Details JSON object
+    print("\n🔧 BUILDING FEATURES LIST:");
+    print("  Features count: ${featuresList.length}");
+    print("  Features: $featuresList");
+    
+    // Create Details JSON object with proper nesting for backend
+    print("\n🏗️ BUILDING DETAILS JSON:");
     final detailsJson = {
-      "vehicleType": "car",
-      "make": make.value,
-      "model": model.value,
-      "year": year.value.toString(),
-      "mileage": int.tryParse(mileage.value) ?? 0,
-      "previousOwners": previousOwners.value,
-      "horsepower": horsepower.value,
-      "transmissionType": transmissionType.value,
-      "fuelType": fuelType.value,
-      "color": exteriorColor.value,
-      "registrationStatus": importStatus.value,
-      "registrationExpiry": registrationExpiry.value,
-      "serviceHistory": serviceHistory.value.isNotEmpty ? [serviceHistory.value] : [],
-      "warranty": warranty.value,
-      "accidentFree": accidental.value == "No" || accidental.value == "false",
-      "customsCleared": importStatus.value == "Cleared" || importStatus.value == "Local",
-      "airbags": noOfAirbags.value,
-      "abs": abs.value,
-      "tractionControl": tractionControl.value,
-      "laneAssist": laneAssist.value,
-      "features": featuresList,
-      "driveType": driveType.value,
-      "bodyType": bodyType.value,
-      "wheelSize": "", // Add if needed
-      "wheelType": "", // Add if needed
-      "fuelEfficiency": "", // Add if needed
-      "emissionClass": "", // Add if needed
-      "parkingSensor": parkingSensor.value ? "Yes" : "No",
-      "parkingBreak": "", // Add if needed
+      "vehicles": {
+        "vehicleType": subCategory.value,
+        "make": make.value,
+        "model": model.value,
+        "year": year.value.toString(),
+        "mileage": int.tryParse(mileage.value) ?? 0,
+        "previousOwners": previousOwners.value,
+        "horsepower": horsepower.value,
+        "transmission": transmissionType.value, // Fixed field name
+        "fuelType": fuelType.value,
+        "exteriorColor": exteriorColor.value, // Fixed field name
+        "interiorColor": interiorColor.value, // Added missing field
+        "engineSize": engineSize.value, // Added missing field
+        "registrationStatus": importStatus.value,
+        "registrationExpiry": registrationExpiry.value,
+        "serviceHistory": serviceHistory.value.isNotEmpty ? [serviceHistory.value] : [],
+        "warranty": warranty.value,
+        "accidentFree": accidental.value == "No" || accidental.value == "false",
+        "customsCleared": importStatus.value == "Cleared" || importStatus.value == "Local",
+        "airbags": noOfAirbags.value,
+        "abs": abs.value,
+        "tractionControl": tractionControl.value,
+        "laneAssist": laneAssist.value,
+        "features": featuresList,
+        "driveType": driveType.value,
+        "bodyType": bodyType.value,
+        "wheelSize": "", // Add if needed
+        "wheelType": "", // Add if needed
+        "fuelEfficiency": "", // Add if needed
+        "emissionClass": "", // Add if needed
+        "parkingSensor": parkingSensor.value ? "Yes" : "No",
+        "parkingBreak": "", // Add if needed
 
-      // Truck-specific fields
-      "payloadCapacity": payloadCapacity.value,
-      "towingCapacity": towingCapacity.value,
+        // Truck-specific fields
+        "payloadCapacity": payloadCapacity.value,
+        "towingCapacity": towingCapacity.value,
 
-      // Passenger vehicle fields
-      "seatingCapacity": seatingCapacity.value,
-      "doors": doors.value,
-      "airConditioning": airConditioning.value,
-      "entertainmentSystem": entertainmentSystem.value,
+        // Passenger vehicle fields
+        "seatingCapacity": int.tryParse(seatingCapacity.value) ?? 0,
+        "doors": int.tryParse(doors.value) ?? 0,
+        "airConditioning": airConditioning.value,
+        "entertainmentSystem": entertainmentSystem.value,
 
-      // Commercial vehicle fields
-      "cargoVolume": cargoVolume.value,
-      "axles": axles.value,
-      "gvwr": gvwr.value,
+        // Commercial vehicle fields
+        "cargoVolume": cargoVolume.value,
+        "axles": axles.value,
+        "gvwr": gvwr.value,
 
-      // Construction vehicle fields
-      "operatingWeight": operatingWeight.value,
-      "bucketCapacity": bucketCapacity.value,
-      "liftingCapacity": liftingCapacity.value,
-      "reach": reach.value,
-      "workingHours": workingHours.value
+        // Construction vehicle fields
+        "operatingWeight": operatingWeight.value,
+        "bucketCapacity": bucketCapacity.value,
+        "liftingCapacity": liftingCapacity.value,
+        "reach": reach.value,
+        "workingHours": workingHours.value
+      }
     };
 
+    print("\n📦 FINAL DETAILS JSON STRUCTURE:");
+    print("$detailsJson");
+    
     final details = vehicle_listing.Details(json: detailsJson);
 
+    print("\n🚗 CREATING VEHICLE MODEL WITH:");
+    print("  title: '${title.value}'");
+    print("  price: ${price.value.toInt()}");
+    print("  mainCategory: '${mainCategory.value}'");
+    print("  subCategory: '${subCategory.value}'");
+    print("  location: '${location.value}'");
+    print("  condition: '${condition.value}'");
+    print("  listingAction: '${listingAction.value}'");
+    print("  sellerType: '${sellerType.value}'");
+    print("  images count: ${listingImage.length}");
+    
     // Create and return CarModel
-    return vehicle_listing.VehicleModel(
+    final vehicleModel = vehicle_listing.VehicleModel(
       title: title.value,
       description: description.value,
        price: price.value.toInt(),
@@ -523,6 +569,34 @@ class ListingInputController extends GetxController {
       details: details,
       listingImage: listingImage.toList(),
     );
+    
+    print("\n✅ VEHICLE MODEL CREATED SUCCESSFULLY");
+    print("🔍 VERIFYING CREATED MODEL:");
+    print("  Model title: '${vehicleModel.title}'");
+    print("  Model price: ${vehicleModel.price}");
+    print("  Model details type: ${vehicleModel.details.runtimeType}");
+    print("  Model details.json type: ${vehicleModel.details.json.runtimeType}");
+    print("  Model details.json keys: ${vehicleModel.details.json.keys.toList()}");
+    
+    if (vehicleModel.details.json.containsKey('vehicles')) {
+      final vehiclesData = vehicleModel.details.json['vehicles'] as Map<String, dynamic>?;
+      if (vehiclesData != null) {
+        print("  vehicles.make: '${vehiclesData['make']}'");
+        print("  vehicles.model: '${vehiclesData['model']}'");
+        print("  vehicles.year: '${vehiclesData['year']}'");
+        print("  vehicles.mileage: '${vehiclesData['mileage']}'");
+        print("  vehicles.horsepower: '${vehiclesData['horsepower']}'");
+        print("  vehicles.fuelType: '${vehiclesData['fuelType']}'");
+        print("  vehicles.transmission: '${vehiclesData['transmission']}'");
+      } else {
+        print("  ❌ vehicles data is null!");
+      }
+    } else {
+      print("  ❌ No 'vehicles' key found in details.json!");
+    }
+    print("🏗️ === VEHICLE MODEL CREATION COMPLETE ===\n");
+    
+    return vehicleModel;
   }
 
   // Method to validate that essential data exists before clearing
@@ -754,6 +828,7 @@ class ListingInputController extends GetxController {
       'payloadCapacity': payloadCapacity.value,
       'towingCapacity': towingCapacity.value,
       'exteriorColor': exteriorColor.value,
+      'interiorColor': interiorColor.value,
       
       // Passenger vehicle fields
       'seatingCapacity': seatingCapacity.value,

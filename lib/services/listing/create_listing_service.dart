@@ -9,7 +9,9 @@ import 'package:samsar/models/listing/create_listing/create_vehicle_listing.dart
 import 'package:samsar/models/listing/create_listing/create_real_estate_listing.dart';
 import 'package:http_parser/http_parser.dart';         
 import 'package:mime/mime.dart';                     
-import 'package:path/path.dart';  
+import 'package:path/path.dart';
+import 'package:get/get.dart' as GetX;
+import 'package:samsar/controllers/listing/listing_input_controller.dart';  
 
 
 class CreateListingService {
@@ -44,16 +46,17 @@ class CreateListingService {
         'longitude': commercialDetails.longitude,
         'condition': commercialDetails.condition,
         'listingAction': _mapListingAction(commercialDetails.listingAction),
-        // Send these fields separately instead of JSON
+        // Send these fields separately instead of JSON - match backend field names
         'make': commercialDetails.details.make,
         'model': commercialDetails.details.model,
         'year': commercialDetails.details.year.toString(),
         'sellerType': _mapSellerType(commercialDetails.sellerType),
         'bodyType': commercialDetails.details.bodyType,
         'fuelType': _mapFuelType(commercialDetails.details.fuelType?.toString()),
-        'transmissionType': _mapTransmissionType(commercialDetails.details.transmissionType?.toString()),
-        'color': commercialDetails.details.color,
+        'transmission': _mapTransmissionType(commercialDetails.details.transmissionType?.toString()), // Changed from transmissionType
+        'exteriorColor': commercialDetails.details.color, // Changed from color
         'engineSize': commercialDetails.details.engineSize?.toString() ?? '',
+        'mileage': commercialDetails.details.mileage?.toString() ?? '',
         'accidental': commercialDetails.details.accidentFree == true ? 'no' : 'yes',
         'registrationExpiry': commercialDetails.details.registrationExpiry ?? '',
         // Keep other fields as JSON in details
@@ -222,18 +225,62 @@ class CreateListingService {
     car_listing.VehicleModel carModel,
   ) async {
     try {
-      // Prepare multipart form data
-      print("=== SENDING LISTING DATA ===");
-      print("mainCategory: ${carModel.mainCategory}");
-      print("subCategory: ${carModel.subCategory}");
-      print("title: ${carModel.title}");
-      print("description: ${carModel.description}");
-      print("price: ${carModel.price}");
-      print("location: ${carModel.location}");
-      print("condition: ${carModel.condition}");
-      print("vehicles details: ${carModel.details.toJson()}");
+      print("\n📡 === CREATE LISTING SERVICE START ===");
+      print("🔐 Access Token: ${accessToken.isNotEmpty ? 'Present (${accessToken.length} chars)' : 'Missing'}");
       
-      final formData = FormData.fromMap({
+      print("\n📋 RECEIVED CAR MODEL:");
+      print("  Type: ${carModel.runtimeType}");
+      print("  Title: '${carModel.title}'");
+      print("  Description: '${carModel.description}'");
+      print("  Price: ${carModel.price}");
+      print("  Main Category: '${carModel.mainCategory}'");
+      print("  Sub Category: '${carModel.subCategory}'");
+      print("  Location: '${carModel.location}'");
+      print("  Latitude: ${carModel.latitude}");
+      print("  Longitude: ${carModel.longitude}");
+      print("  Condition: '${carModel.condition}'");
+      print("  Listing Action: '${carModel.listingAction}'");
+      print("  Seller Type: '${carModel.sellerType}'");
+      print("  Images count: ${carModel.listingImage.length}");
+      
+      print("\n🔍 DETAILS ANALYSIS:");
+      print("  Details type: ${carModel.details.runtimeType}");
+      print("  Details.json type: ${carModel.details.json.runtimeType}");
+      print("  Details.json keys: ${carModel.details.json.keys.toList()}");
+      print("  Full details content: ${carModel.details.json}");
+      
+      print("\n🔧 EXTRACTING VEHICLE FIELDS FROM NESTED STRUCTURE:");
+      final vehicleData = carModel.details.json['vehicles'] as Map<String, dynamic>?;
+      if (vehicleData != null) {
+        print("  ✅ Vehicle data found in nested structure");
+        print("  Raw make: '${vehicleData['make']}'");
+        print("  Raw model: '${vehicleData['model']}'");
+        print("  Raw year: '${vehicleData['year']}'");
+        print("  Raw mileage: '${vehicleData['mileage']}'");
+        print("  Raw horsepower: '${vehicleData['horsepower']}'");
+        print("  Raw fuelType: '${vehicleData['fuelType']}'");
+        print("  Raw transmission: '${vehicleData['transmission']}'");
+        print("  Raw bodyType: '${vehicleData['bodyType']}'");
+        print("  Raw exteriorColor: '${vehicleData['exteriorColor']}'");
+        print("  Raw accidentFree: '${vehicleData['accidentFree']}'");
+        print("  Raw doors: '${vehicleData['doors']}'");
+        print("  Raw seatingCapacity: '${vehicleData['seatingCapacity']}'");
+        print("  Raw interiorColor: '${vehicleData['interiorColor']}'");
+        
+        print("\n🔄 MAPPED VALUES:");
+        print("  Mapped fuelType: '${_mapFuelType(vehicleData['fuelType'])}'");
+        print("  Mapped transmission: '${_mapTransmissionType(vehicleData['transmission'])}'");
+        print("  Mapped sellerType: '${_mapSellerType(carModel.sellerType)}'");
+        print("  Mapped listingAction: '${_mapListingAction(carModel.listingAction)}'");
+      } else {
+        print("  ❌ No vehicle data found in nested structure!");
+        print("  Available keys: ${carModel.details.json.keys.toList()}");
+      }
+
+      print("\n🏗️ BUILDING FORM DATA:");
+      // Extract vehicle fields directly from nested structure and add to root level
+      
+      final Map<String, dynamic> formFields = {
         'title': carModel.title,
         'description': carModel.description,
         'price': carModel.price.toString(),
@@ -244,49 +291,114 @@ class CreateListingService {
         'longitude': carModel.longitude,
         'condition': carModel.condition,
         'listingAction': _mapListingAction(carModel.listingAction),
-        // Send these fields separately instead of JSON
-        'make': carModel.details.json['make'],
-        'model': carModel.details.json['model'],
-        'year': carModel.details.json['year'].toString(),
-        'sellerType': _mapSellerType(carModel.details.json['sellerType']),
-        'bodyType': carModel.details.json['bodyType'],
-        'fuelType': _mapFuelType(carModel.details.json['fuelType']),
-        'transmissionType': _mapTransmissionType(carModel.details.json['transmissionType']),
-        'color': carModel.details.json['color'],
-        'engineSize': carModel.details.json['engineSize']?.toString() ?? '',
-        'accidental': carModel.details.json['accidentFree'] == true ? 'no' : 'yes',
-        'registrationExpiry': carModel.details.json['registrationExpiry'] ?? '',
-        // Keep other fields as JSON in details
+        'sellerType': _mapSellerType(carModel.sellerType),
+      };
+      
+      // Add ALL vehicle fields from nested structure OR fallback to controller values
+      if (vehicleData != null) {
+        print("\n🔧 ADDING VEHICLE FIELDS TO FORM:");
+        // Always add fields if they exist, let backend handle null/empty values
+        _addFieldIfExists(formFields, 'make', vehicleData['make']);
+        _addFieldIfExists(formFields, 'model', vehicleData['model']);
+        _addFieldIfExists(formFields, 'year', vehicleData['year']);
+        _addFieldIfExists(formFields, 'bodyType', vehicleData['bodyType']);
+        _addFieldIfExists(formFields, 'exteriorColor', vehicleData['exteriorColor']);
+        _addFieldIfExists(formFields, 'interiorColor', vehicleData['interiorColor']);
+        _addFieldIfExists(formFields, 'engineSize', vehicleData['engineSize']);
+        _addFieldIfExists(formFields, 'mileage', vehicleData['mileage']);
+        _addFieldIfExists(formFields, 'horsepower', vehicleData['horsepower']);
+        _addFieldIfExists(formFields, 'doors', vehicleData['doors']);
+        _addFieldIfExists(formFields, 'seatingCapacity', vehicleData['seatingCapacity']);
+        _addFieldIfExists(formFields, 'registrationExpiry', vehicleData['registrationExpiry']);
+        
+        // Handle mapped fields
+        if (vehicleData['fuelType'] != null) {
+          formFields['fuelType'] = _mapFuelType(vehicleData['fuelType']);
+          print("  ✅ Added fuelType: ${formFields['fuelType']}");
+        }
+        if (vehicleData['transmission'] != null) {
+          formFields['transmission'] = _mapTransmissionType(vehicleData['transmission']);
+          print("  ✅ Added transmission: ${formFields['transmission']}");
+        }
+        if (vehicleData['accidentFree'] != null) {
+          formFields['accidental'] = vehicleData['accidentFree'] == true ? 'no' : 'yes';
+          print("  ✅ Added accidental: ${formFields['accidental']}");
+        }
+      } else {
+        print("\n❌ NO VEHICLE DATA FOUND - TRYING DIRECT EXTRACTION:");
+        // Fallback: try to get fields directly from the main details object
+        final mainDetails = carModel.details.json;
+        print("  Main details keys: ${mainDetails.keys.toList()}");
+        print("  Full details content: $mainDetails");
+        
+        // Try to extract from controller directly as fallback
+        print("\n🔄 FALLBACK: EXTRACTING FROM CONTROLLER:");
+        final controller = GetX.Get.find<ListingInputController>();
+        
+        _addFieldIfExists(formFields, 'make', controller.make.value);
+        _addFieldIfExists(formFields, 'model', controller.model.value);
+        _addFieldIfExists(formFields, 'year', controller.year.value);
+        _addFieldIfExists(formFields, 'bodyType', controller.bodyType.value);
+        _addFieldIfExists(formFields, 'exteriorColor', controller.exteriorColor.value);
+        _addFieldIfExists(formFields, 'interiorColor', controller.interiorColor.value);
+        _addFieldIfExists(formFields, 'engineSize', controller.engineSize.value);
+        _addFieldIfExists(formFields, 'mileage', controller.mileage.value);
+        _addFieldIfExists(formFields, 'horsepower', controller.horsepower.value);
+        _addFieldIfExists(formFields, 'doors', controller.doors.value);
+        _addFieldIfExists(formFields, 'seatingCapacity', controller.seatingCapacity.value);
+        
+        // Handle mapped fields from controller
+        if (controller.fuelType.value.isNotEmpty) {
+          formFields['fuelType'] = _mapFuelType(controller.fuelType.value);
+          print("  ✅ Added fuelType from controller: ${formFields['fuelType']}");
+        }
+        if (controller.transmissionType.value.isNotEmpty) {
+          formFields['transmission'] = _mapTransmissionType(controller.transmissionType.value);
+          print("  ✅ Added transmission from controller: ${formFields['transmission']}");
+        }
+        if (controller.accidental.value.isNotEmpty) {
+          formFields['accidental'] = controller.accidental.value == "No" ? 'no' : 'yes';
+          print("  ✅ Added accidental from controller: ${formFields['accidental']}");
+        }
+      }
+      
+      print("\n🚀 FINAL FORM FIELDS TO SEND:");
+      formFields.forEach((key, value) {
+        print("  '$key': '$value'");
+      });
+      print("  Total form fields: ${formFields.length}");
+
+      print("\n📦 CREATING MULTIPART FORM DATA:");
+      final formData = FormData.fromMap({
+        ...formFields,
+        // Keep only features and non-main fields in details JSON
         'details': jsonEncode({
           'vehicles': {
-            'vehicleType': carModel.subCategory.toUpperCase() == 'CARS' ? 'CARS' : 
-                           carModel.subCategory.toUpperCase(),
-            'mileage': int.tryParse(carModel.details.json['mileage'].toString()) ?? carModel.details.json['mileage'],
-            'previousOwners': int.tryParse(carModel.details.json['previousOwners'].toString()) ?? carModel.details.json['previousOwners'],
-            'horsepower': int.tryParse(carModel.details.json['horsepower'].toString()) ?? carModel.details.json['horsepower'],
-            'registrationStatus': carModel.details.json['registrationStatus'],
-            'registrationExpiry': carModel.details.json['registrationExpiry'],
-            'serviceHistory': carModel.details.json['serviceHistory'],
-            'warranty': carModel.details.json['warranty'],
-            'accidentFree': carModel.details.json['accidentFree'],
-            'customsCleared': carModel.details.json['customsCleared'],
-            'airbags': int.tryParse(carModel.details.json['airbags'].toString()) ?? carModel.details.json['airbags'],
-            'abs': carModel.details.json['abs'],
-            'tractionControl': carModel.details.json['tractionControl'],
-            'laneAssist': carModel.details.json['laneAssist'],
-            'features': carModel.details.json['features'],
-            'driveType': carModel.details.json['driveType'],
-            'wheelSize': carModel.details.json['wheelSize'],
-            'wheelType': carModel.details.json['wheelType'],
-            'fuelEfficiency': carModel.details.json['fuelEfficiency'],
-            'emissionClass': carModel.details.json['emissionClass'],
-            'parkingSensor': carModel.details.json['parkingSensor'],
-            'parkingBreak': carModel.details.json['parkingBreak'],
+            'vehicleType': carModel.subCategory.toUpperCase(),
+            // Keep features and advanced fields that don't have dedicated database columns
+            'previousOwners': carModel.details.json['vehicles']?['previousOwners'],
+            'registrationStatus': carModel.details.json['vehicles']?['registrationStatus'],
+            'serviceHistory': carModel.details.json['vehicles']?['serviceHistory'],
+            'warranty': carModel.details.json['vehicles']?['warranty'],
+            'customsCleared': carModel.details.json['vehicles']?['customsCleared'],
+            'airbags': carModel.details.json['vehicles']?['airbags'],
+            'abs': carModel.details.json['vehicles']?['abs'],
+            'tractionControl': carModel.details.json['vehicles']?['tractionControl'],
+            'laneAssist': carModel.details.json['vehicles']?['laneAssist'],
+            'features': carModel.details.json['vehicles']?['features'],
+            'driveType': carModel.details.json['vehicles']?['driveType'],
+            'wheelSize': carModel.details.json['vehicles']?['wheelSize'],
+            'wheelType': carModel.details.json['vehicles']?['wheelType'],
+            'fuelEfficiency': carModel.details.json['vehicles']?['fuelEfficiency'],
+            'emissionClass': carModel.details.json['vehicles']?['emissionClass'],
+            'parkingSensor': carModel.details.json['vehicles']?['parkingSensor'],
+            'parkingBreak': carModel.details.json['vehicles']?['parkingBreak'],
           }
         }),
         'listingImage': await Future.wait(
           carModel.listingImage.map((filePath) async {
             final mimeType = lookupMimeType(filePath) ?? 'image/jpeg';
+            print("  📸 Adding image: ${basename(filePath)} (${mimeType})");
             return await MultipartFile.fromFile(
               filePath,
               contentType: MediaType.parse(mimeType),
@@ -295,6 +407,8 @@ class CreateListingService {
           }),
         ),
       });
+      
+      print("  ✅ FormData created with ${formData.fields.length} fields and ${formData.files.length} files");
 
       final response = await _dio.post(
         createListingRoute,
@@ -307,14 +421,32 @@ class CreateListingService {
         ),
       );
 
-      print("=== API CALL COMPLETED ===");
-      print("Response status: ${response.statusCode}");
-      print("Response data: ${response.data}");
-      print("Response type: ${response.data.runtimeType}");
+      print("\n📡 === API CALL COMPLETED ===");
+      print("📊 Response status: ${response.statusCode}");
+      print("📊 Response headers: ${response.headers}");
+      print("📊 Response data type: ${response.data.runtimeType}");
+      print("📊 Response data: ${response.data}");
+      
+      if (response.data is Map<String, dynamic>) {
+        final responseMap = response.data as Map<String, dynamic>;
+        if (responseMap.containsKey('data')) {
+          final dataMap = responseMap['data'] as Map<String, dynamic>?;
+          if (dataMap != null && dataMap.containsKey('details')) {
+            print("\n🔍 BACKEND SAVED DETAILS:");
+            print("  Backend details: ${dataMap['details']}");
+            if (dataMap['details'] is Map<String, dynamic>) {
+              final detailsMap = dataMap['details'] as Map<String, dynamic>;
+              if (detailsMap.containsKey('vehicles')) {
+                print("  Backend vehicles data: ${detailsMap['vehicles']}");
+              }
+            }
+          }
+        }
+      }
 
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        print("=== SUCCESS: Listing created successfully ===");
-        print("Success response: ${response.data}");
+      if (response.statusCode == 201) {
+        print("\n✅ === SUCCESS: Listing created successfully ===");
+        print("🎉 Success response: ${response.data}");
 
         // Handle case where response.data might be a String instead of Map
         Map<String, dynamic> responseMap;
@@ -370,10 +502,14 @@ class CreateListingService {
       print("DioException has no response data, returning generic error");
       return ApiResponse.failure(ApiError(fastifyErrorResponse: null, errorResponse: null));
     } catch (e) {
-      print("=== UNEXPECTED ERROR ===");
-      print("Unexpected error occurred: $e");
-      print("Error type: ${e.runtimeType}");
-      print("Error stack trace: ${StackTrace.current}");
+      print("\n❌ === ERROR CREATING CAR LISTING ===");
+      print("🚨 Error type: ${e.runtimeType}");
+      print("🚨 Error message: $e");
+      if (e is DioException) {
+        print("🚨 Dio error type: ${e.type}");
+        print("🚨 Dio response: ${e.response?.data}");
+        print("🚨 Dio status code: ${e.response?.statusCode}");
+      }
       return ApiResponse.failure(ApiError(fastifyErrorResponse: null, errorResponse: null));
     }
   }
@@ -397,19 +533,21 @@ class CreateListingService {
 
   // Helper method to map seller type
   String _mapSellerType(String? sellerType) {
-    if (sellerType == null) return 'owner';
+    if (sellerType == null) return 'INDIVIDUAL';
     
     switch (sellerType.toLowerCase()) {
       case 'owner':
-        return 'owner';
+      case 'individual':
+        return 'INDIVIDUAL';
       case 'broker':
-        return 'broker';
+      case 'dealer':
+        return 'DEALER';
       case 'business':
       case 'business_owner':
       case 'businessowner':
-        return 'business_owner';
+        return 'BUSINESS';
       default:
-        return 'owner';
+        return 'INDIVIDUAL';
     }
   }
 
@@ -419,13 +557,18 @@ class CreateListingService {
     
     switch (transmissionType.toLowerCase()) {
       case 'automatic':
+      case 'أوتوماتيك':
         return 'AUTOMATIC';
       case 'manual':
+      case 'يدوي':
         return 'MANUAL';
       case 'continuouslyvariable':
       case 'continuously_variable':
       case 'cvt':
-        return 'continuouslyVariable'; // Match Prisma schema
+        return 'AUTOMATIC_MANUAL'; // Map CVT to valid enum
+      case 'automaticmanual':
+      case 'automatic_manual':
+        return 'AUTOMATIC_MANUAL';
       default:
         return 'MANUAL';
     }
@@ -438,12 +581,16 @@ class CreateListingService {
     switch (fuelType.toLowerCase()) {
       case 'gasoline':
       case 'petrol':
+      case 'بنزين':
         return 'GASOLINE';
       case 'diesel':
+      case 'ديزل':
         return 'DIESEL';
       case 'electric':
+      case 'كهربائي':
         return 'ELECTRIC';
       case 'hybrid':
+      case 'هجين':
         return 'HYBRID';
       case 'lpg':
         return 'LPG';
@@ -451,6 +598,16 @@ class CreateListingService {
         return 'CNG';
       default:
         return 'GASOLINE';
+    }
+  }
+
+  // Helper method to add field only if it exists and is not empty
+  void _addFieldIfExists(Map<String, dynamic> formFields, String key, dynamic value) {
+    if (value != null && value.toString().isNotEmpty && value.toString() != '0') {
+      formFields[key] = value.toString();
+      print("    ✅ Added $key: '${value.toString()}'");
+    } else {
+      print("    ❌ Skipped $key: '$value' (null/empty/zero)");
     }
   }
 

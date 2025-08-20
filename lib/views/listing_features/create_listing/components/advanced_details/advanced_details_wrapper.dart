@@ -16,11 +16,17 @@ import 'package:samsar/views/listing_features/create_listing/components/advanced
 class AdvancedDetailsWrapper extends StatefulWidget {
   final String category;
   final String? subCategory; // For vehicles: 'cars', 'motorcycles'
+  final int currentStep;
+  final VoidCallback? onNext;
+  final VoidCallback? onPrevious;
 
   const AdvancedDetailsWrapper({
     super.key,
     required this.category,
     this.subCategory,
+    required this.currentStep,
+    this.onNext,
+    this.onPrevious,
   });
 
   @override
@@ -53,12 +59,16 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
     final categoryUpper = widget.category.toUpperCase();
     final subCategoryUpper = widget.subCategory?.toUpperCase() ?? '';
 
+    Widget formContent;
+
     if (categoryUpper == 'VEHICLES') {
       switch (subCategoryUpper) {
         case 'CARS':
-          return CarsAdvancedDetails();
+          formContent = CarsAdvancedDetails();
+          break;
         case 'MOTORCYCLES':
-          return MotorcyclesAdvancedDetails();
+          formContent = MotorcyclesAdvancedDetails();
+          break;
         case 'PASSENGER_VEHICLES':
         case 'PASSENGERS':
         case 'BUS':
@@ -67,7 +77,8 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
         case 'MICROBUS':
         case 'COACH':
         case 'SHUTTLE':
-          return PassengersAdvancedDetails();
+          formContent = PassengersAdvancedDetails();
+          break;
         case 'COMMERCIAL_TRANSPORT':
         case 'COMMERCIALS':
         case 'COMMERCIAL':
@@ -85,7 +96,8 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
         case 'DUMP_TRUCK':
         case 'FIRE_TRUCK':
         case 'AMBULANCE':
-          return CommercialsAdvancedDetails();
+          formContent = CommercialsAdvancedDetails();
+          break;
         case 'CONSTRUCTION_VEHICLES':
         case 'CONSTRUCTIONS':
         case 'CONSTRUCTION':
@@ -102,30 +114,45 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
         case 'PAVER':
         case 'CONCRETE_MIXER':
         case 'DRILL_RIG':
-          return ConstructionsAdvancedDetails();
+          formContent = ConstructionsAdvancedDetails();
+          break;
         default:
-          return _buildPlaceholder(context, 'Vehicle Advanced Details');
+          formContent = _buildPlaceholder(context, 'Vehicle Advanced Details');
       }
     } else if (categoryUpper == 'REAL_ESTATE') {
       switch (subCategoryUpper) {
         case 'STORE':
-          return StoreAdvancedDetails();
+          formContent = StoreAdvancedDetails();
+          break;
         case 'APARTMENT':
-          return ApartmentsAdvancedDetails();
+          formContent = ApartmentsAdvancedDetails();
+          break;
         case 'HOUSE':
-          return HousesAdvancedDetails();
+          formContent = HousesAdvancedDetails();
+          break;
         case 'LAND':
-          return LandAdvancedDetails();
+          formContent = LandAdvancedDetails();
+          break;
         case 'OFFICE':
-          return OfficesAdvancedDetails();
+          formContent = OfficesAdvancedDetails();
+          break;
         case 'VILLA':
-          return VillaAdvancedDetails();
+          formContent = VillaAdvancedDetails();
+          break;
         default:
-          return _buildPlaceholder(context, 'Real Estate Advanced Details');
+          formContent = _buildPlaceholder(context, 'Real Estate Advanced Details');
       }
     } else {
-      return _buildPlaceholder(context, 'Unknown Category');
+      formContent = _buildPlaceholder(context, 'Unknown Category');
     }
+
+    return Column(
+      children: [
+        formContent,
+        // Navigation buttons at the bottom of form content
+        _buildNavigationButtons(context),
+      ],
+    );
   }
 
   Widget _buildPlaceholder(BuildContext context, String title) {
@@ -179,6 +206,67 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildNavigationButtons(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    
+    return Container(
+      padding: EdgeInsets.all(16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (widget.currentStep > 0 && widget.onPrevious != null)
+            _buildButton(
+              width: screenWidth * 0.35,
+              color: Colors.grey[300]!,
+              textColor: Colors.black,
+              text: 'Previous',
+              onPressed: widget.onPrevious!,
+            )
+          else
+            SizedBox(width: screenWidth * 0.35),
+          
+          if (widget.onNext != null)
+            _buildButton(
+              width: screenWidth * 0.35,
+              color: Colors.blue,
+              textColor: Colors.white,
+              text: widget.currentStep == 2 ? 'Review' : 'Next',
+              onPressed: widget.onNext!,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildButton({
+    required double width,
+    required Color color,
+    required Color textColor,
+    required String text,
+    required VoidCallback onPressed,
+  }) {
+    return SizedBox(
+      width: width,
+      height: 48,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: textColor,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }

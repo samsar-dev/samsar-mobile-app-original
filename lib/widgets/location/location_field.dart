@@ -13,13 +13,13 @@ class LocationField extends StatefulWidget {
   final VoidCallback? onLocationChanged;
 
   const LocationField({
-    Key? key,
+    super.key,
     this.label,
     this.hintText,
     this.isRequired = true,
     this.showValidationError = false,
     this.onLocationChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<LocationField> createState() => _LocationFieldState();
@@ -91,7 +91,7 @@ class _LocationFieldState extends State<LocationField> {
                   child: Text(
                     _listingController.location.value.isNotEmpty
                         ? _locationController.formattedLocation
-                        : widget.hintText ?? 'Select location',
+                        : widget.hintText ?? 'select_location'.tr,
                     style: TextStyle(
                       fontSize: 16,
                       color: _listingController.location.value.isNotEmpty
@@ -114,7 +114,7 @@ class _LocationFieldState extends State<LocationField> {
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Text(
-              'Please select a location',
+              'please_select_location'.tr,
               style: TextStyle(
                 color: Colors.red.shade600,
                 fontSize: 14,
@@ -192,12 +192,12 @@ class LocationDisplayWidget extends StatelessWidget {
   final bool showCoordinates;
 
   const LocationDisplayWidget({
-    Key? key,
+    super.key,
     required this.location,
     this.latitude,
     this.longitude,
     this.showCoordinates = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

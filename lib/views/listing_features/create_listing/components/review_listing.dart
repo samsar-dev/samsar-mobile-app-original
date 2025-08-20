@@ -456,6 +456,11 @@ Widget vehicleWidget(double screenHeight, double screenWidth) {
                         "label": 'description'.tr,
                         "value": _listingInputController.description.value
                       },
+                      if (_listingInputController.sellerType.value.isNotEmpty)
+                        {
+                          "label": 'seller_type'.tr,
+                          "value": _listingInputController.sellerType.value
+                        },
                     ]),
               ),
               SizedBox(
@@ -665,24 +670,33 @@ Widget vehicleWidget(double screenHeight, double screenWidth) {
               SizedBox(
                 height: screenHeight * 0.003,
               ),
-              AnimatedInputWrapper(
-                delayMilliseconds: 450,
-                child: infoCard(
-                  screenWidth: screenWidth,
-                  screenHeight: screenHeight,
-                  title: 'legal_and_documentation'.tr,
-                  data: [
-                    {
-                      "label": 'import_status'.tr,
-                      "value": _listingInputController.importStatus.value
-                    },
-                    {
-                      "label": 'registration_expiry_date'.tr,
-                      "value": _listingInputController.registrationExpiry.value
-                    },
-                  ],
+              // Legal and Documentation - only show if fields have meaningful values
+              if ((_listingInputController.importStatus.value.isNotEmpty && 
+                   _listingInputController.importStatus.value != 'N/A') ||
+                  (_listingInputController.registrationExpiry.value.isNotEmpty && 
+                   _listingInputController.registrationExpiry.value != 'N/A'))
+                AnimatedInputWrapper(
+                  delayMilliseconds: 450,
+                  child: infoCard(
+                    screenWidth: screenWidth,
+                    screenHeight: screenHeight,
+                    title: 'legal_and_documentation'.tr,
+                    data: [
+                      if (_listingInputController.importStatus.value.isNotEmpty && 
+                          _listingInputController.importStatus.value != 'N/A')
+                        {
+                          "label": 'import_status'.tr,
+                          "value": _listingInputController.importStatus.value
+                        },
+                      if (_listingInputController.registrationExpiry.value.isNotEmpty && 
+                          _listingInputController.registrationExpiry.value != 'N/A')
+                        {
+                          "label": 'registration_expiry_date'.tr,
+                          "value": _listingInputController.registrationExpiry.value
+                        },
+                    ],
+                  ),
                 ),
-              ),
               SizedBox(
                 height: screenHeight * 0.003,
               ),

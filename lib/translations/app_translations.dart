@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 class AppTranslations extends Translations {
@@ -19,6 +20,19 @@ class AppTranslations extends Translations {
       'sort': 'Sort',
       'refresh': 'Refresh',
       'email': 'Email',
+
+      // Location translations
+      'select_location': 'Select Location',
+      'please_select_location': 'Please select a location',
+      'search_for_location': 'Search for a location...',
+      'use_current_location': 'Use Current Location',
+      'search_results': 'Search Results',
+      'cities': 'Cities',
+      'start_typing_to_search': 'Start typing to search for locations',
+      'no_search_results_found': 'No search results found',
+      'no_cities_found': 'No cities found',
+      'neighborhoods': 'neighborhoods',
+      'city_center': 'City Center',
 
       // Subcategories
       'cars': 'Cars',
@@ -109,7 +123,6 @@ class AppTranslations extends Translations {
       'location': 'Location',
       'price': 'Price',
       'sort_by': 'Sort By',
-      'select_location': 'Select Location',
       'price_range': 'Price Range',
       'min_price': 'Min Price',
       'max_price': 'Max Price',
@@ -461,6 +474,8 @@ class AppTranslations extends Translations {
       'engine_and_performance': 'Engine & Performance',
       'horsepower': 'Horsepower',
       'enter_horsepower': 'Enter Horsepower',
+     ' horsepower_hp' : 'horsepower hp',
+
       'vehicle_specifications': 'Vehicle Specifications',
       'drivetrain': 'Drivetrain',
       'transmissionType': 'Transmission Type',
@@ -472,6 +487,9 @@ class AppTranslations extends Translations {
       'registration_expiry_date': 'Registration Expiry Date',
       'color_and_appearance': 'Color & Appearance',
       'exterior_color': 'Exterior Color',
+      'documentation' : 'Documentation',
+        'performance' : 'Performance',
+         ' number_of_owners' : 'Number of Owners',
 
       // Profile
       'my_profile': 'My Profile',
@@ -580,14 +598,8 @@ class AppTranslations extends Translations {
       'location_error': 'Location access is required to show nearby listings',
       'permanently_denied': 'permanently denied',
       
-      // Location Picker
+      // Location Picker (removed duplicates)
       'search_location': 'Search for a location...',
-      'use_current_location': 'Use Current Location',
-      'search_results': 'Search Results',
-      'cities': 'Cities',
- 
-      'neighborhoods': 'neighborhoods',
-      'no_cities_found': 'No cities found',
       
       // Auth & Registration
       'registration_successful': 'Registration successful! Please check your email for the verification code.',
@@ -774,6 +786,59 @@ class AppTranslations extends Translations {
       'number_of_bathrooms': 'Number of bathrooms',
       'year_property_built': 'Year the property was built',
 
+      // Motorcycle Features
+      'stability_control': 'Stability Control',
+      'wheelie_control': 'Wheelie Control',
+      'launch_control': 'Launch Control',
+      'quick_shifter': 'Quick Shifter',
+      'slipper_clutch': 'Slipper Clutch',
+      'riding_modes': 'Riding Modes',
+      'suspension_adjustment': 'Suspension Adjustment',
+      'electronic_suspension': 'Electronic Suspension',
+      'adaptive_headlights': 'Adaptive Headlights',
+      'daytime_running_lights': 'Daytime Running Lights',
+      'hazard_lights': 'Hazard Lights',
+      'turn_signals': 'Turn Signals',
+      'brake_light': 'Brake Light',
+      'digital_display': 'Digital Display',
+      'analog_gauges': 'Analog Gauges',
+      '12v_socket': '12V Socket',
+      'phone_mount': 'Phone Mount',
+      'windscreen': 'Windscreen',
+      'adjustable_windscreen': 'Adjustable Windscreen',
+      'hand_guards': 'Hand Guards',
+      'knee_grips': 'Knee Grips',
+      'seat_heating': 'Seat Heating',
+      'grip_heating': 'Grip Heating',
+      'storage_compartment': 'Storage Compartment',
+      'side_boxes': 'Side Boxes',
+      'top_box': 'Top Box',
+      'tank_bag': 'Tank Bag',
+      'crash_bars': 'Crash Bars',
+      'engine_guard': 'Engine Guard',
+      'skid_plate': 'Skid Plate',
+      'chain_guard': 'Chain Guard',
+      'disc_lock': 'Disc Lock',
+      'chain_lock': 'Chain Lock',
+      'kick_starter': 'Kick Starter',
+      'electric_starter': 'Electric Starter',
+      'center_stand': 'Center Stand',
+      'side_stand': 'Side Stand',
+      'maintenance_stand': 'Maintenance Stand',
+      'tool_kit': 'Tool Kit',
+      'puncture_kit': 'Puncture Kit',
+      'first_aid_kit': 'First Aid Kit',
+
+      // Real Estate Features
+      'landline_available': 'Landline Available',
+      'storage_room': 'Storage Room',
+      'laundry_room': 'Laundry Room',
+
+      // Construction Vehicle Features
+      'attachments': 'Attachments',
+      'cab_type': 'Cab Type',
+      'track_type': 'Track Type',
+
       // Construction Vehicle Fields - using existing keys where available
       'construction_vehicle_specifications': 'Construction Vehicle Specifications',
       'construction_vehicle_specifications_info': 'Specialized construction equipment details are crucial for commercial buyers',
@@ -846,6 +911,20 @@ class AppTranslations extends Translations {
       'sort': 'ترتيب',
       'refresh': 'تحديث',
       'email': 'البريد الإلكتروني',
+      'title': 'عنوان',
+
+      // Location translations
+      'select_location': 'اختر الموقع',
+      'please_select_location': 'يرجى اختيار موقع',
+      'search_for_location': 'البحث عن موقع...',
+      'use_current_location': 'استخدم الموقع الحالي',
+      'search_results': 'نتائج البحث',
+      'cities': 'المدن',
+      'start_typing_to_search': 'ابدأ الكتابة للبحث عن المواقع',
+      'no_search_results_found': 'لم يتم العثور على نتائج بحث',
+      'no_cities_found': 'لم يتم العثور على مدن',
+      'neighborhoods': 'الأحياء',
+      'city_center': 'وسط المدينة',
 
       // Subcategories
       'cars': 'سيارات',
@@ -972,7 +1051,6 @@ class AppTranslations extends Translations {
       'real_estate': 'عقارات',
       'search_listings': 'ابحث في الإعلانات...',
       'search_listings_enhanced': 'ابحث عن السيارات والمنازل والعلامات التجارية...',
-      'start_typing_to_search': 'ابدأ بالكتابة للبحث',
       'search_for_listing': 'ابحث عن إعلان...',
       'filters_coming_soon': 'قريباً الفلاتر',
       'quick_filters': 'فلاتر سريعة',
@@ -981,7 +1059,6 @@ class AppTranslations extends Translations {
       'location': 'الموقع',
       'price': 'السعر',
       'sort_by': 'ترتيب حسب',
-      'select_location': 'اختر الموقع',
       'price_range': 'نطاق السعر',
       'min_price': 'أقل سعر',
       'max_price': 'أعلى سعر',
@@ -1097,6 +1174,8 @@ class AppTranslations extends Translations {
        'no_listings': 'لم تقم بإنشاء أي إعلانات بعد.',
       'login_to_view': 'يرجى تسجيل الدخول لعرض إعلاناتك',
       'go_to_login': 'تسجيل الدخول',
+            'engine_size' : ' حجم المحرك',
+      'enter_engine_size' : ' أدخل حجم المحرك',
       
       // Profile
       'my_profile': 'ملفي الشخصي',
@@ -1355,7 +1434,102 @@ class AppTranslations extends Translations {
       'japanese_specs': 'مواصفات يابانية',
       'canadian_specs': 'مواصفات كندية',
       'korean_specs': 'مواصفات كورية',
-      'other': 'أخرى',
+    // Feature translations
+'features_extras': 'المميزات الإضافية',
+'vehicle_features_extras': 'مميزات المركبة',
+'real_estate_features_extras': 'مميزات العقار',
+'unknown_category': 'فئة غير معروفة',
+'select_vehicle_type_step1': 'يرجى اختيار نوع المركبة في الخطوة الأولى',
+'commercial_vehicle_features': 'مميزات المركبة التجارية',
+'construction_vehicle_features': 'مميزات مركبة البناء',
+'apartment_features': 'مميزات الشقة',
+'house_features': 'مميزات المنزل',
+'car_features_title': 'مميزات السيارة',
+'motorcycle_features_title': 'مميزات الدراجة النارية',
+'land_features': 'مميزات الأرض',
+'select_available_features': 'اختر المميزات المتاحة',
+
+// Vehicle features
+'abs': 'نظام منع انغلاق المكابح (ABS)',
+'traction_control': 'نظام التحكم في الجر',
+'lane_assist': 'مساعد الحفاظ على المسار',
+'blind_spot_monitor': 'مراقبة النقطة العمياء',
+'parking_sensor': 'حساسات الركن',
+'rear_camera': 'كاميرا خلفية',
+'360_camera': 'كاميرا 360°',
+'cruise_control': 'مثبت السرعة',
+'led_headlights': 'مصابيح أمامية LED',
+'fog_lights': 'أضواء الضباب',
+'bluetooth': 'بلوتوث',
+'apple_carplay': 'Apple CarPlay',
+'android_auto': 'Android Auto',
+'wireless_charging': 'شحن لاسلكي',
+'usb_ports': 'منافذ USB',
+'sunroof': 'فتحة سقف',
+'panoramic_roof': 'سقف بانورامي',
+'heated_seats': 'مقاعد مدفأة',
+'cooled_seats': 'مقاعد مبردة',
+'electric_seats': 'مقاعد كهربائية',
+'immobilizer': 'مانع تشغيل السيارة',
+'alarm_system': 'نظام إنذار',
+'number_of_airbags': 'عدد الوسائد الهوائية',
+'enter_number_of_airbags': 'أدخل عدد الوسائد الهوائية',
+'gps_navigation': 'نظام ملاحة GPS',
+'usb_charging': 'شحن USB',
+'backup_camera': 'كاميرا خلفية للرجوع',
+'leather_seats': 'مقاعد جلدية',
+
+// Commercial vehicle features
+'hydraulic_lift': 'رافعة هيدروليكية',
+'cargo_cover': 'غطاء الحمولة',
+'tie_down_points': 'نقاط تثبيت الحمولة',
+'loading_ramp': 'منحدر تحميل',
+'refrigeration': 'تبريد',
+'gps_tracking': 'تتبع GPS',
+'commercial_license': 'رخصة تجارية',
+'cargo_barrier': 'حاجز حمولة',
+
+// Construction vehicle features
+'hydraulic_system': 'نظام هيدروليكي',
+'work_lights': 'أضواء العمل',
+'quick_attach': 'توصيل سريع',
+'rubber_tracks': 'سلاسل مطاطية',
+'enclosed_cab': 'كابينة مغلقة',
+'emergency_stop': 'زر التوقف الطارئ',
+'rollover_protection': 'حماية من الانقلاب',
+'service_records': 'سجلات الصيانة',
+'operator_manual': 'دليل التشغيل',
+
+// Real estate features
+'elevator': 'مصعد',
+'balcony': 'شرفة',
+'furnished': 'مفروشة',
+'concierge': 'خدمة بواب',
+'water_heater': 'سخان ماء',
+'garden': 'حديقة',
+'garage': 'كراج',
+'terrace': 'تراس',
+'basement': 'قبو',
+'fireplace': 'مدفأة',
+'swimming_pool': 'مسبح',
+'solar_panels': 'ألواح شمسية',
+'water_well': 'بئر ماء',
+
+'meeting_rooms': 'غرف اجتماعات',
+
+'water_access': 'وصول إلى المياه',
+'electricity_access': 'وصول إلى الكهرباء',
+'road_access': 'وصول إلى الطريق',
+'agricultural_use': 'الاستخدام الزراعي',
+'residential_zoning': 'منطقة سكنية',
+'commercial_zoning': 'منطقة تجارية',
+'flat_terrain': 'أرض مستوية',
+'fenced': 'مسورة',
+'fruit_trees': 'أشجار فاكهة',
+'building_permit': 'تصريح بناء',
+'corner_lot': 'قطعة أرض على الزاوية',
+
+  
 
       // Truck Details
       'truck_advanced_details': 'تفاصيل الشاحنة المتقدمة',
@@ -1398,6 +1572,7 @@ class AppTranslations extends Translations {
       'engine_and_performance': 'المحرك والأداء',
       'horsepower': 'القوة الحصانية',
       'enter_horsepower': 'أدخل القوة الحصانية',
+      ' horsepower_hp' : 'قوة حصانية',
       'vehicle_specifications': 'مواصفات المركبة',
       'drivetrain': 'نظام الدفع',
       'transmissionType': 'نوع ناقل الحركة',
@@ -1409,6 +1584,11 @@ class AppTranslations extends Translations {
       'registration_expiry_date': 'تاريخ انتهاء التسجيل',
       'color_and_appearance': 'اللون والمظهر',
       'exterior_color': 'اللون الخارجي',
+      'documentation' : 'التوثيق',
+       'performance' : 'الأداء',
+      ' number_of_owners' : 'عدد المالكين',
+      
+     
 
       // Property Details - Real Estate
       'property_details': 'تفاصيل العقار',
@@ -1441,7 +1621,7 @@ class AppTranslations extends Translations {
       'plot_size': 'مساحة الأرض',
       'plot_size_sqm': 'مساحة الأرض (متر مربع)',
       'enter_plot_size': 'أدخل مساحة الأرض بالمتر المربع',
-      'garden': 'حديقة',
+ 
       'pool': 'مسبح',
       'office_type': 'نوع المكتب',
       'shared': 'مشترك',
@@ -1449,14 +1629,14 @@ class AppTranslations extends Translations {
       'total_area': 'المساحة الإجمالية',
       'total_area_sqm': 'المساحة الإجمالية (متر مربع)',
       'enter_total_area': 'أدخل المساحة الإجمالية بالمتر المربع',
-      'meeting_rooms': 'غرف الاجتماعات',
+ 
       'number_meeting_rooms': 'عدد غرف الاجتماعات',
       'zoning': 'التقسيم',
       'residential': 'سكني',
       'commercial': 'تجاري',
       'agricultural': 'زراعي',
       'industrial': 'صناعي',
-      'road_access': 'الوصول للطريق',
+ 
 
  
 

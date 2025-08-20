@@ -177,7 +177,7 @@ class SearchIndividualListingModel {
         "listingAction": listingAction,
         "status": status,
         "seller": seller?.toJson(),
-        "savedBy": savedBy.map((x) => x?.toJson()).toList(),
+        "savedBy": savedBy.map((x) => x.toJson()).toList(),
     };
 
     @override

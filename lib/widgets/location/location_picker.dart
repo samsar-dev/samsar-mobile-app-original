@@ -71,7 +71,7 @@ class _LocationPickerState extends State<LocationPicker>
                 ),
                 Expanded(
                   child: Text(
-                    'Select Location',
+                    'select_location'.tr,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -92,7 +92,7 @@ class _LocationPickerState extends State<LocationPicker>
                 TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Search for a location...',
+                    hintText: 'search_for_location'.tr,
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
@@ -137,7 +137,7 @@ class _LocationPickerState extends State<LocationPicker>
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.my_location),
-                      label: Text('Use Current Location'),
+                      label: Text('use_current_location'.tr),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
@@ -157,8 +157,8 @@ class _LocationPickerState extends State<LocationPicker>
             TabBar(
               controller: _tabController,
               tabs: [
-                Tab(text: 'Search Results'),
-                Tab(text: 'Cities'),
+                Tab(text: 'search_results'.tr),
+                Tab(text: 'cities'.tr),
               ],
             ),
 
@@ -197,7 +197,7 @@ class _LocationPickerState extends State<LocationPicker>
               ),
               const SizedBox(height: 16),
               Text(
-                'Start typing to search for locations',
+                'start_typing_to_search'.tr,
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600],
@@ -220,7 +220,7 @@ class _LocationPickerState extends State<LocationPicker>
               ),
               const SizedBox(height: 16),
               Text(
-                'No search results found',
+                'no_search_results_found'.tr,
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600],
@@ -272,7 +272,7 @@ class _LocationPickerState extends State<LocationPicker>
               ),
               const SizedBox(height: 16),
               Text(
-                'No cities found',
+                'no_cities_found'.tr,
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600],
@@ -301,7 +301,7 @@ class _LocationPickerState extends State<LocationPicker>
                 style: const TextStyle(fontWeight: FontWeight.w500),
               ),
               subtitle: Text(
-                '${city.neighbors.length} neighborhoods',
+                '${city.neighbors.length} ${'neighborhoods'.tr}',
                 style: TextStyle(color: Colors.grey[600]),
               ),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
@@ -350,7 +350,7 @@ class _LocationPickerState extends State<LocationPicker>
         ListTile(
           leading: const Icon(Icons.location_city, color: Colors.blue),
           title: Text(
-            '${selectedCity.name} (City Center)',
+            '${selectedCity.name} (${'city_center'.tr})',
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
           onTap: () {
