@@ -61,6 +61,12 @@ class Data {
     required this.bodyType,
     required this.accidental,
     required this.engineSize,
+    // Real Estate fields at root level (saved as separate columns)
+    required this.totalArea,
+    required this.yearBuilt,
+    required this.furnishing,
+    required this.floor,
+    required this.totalFloors,
   });
 
   final String? id;
@@ -93,6 +99,12 @@ class Data {
   final String? bodyType;
   final String? accidental;
   final double? engineSize;
+  // Real Estate fields at root level (saved as separate columns)
+  final int? totalArea;
+  final int? yearBuilt;
+  final String? furnishing;
+  final int? floor;
+  final int? totalFloors;
 
   factory Data.fromJson(Map<String, dynamic> json) {
     print('🔍 [DATA MODEL DEBUG] Parsing root level vehicle fields:');
@@ -149,6 +161,12 @@ class Data {
       bodyType: json["bodyType"], // Backend sends "bodyType"
       accidental: json["accidental"], // Backend sends "accidental"
       engineSize: json["engineSize"]?.toDouble(), // Backend sends "engineSize"
+      // Real Estate fields at root level (saved as separate columns)
+      totalArea: json["totalArea"],
+      yearBuilt: json["yearBuilt"],
+      furnishing: json["furnishing"],
+      floor: json["floor"],
+      totalFloors: json["totalFloors"],
     );
   }
 
@@ -180,6 +198,12 @@ class Data {
     "transmissionType": transmissionType,
     "color": color,
     "condition": condition,
+    // Real Estate fields at root level
+    "totalArea": totalArea,
+    "yearBuilt": yearBuilt,
+    "furnishing": furnishing,
+    "floor": floor,
+    "totalFloors": totalFloors,
   };
 
   @override

@@ -221,12 +221,13 @@ class _ListingDetailState extends State<ListingDetail> {
 
                     SizedBox(height: 16),
 
-                    // Reusable Cards
+                    // Essential Details - Vehicle or Real Estate
                     AnimatedInputWrapper(
                       delayMilliseconds: 200,
                       child: DetailSectionCard(
                         title: "Essential Details",
                         items: [
+                          // Vehicle fields
                           if (listing.make != null && listing.make!.isNotEmpty)
                             IconLabelPair(
                               FontAwesomeIcons.car,
@@ -279,6 +280,59 @@ class _ListingDetailState extends State<ListingDetail> {
                               Icons.warning,
                               "Accident History: ${listing.accidental!}",
                             ),
+                          
+                          // Real Estate fields from root level (saved as separate columns)
+                          if (listing.totalArea != null && listing.totalArea! > 0)
+                            IconLabelPair(
+                              Icons.square_foot,
+                              "Area: ${listing.totalArea} m²",
+                            ),
+                          if (listing.details?.realEstate?.bedrooms != null && listing.details!.realEstate!.bedrooms! > 0)
+                            IconLabelPair(
+                              Icons.bed,
+                              "Bedrooms: ${listing.details!.realEstate!.bedrooms}",
+                            ),
+                          if (listing.details?.realEstate?.bathrooms != null && listing.details!.realEstate!.bathrooms! > 0)
+                            IconLabelPair(
+                              Icons.bathtub,
+                              "Bathrooms: ${listing.details!.realEstate!.bathrooms}",
+                            ),
+                          if (listing.floor != null)
+                            IconLabelPair(
+                              Icons.layers,
+                              "Floor: ${listing.floor}",
+                            ),
+                          if (listing.totalFloors != null && listing.totalFloors! > 0)
+                            IconLabelPair(
+                              Icons.apartment,
+                              "Total Floors: ${listing.totalFloors}",
+                            ),
+                          if (listing.yearBuilt != null && listing.yearBuilt! > 0)
+                            IconLabelPair(
+                              Icons.calendar_today,
+                              "Year Built: ${listing.yearBuilt}",
+                            ),
+                          if (listing.furnishing != null && listing.furnishing!.isNotEmpty)
+                            IconLabelPair(
+                              Icons.chair,
+                              "Furnishing: ${listing.furnishing}",
+                            ),
+                          if (listing.details?.realEstate?.facing != null && listing.details!.realEstate!.facing!.isNotEmpty)
+                            IconLabelPair(
+                              Icons.explore,
+                              "Facing: ${listing.details!.realEstate!.facing}",
+                            ),
+                          if (listing.details?.realEstate?.balconies != null && listing.details!.realEstate!.balconies! > 0)
+                            IconLabelPair(
+                              Icons.balcony,
+                              "Balconies: ${listing.details!.realEstate!.balconies}",
+                            ),
+                          if (listing.details?.realEstate?.parking != null && listing.details!.realEstate!.parking!.isNotEmpty)
+                            IconLabelPair(
+                              Icons.local_parking,
+                              "Parking: ${listing.details!.realEstate!.parking}",
+                            ),
+                          
                           // Add listingAction field
                           if (listing.listingAction != null && listing.listingAction!.isNotEmpty)
                             IconLabelPair(
@@ -509,6 +563,78 @@ class _ListingDetailState extends State<ListingDetail> {
                               )
                             ).toList(),
                           ],
+                        ),
+                      ),
+
+                    SizedBox(height: 16),
+
+                    // Real Estate Additional Details section
+                    if ((listing.details?.realEstate?.garden != null && listing.details!.realEstate!.garden!.isNotEmpty) ||
+                        (listing.details?.realEstate?.pool != null && listing.details!.realEstate!.pool!.isNotEmpty) ||
+                        (listing.details?.realEstate?.plotSize != null && listing.details!.realEstate!.plotSize! > 0) ||
+                        (listing.details?.realEstate?.officeType != null && listing.details!.realEstate!.officeType!.isNotEmpty) ||
+                        (listing.details?.realEstate?.zoning != null && listing.details!.realEstate!.zoning!.isNotEmpty) ||
+                        (listing.details?.realEstate?.roadAccess != null && listing.details!.realEstate!.roadAccess!.isNotEmpty) ||
+                        (listing.details?.realEstate?.heating != null && listing.details!.realEstate!.heating!.isNotEmpty) ||
+                        (listing.details?.realEstate?.cooling != null && listing.details!.realEstate!.cooling!.isNotEmpty) ||
+                        (listing.details?.realEstate?.view != null && listing.details!.realEstate!.view!.isNotEmpty) ||
+                        (listing.details?.realEstate?.energyRating != null && listing.details!.realEstate!.energyRating!.isNotEmpty))
+                      AnimatedInputWrapper(
+                        delayMilliseconds: 855,
+                        child: DetailSectionCard(
+                          title: "Property Features",
+                          items: [
+                            if (listing.details?.realEstate?.garden != null && listing.details!.realEstate!.garden!.isNotEmpty)
+                              IconLabelPair(
+                                Icons.grass,
+                                "Garden: ${listing.details!.realEstate!.garden}",
+                              ),
+                            if (listing.details?.realEstate?.pool != null && listing.details!.realEstate!.pool!.isNotEmpty)
+                              IconLabelPair(
+                                Icons.pool,
+                                "Pool: ${listing.details!.realEstate!.pool}",
+                              ),
+                            if (listing.details?.realEstate?.plotSize != null && listing.details!.realEstate!.plotSize! > 0)
+                              IconLabelPair(
+                                Icons.landscape,
+                                "Plot Size: ${listing.details!.realEstate!.plotSize} m²",
+                              ),
+                            if (listing.details?.realEstate?.officeType != null && listing.details!.realEstate!.officeType!.isNotEmpty)
+                              IconLabelPair(
+                                Icons.business,
+                                "Office Type: ${listing.details!.realEstate!.officeType}",
+                              ),
+                            if (listing.details?.realEstate?.zoning != null && listing.details!.realEstate!.zoning!.isNotEmpty)
+                              IconLabelPair(
+                                Icons.location_city,
+                                "Zoning: ${listing.details!.realEstate!.zoning}",
+                              ),
+                            if (listing.details?.realEstate?.roadAccess != null && listing.details!.realEstate!.roadAccess!.isNotEmpty)
+                              IconLabelPair(
+                                Icons.directions,
+                                "Road Access: ${listing.details!.realEstate!.roadAccess}",
+                              ),
+                            if (listing.details?.realEstate?.heating != null && listing.details!.realEstate!.heating!.isNotEmpty)
+                              IconLabelPair(
+                                Icons.thermostat,
+                                "Heating: ${listing.details!.realEstate!.heating}",
+                              ),
+                            if (listing.details?.realEstate?.cooling != null && listing.details!.realEstate!.cooling!.isNotEmpty)
+                              IconLabelPair(
+                                Icons.ac_unit,
+                                "Cooling: ${listing.details!.realEstate!.cooling}",
+                              ),
+                            if (listing.details?.realEstate?.view != null && listing.details!.realEstate!.view!.isNotEmpty)
+                              IconLabelPair(
+                                Icons.visibility,
+                                "View: ${listing.details!.realEstate!.view}",
+                              ),
+                            if (listing.details?.realEstate?.energyRating != null && listing.details!.realEstate!.energyRating!.isNotEmpty)
+                              IconLabelPair(
+                                Icons.energy_savings_leaf,
+                                "Energy Rating: ${listing.details!.realEstate!.energyRating}",
+                              ),
+                          ].where((item) => true).toList(),
                         ),
                       ),
 
