@@ -11,10 +11,7 @@ import 'package:samsar/models/auth/login_model.dart';
 class EmailChangeView extends StatefulWidget {
   final String currentEmail;
 
-  const EmailChangeView({
-    super.key,
-    required this.currentEmail,
-  });
+  const EmailChangeView({super.key, required this.currentEmail});
 
   @override
   State<EmailChangeView> createState() => _EmailChangeViewState();
@@ -23,8 +20,11 @@ class EmailChangeView extends StatefulWidget {
 class _EmailChangeViewState extends State<EmailChangeView> {
   final AuthController authController = Get.find<AuthController>();
   final TextEditingController newEmailController = TextEditingController();
-  final List<TextEditingController> otpControllers = List.generate(6, (index) => TextEditingController());
-  
+  final List<TextEditingController> otpControllers = List.generate(
+    6,
+    (index) => TextEditingController(),
+  );
+
   bool isStep1 = true;
   bool isLoading = false;
   String? errorMessage;
@@ -51,10 +51,7 @@ class _EmailChangeViewState extends State<EmailChangeView> {
         foregroundColor: blueColor,
         title: Text(
           'change_email'.tr,
-          style: TextStyle(
-            color: blackColor,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: blackColor, fontWeight: FontWeight.bold),
         ),
       ),
       body: SafeArea(
@@ -65,7 +62,7 @@ class _EmailChangeViewState extends State<EmailChangeView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: screenHeight * 0.02),
-                
+
                 // Title
                 Text(
                   isStep1 ? 'enter_new_email'.tr : 'verify_new_email'.tr,
@@ -75,20 +72,22 @@ class _EmailChangeViewState extends State<EmailChangeView> {
                     fontSize: screenWidth * 0.08,
                   ),
                 ),
-                
+
                 SizedBox(height: screenHeight * 0.01),
-                
+
                 // Description
                 Text(
-                  isStep1 
-                    ? 'change_email_description'.tr
-                    : 'email_verification_code_sent_to'.trParams({'email': pendingEmail}),
+                  isStep1
+                      ? 'change_email_description'.tr
+                      : 'email_verification_code_sent_to'.trParams({
+                          'email': pendingEmail,
+                        }),
                   style: TextStyle(
                     color: blackColor,
                     fontSize: screenWidth * 0.04,
                   ),
                 ),
-                
+
                 SizedBox(height: screenHeight * 0.03),
 
                 // Current Email Display
@@ -122,7 +121,7 @@ class _EmailChangeViewState extends State<EmailChangeView> {
                     ],
                   ),
                 ),
-                
+
                 SizedBox(height: screenHeight * 0.04),
 
                 if (isStep1) ...[
@@ -150,7 +149,10 @@ class _EmailChangeViewState extends State<EmailChangeView> {
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: blueColor, width: 2),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
                     ),
                   ),
                 ] else ...[
@@ -158,16 +160,13 @@ class _EmailChangeViewState extends State<EmailChangeView> {
                   Text(
                     'enter_6_digit_otp'.tr,
                     style: TextStyle(
-                      fontSize: 18, 
-                      fontWeight: FontWeight.bold, 
-                      color: blackColor
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: blackColor,
                     ),
                   ),
                   const SizedBox(height: 20),
-                  OtpField(
-                    widthMultiplier: 0.9,
-                    controllers: otpControllers,
-                  ),
+                  OtpField(widthMultiplier: 0.9, controllers: otpControllers),
                 ],
 
                 SizedBox(height: screenHeight * 0.04),
@@ -184,7 +183,11 @@ class _EmailChangeViewState extends State<EmailChangeView> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.error_outline, color: Colors.red[600], size: 20),
+                        Icon(
+                          Icons.error_outline,
+                          color: Colors.red[600],
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -208,20 +211,20 @@ class _EmailChangeViewState extends State<EmailChangeView> {
                   text: isStep1 ? 'send_verification_code'.tr : 'verify'.tr,
                   textColor: whiteColor,
                   buttonColor: blueColor,
-                  onPressed: isLoading ? null : () {
-                    if (isStep1) {
-                      _sendVerificationCode();
-                    } else {
-                      _verifyEmailChange();
-                    }
-                  },
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          if (isStep1) {
+                            _sendVerificationCode();
+                          } else {
+                            _verifyEmailChange();
+                          }
+                        },
                 ),
 
                 if (!isStep1) ...[
                   SizedBox(height: screenHeight * 0.03),
-                  ResendCodeSection(
-                    onResend: _sendVerificationCode,
-                  ),
+                  ResendCodeSection(onResend: _sendVerificationCode),
                 ],
 
                 SizedBox(height: screenHeight * 0.03),
@@ -242,10 +245,7 @@ class _EmailChangeViewState extends State<EmailChangeView> {
                       Expanded(
                         child: Text(
                           'email_change_security_notice'.tr,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: blueColor,
-                          ),
+                          style: TextStyle(fontSize: 12, color: blueColor),
                         ),
                       ),
                     ],
@@ -261,7 +261,7 @@ class _EmailChangeViewState extends State<EmailChangeView> {
 
   void _sendVerificationCode() async {
     final newEmail = newEmailController.text.trim();
-    
+
     if (newEmail.isEmpty) {
       setState(() {
         errorMessage = 'please_enter_new_email'.tr;
@@ -289,15 +289,16 @@ class _EmailChangeViewState extends State<EmailChangeView> {
     });
 
     try {
-      final response = await AuthApiServices().sendEmailChangeVerificationService(newEmail);
-      
+      final response = await AuthApiServices()
+          .sendEmailChangeVerificationService(newEmail);
+
       if (response.isSuccess) {
         setState(() {
           isStep1 = false;
           pendingEmail = newEmail;
           isLoading = false;
         });
-        
+
         Get.snackbar(
           'success'.tr,
           'verification_code_sent'.tr,
@@ -320,8 +321,10 @@ class _EmailChangeViewState extends State<EmailChangeView> {
   }
 
   void _verifyEmailChange() async {
-    final otp = otpControllers.map((controller) => controller.text.trim()).join();
-    
+    final otp = otpControllers
+        .map((controller) => controller.text.trim())
+        .join();
+
     if (otp.length != 6) {
       setState(() {
         errorMessage = 'please_enter_valid_code'.tr;
@@ -335,8 +338,9 @@ class _EmailChangeViewState extends State<EmailChangeView> {
     });
 
     try {
-      final response = await AuthApiServices().changeEmailWithVerificationService(otp);
-      
+      final response = await AuthApiServices()
+          .changeEmailWithVerificationService(otp);
+
       if (response.isSuccess) {
         // Update the user's email in the auth controller
         if (authController.user.value != null) {
@@ -366,9 +370,9 @@ class _EmailChangeViewState extends State<EmailChangeView> {
           );
           authController.user.value = updatedUser;
         }
-        
+
         Get.back(result: pendingEmail);
-        
+
         Get.snackbar(
           'success'.tr,
           'email_changed_successfully'.tr,
@@ -408,7 +412,7 @@ class _EmailChangeViewState extends State<EmailChangeView> {
 
 class ResendCodeSection extends StatefulWidget {
   final VoidCallback onResend;
-  
+
   const ResendCodeSection({super.key, required this.onResend});
 
   @override
@@ -432,7 +436,7 @@ class _ResendCodeSectionState extends State<ResendCodeSection> {
     _remainingSeconds = _initialSeconds;
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if(_remainingSeconds > 0) {
+      if (_remainingSeconds > 0) {
         setState(() {
           _remainingSeconds--;
         });

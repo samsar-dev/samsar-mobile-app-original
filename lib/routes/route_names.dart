@@ -22,4 +22,4 @@ class RouteNames {
 
   //notifications
   static const notifications = '/notifications';
-}                                                             
+}

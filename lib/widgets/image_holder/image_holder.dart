@@ -4,19 +4,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:samsar/constants/color_constants.dart';
 import 'package:get/get.dart';
 
-
 class ImageHolder extends StatefulWidget {
   final String imageUrl;
   final bool isEditable;
   final void Function(File)? onImageSelected;
-  const ImageHolder(
-    {
-      super.key, 
-      this.imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGDSuK3gg8gojbS1BjnbA4NLTjMg_hELJbpQ&s", 
-      this.isEditable = false,
-      this.onImageSelected,
-    }
-  );
+  const ImageHolder({
+    super.key,
+    this.imageUrl =
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGDSuK3gg8gojbS1BjnbA4NLTjMg_hELJbpQ&s",
+    this.isEditable = false,
+    this.onImageSelected,
+  });
 
   @override
   State<ImageHolder> createState() => _ImageHolderState();
@@ -56,10 +54,7 @@ class _ImageHolderState extends State<ImageHolder> {
           // Avatar
           Container(
             padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: blueColor,
-            ),
+            decoration: BoxDecoration(shape: BoxShape.circle, color: blueColor),
             child: CircleAvatar(
               radius: avatarRadius,
               backgroundColor: Colors.grey[300],
@@ -84,7 +79,7 @@ class _ImageHolderState extends State<ImageHolder> {
                             child: CircularProgressIndicator(
                               value: loadingProgress.expectedTotalBytes != null
                                   ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
+                                        loadingProgress.expectedTotalBytes!
                                   : null,
                             ),
                           );
@@ -104,65 +99,78 @@ class _ImageHolderState extends State<ImageHolder> {
           ),
 
           // Edit Button Positioned on Bottom Right of Avatar
-          widget.isEditable ? Positioned(
-            bottom: 4,
-            right: 8,
-            child: GestureDetector(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                  ),
-                  builder: (context) {
-                    return Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'select_image'.tr,
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          widget.isEditable
+              ? Positioned(
+                  bottom: 4,
+                  right: 8,
+                  child: GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
                           ),
-                          const SizedBox(height: 20),
-                          ListTile(
-                            leading: const Icon(Icons.camera_alt, color: purpleColor),
-                            title: Text('take_a_picture'.tr),
-                            onTap: () {
-                              Navigator.pop(context);
-                              _pickImage(ImageSource.camera);
-                            },
-                          ),
-                          ListTile(
-                            leading: const Icon(Icons.photo_library, color: purpleColor),
-                            title: Text('pick_from_gallery'.tr),
-                            onTap: () {
-                              Navigator.pop(context);
-                              _pickImage(ImageSource.gallery);
-                            },
-                          ),
-                        ],
+                        ),
+                        builder: (context) {
+                          return Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'select_image'.tr,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                ListTile(
+                                  leading: const Icon(
+                                    Icons.camera_alt,
+                                    color: purpleColor,
+                                  ),
+                                  title: Text('take_a_picture'.tr),
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    _pickImage(ImageSource.camera);
+                                  },
+                                ),
+                                ListTile(
+                                  leading: const Icon(
+                                    Icons.photo_library,
+                                    color: purpleColor,
+                                  ),
+                                  title: Text('pick_from_gallery'.tr),
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    _pickImage(ImageSource.gallery);
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: Container(
+                      height: editButtonSize,
+                      width: editButtonSize,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: purpleColor,
+                        border: Border.all(color: Colors.white, width: 2),
                       ),
-                    );
-                  },
-                );
-              },
-              child: Container(
-                height: editButtonSize,
-                width: editButtonSize,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: purpleColor,
-                  border: Border.all(color: Colors.white, width: 2),
-                ),
-                child: Icon(
-                  Icons.edit,
-                  size: editButtonSize * 0.6,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ) : SizedBox()
+                      child: Icon(
+                        Icons.edit,
+                        size: editButtonSize * 0.6,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                )
+              : SizedBox(),
         ],
       ),
     );

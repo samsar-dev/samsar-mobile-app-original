@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:samsar/constants/color_constants.dart';
 
-
 class SearchBarWidget extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
@@ -44,7 +43,7 @@ class SearchBarWidget extends StatelessWidget {
                   if (onChanged != null) onChanged!('');
                 },
                 child: const Icon(Icons.clear, color: Colors.grey),
-              )
+              ),
           ],
         ),
       ),

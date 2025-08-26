@@ -13,10 +13,16 @@ android {
     // Enable resource optimization
     buildFeatures {
         buildConfig = true
+        aidl = false
+        renderScript = false
+        resValues = false
+        shaders = false
+        viewBinding = false
+        dataBinding = false
     }
     
-    // Packaging options to exclude unnecessary files
-    packagingOptions {
+    // Aggressive packaging options to exclude unnecessary files
+    packaging {
         resources {
             excludes += listOf(
                 "META-INF/DEPENDENCIES",
@@ -27,8 +33,38 @@ android {
                 "META-INF/*.kotlin_module",
                 "**/*.kotlin_metadata",
                 "**/*.version",
-                "**/*.properties"
+                "**/*.properties",
+                "**/*.md",
+                "**/*.txt",
+                "**/README*",
+                "**/CHANGELOG*",
+                "**/LICENSE*",
+                "**/NOTICE*",
+                "**/*.proto",
+                "**/*.bin",
+                "**/*.class",
+                "lib/x86/**",
+                "lib/x86_64/**",
+                "lib/mips/**",
+                "lib/mips64/**",
+                "**/original.png",
+                "**/original.jpg",
+                "**/original.jpeg",
+                "**/*_original.*",
+                "**/drawable-ldpi/**",
+                "**/drawable-mdpi/**",
+                "**/mipmap-ldpi/**",
+                "**/mipmap-mdpi/**",
+                "**/*.webp",
+                "**/kotlin/**",
+                "**/META-INF/kotlin*",
+                "**/DebugProbesKt.bin",
+                "**/*_debug.*",
+                "**/unused/**"
             )
+        }
+        jniLibs {
+            useLegacyPackaging = false
         }
     }
 
@@ -51,13 +87,24 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         
-        // Optimize native libraries - only include ARM architectures
+        // Optimize native libraries - ARM64 primary, ARMv7 fallback
         ndk {
-            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
         }
         
         // Reduce APK size by excluding unused resources
         resourceConfigurations += listOf("en", "ar")
+        
+        // Additional size optimizations
+        multiDexEnabled = false
+        vectorDrawables.useSupportLibrary = true
+        
+        // Remove deprecated aaptOptions - handled by packaging optimization
+        
+        // Remove duplicate packagingOptions - already defined above
+        
+        // Keep all densities for compatibility
+        // resConfigs will be handled by resource shrinking
     }
 
     buildTypes {
@@ -66,18 +113,22 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
             
-            // Enable R8/ProGuard for optimization (less aggressive for networking)
+            // Aggressive R8/ProGuard optimization for maximum size reduction
             isMinifyEnabled = true
             isShrinkResources = true
+            isDebuggable = false
             
             // Use ProGuard rules with networking preservation
             proguardFiles(
-                getDefaultProguardFile("proguard-android.txt"),
+                getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
             
-            // Ensure networking works in release builds
+            // Additional optimizations
             buildConfigField("boolean", "ENABLE_NETWORKING", "true")
+            
+            // Simplified APK optimization without splits to avoid AAPT issues
+            // APK splitting can cause resource processing conflicts
         }
         
         debug {

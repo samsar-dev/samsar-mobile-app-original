@@ -20,14 +20,15 @@ class _AddPicturesState extends State<AddPictures> {
   final List<XFile> _images = [];
   final ImagePicker _picker = ImagePicker();
 
-  final ListingInputController _listingInputController = Get.find<ListingInputController>();
+  final ListingInputController _listingInputController =
+      Get.find<ListingInputController>();
 
   Future<void> _pickImage(ImageSource source) async {
     if (_images.length >= 20) {
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('maximum_20_images_allowed'.tr)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('maximum_20_images_allowed'.tr)));
       return;
     }
 
@@ -53,7 +54,10 @@ class _AddPicturesState extends State<AddPictures> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('add_pictures'.tr, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(
+                'add_pictures'.tr,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 10),
               ListTile(
                 leading: const Icon(Icons.photo_library),
@@ -72,7 +76,9 @@ class _AddPicturesState extends State<AddPictures> {
                     return;
                   }
 
-                  final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+                  final XFile? photo = await _picker.pickImage(
+                    source: ImageSource.camera,
+                  );
                   if (photo != null) {
                     setState(() {
                       _images.add(photo);
@@ -115,12 +121,13 @@ class _AddPicturesState extends State<AddPictures> {
                   child: GridView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: _images.length < 20 ? _images.length + 1 : 20,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 1,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 1,
+                        ),
                     itemBuilder: (context, index) {
                       if (index == _images.length && _images.length < 20) {
                         return GestureDetector(
@@ -130,7 +137,11 @@ class _AddPicturesState extends State<AddPictures> {
                               color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Icon(Icons.add, size: 40, color: Colors.grey),
+                            child: const Icon(
+                              Icons.add,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
                           ),
                         );
                       }
@@ -157,7 +168,11 @@ class _AddPicturesState extends State<AddPictures> {
                                   shape: BoxShape.circle,
                                 ),
                                 padding: const EdgeInsets.all(4),
-                                child: const Icon(Icons.close, size: 18, color: Colors.white),
+                                child: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
@@ -210,14 +225,21 @@ class _AddPicturesState extends State<AddPictures> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-
-                            final List<String> imagePaths = _images.map((img) => img.path).toList();
-                            print('AddPictures: Setting image paths: $imagePaths'); // Debug print
+                            final List<String> imagePaths = _images
+                                .map((img) => img.path)
+                                .toList();
+                            print(
+                              'AddPictures: Setting image paths: $imagePaths',
+                            ); // Debug print
                             _listingInputController.setImages(imagePaths);
 
-                            widget.isVehicles ? 
-                            Get.to(AdvanceListingOptions(isVehicle: widget.isVehicles,)) :
-                            Get.to(AdvanceListingOptionsRealEstate());
+                            widget.isVehicles
+                                ? Get.to(
+                                    AdvanceListingOptions(
+                                      isVehicle: widget.isVehicles,
+                                    ),
+                                  )
+                                : Get.to(AdvanceListingOptionsRealEstate());
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,

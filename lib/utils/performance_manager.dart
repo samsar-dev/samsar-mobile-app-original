@@ -18,12 +18,14 @@ class PerformanceManager {
   /// Initialize performance optimizations
   static Future<void> initialize() async {
     if (_isInitialized) return;
-    
+
     // Configure system UI for performance
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      systemNavigationBarColor: Colors.transparent,
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        systemNavigationBarColor: Colors.transparent,
+      ),
+    );
 
     // Enable hardware acceleration
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -38,7 +40,7 @@ class PerformanceManager {
     bool permanent = false,
   }) {
     final controllerName = T.toString() + (tag ?? '');
-    
+
     // Check if controller already exists
     if (Get.isRegistered<T>(tag: tag)) {
       return Get.find<T>(tag: tag);
@@ -46,7 +48,7 @@ class PerformanceManager {
 
     // Track loading time
     final startTime = DateTime.now();
-    
+
     // Create controller
     final controller = Get.put<T>(
       controllerFactory(),
@@ -67,12 +69,12 @@ class PerformanceManager {
   /// Clean up unused controllers for memory optimization
   static void cleanupUnusedControllers() {
     final controllersToRemove = <String>[];
-    
+
     for (final controllerName in _loadedControllers) {
       final loadTime = _controllerLoadTimes[controllerName];
       if (loadTime != null) {
         final timeSinceLoad = DateTime.now().difference(loadTime);
-        
+
         // Remove controllers not used for more than 5 minutes
         if (timeSinceLoad.inMinutes > 5) {
           controllersToRemove.add(controllerName);
@@ -105,12 +107,12 @@ class PerformanceManager {
 
   static double _calculateAverageLoadTime() {
     if (_controllerLoadTimes.isEmpty) return 0.0;
-    
+
     final now = DateTime.now();
     final totalTime = _controllerLoadTimes.values
         .map((time) => now.difference(time).inMilliseconds)
         .reduce((a, b) => a + b);
-    
+
     return totalTime / _controllerLoadTimes.length;
   }
 
@@ -123,7 +125,7 @@ class PerformanceManager {
   static void forceGarbageCollection() {
     // Clean up controllers
     cleanupUnusedControllers();
-    
+
     // Suggest garbage collection
     debugPrint('🗑️ Performing garbage collection...');
   }
@@ -187,26 +189,23 @@ class OptimizedImage extends StatelessWidget {
         fit: fit,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
-          return placeholder ?? 
-            SizedBox(
-              width: width,
-              height: height,
-              child: const Center(
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            );
+          return placeholder ??
+              SizedBox(
+                width: width,
+                height: height,
+                child: const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              );
         },
         errorBuilder: (context, error, stackTrace) {
-          return errorWidget ?? 
-            Container(
-              width: width,
-              height: height,
-              color: Colors.grey[200],
-              child: Icon(
-                Icons.image_not_supported,
-                color: Colors.grey[400],
-              ),
-            );
+          return errorWidget ??
+              Container(
+                width: width,
+                height: height,
+                color: Colors.grey[200],
+                child: Icon(Icons.image_not_supported, color: Colors.grey[400]),
+              );
         },
         // Performance optimizations
         cacheWidth: width?.toInt(),
@@ -233,10 +232,7 @@ class OptimizedImage extends StatelessWidget {
       width: width,
       height: height,
       color: Colors.grey[200],
-      child: Icon(
-        Icons.image,
-        color: Colors.grey[400],
-      ),
+      child: Icon(Icons.image, color: Colors.grey[400]),
     );
   }
 }
@@ -323,7 +319,7 @@ class _LazyLoadingListState<T> extends State<LazyLoadingList<T>> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= 
+    if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       _loadMore();
     }
@@ -340,8 +336,10 @@ class _LazyLoadingListState<T> extends State<LazyLoadingList<T>> {
     Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
         setState(() {
-          _loadedItemCount = (_loadedItemCount + widget.loadMoreCount)
-              .clamp(0, widget.items.length);
+          _loadedItemCount = (_loadedItemCount + widget.loadMoreCount).clamp(
+            0,
+            widget.items.length,
+          );
           _isLoading = false;
         });
       }
@@ -355,13 +353,13 @@ class _LazyLoadingListState<T> extends State<LazyLoadingList<T>> {
       itemCount: _loadedItemCount + (_isLoading ? 1 : 0),
       itemBuilder: (context, index) {
         if (index >= _loadedItemCount) {
-          return widget.loadingWidget ?? 
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: CircularProgressIndicator(),
-              ),
-            );
+          return widget.loadingWidget ??
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: CircularProgressIndicator(),
+                ),
+              );
         }
 
         return widget.itemBuilder(context, widget.items[index], index);

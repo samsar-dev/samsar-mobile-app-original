@@ -4,7 +4,7 @@ import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/controllers/listing/favourite_listing_controller.dart';
 import 'package:samsar/views/listing_features/listing_detail/listing_detail.dart';
 import 'package:samsar/widgets/animated_input_wrapper/animated_input_wrapper.dart';
-import 'package:samsar/widgets/listing_card/listing_card.dart'; 
+import 'package:samsar/widgets/listing_card/listing_card.dart';
 
 class FavouriteListings extends StatefulWidget {
   const FavouriteListings({super.key});
@@ -14,7 +14,9 @@ class FavouriteListings extends StatefulWidget {
 }
 
 class _FavouriteListingsState extends State<FavouriteListings> {
-  final FavouriteListingController _favouriteListingController = Get.put(FavouriteListingController());
+  final FavouriteListingController _favouriteListingController = Get.put(
+    FavouriteListingController(),
+  );
 
   @override
   void initState() {
@@ -25,7 +27,7 @@ class _FavouriteListingsState extends State<FavouriteListings> {
   Future<void> _onRefresh() async {
     // Show a brief loading indicator
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     // Fetch updated favourites from the server
     await _favouriteListingController.fetchFavourites();
   }
@@ -39,20 +41,19 @@ class _FavouriteListingsState extends State<FavouriteListings> {
         elevation: 0,
         title: Text(
           "favourites".tr,
-          style: TextStyle(
-            color: blackColor,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: blackColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
       body: SafeArea(
         child: Obx(() {
-          if (_favouriteListingController.isLoading.value && _favouriteListingController.favouriteListings.isEmpty) {
+          if (_favouriteListingController.isLoading.value &&
+              _favouriteListingController.favouriteListings.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (_favouriteListingController.favouriteListings.isEmpty && !_favouriteListingController.isLoading.value) {
+          if (_favouriteListingController.favouriteListings.isEmpty &&
+              !_favouriteListingController.isLoading.value) {
             return RefreshIndicator(
               onRefresh: _onRefresh,
               child: SingleChildScrollView(
@@ -95,7 +96,8 @@ class _FavouriteListingsState extends State<FavouriteListings> {
               physics: const AlwaysScrollableScrollPhysics(),
               itemCount: _favouriteListingController.favouriteListings.length,
               itemBuilder: (context, index) {
-                final item = _favouriteListingController.favouriteListings[index];
+                final item =
+                    _favouriteListingController.favouriteListings[index];
 
                 return AnimatedInputWrapper(
                   delayMilliseconds: index * 100,
@@ -113,6 +115,10 @@ class _FavouriteListingsState extends State<FavouriteListings> {
                       subCategory: item.category?.subCategory ?? '',
                       listingId: item.id ?? 'NA',
                       price: item.price ?? 0,
+                      fuelType: item.fuelType,
+                      year: item.year,
+                      transmission: item.transmission,
+                      mileage: item.mileage?.toString(),
                     ),
                   ),
                 );

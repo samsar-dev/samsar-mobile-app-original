@@ -17,17 +17,21 @@ class ForgotPasswordDialog extends StatefulWidget {
 class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
   final AuthApiServices _authApiServices = AuthApiServices();
   final PageController _pageController = PageController();
-  
+
   // Controllers
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  final List<TextEditingController> _otpControllers = List.generate(6, (index) => TextEditingController());
-  
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final List<TextEditingController> _otpControllers = List.generate(
+    6,
+    (index) => TextEditingController(),
+  );
+
   // Form keys
   final GlobalKey<FormState> _emailFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _passwordFormKey = GlobalKey<FormState>();
-  
+
   // State
   bool _isLoading = false;
 
@@ -88,16 +92,13 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                 ],
               ),
             ),
-            
+
             // Content
             Expanded(
               child: PageView(
                 controller: _pageController,
                 physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  _buildEmailStep(),
-                  _buildOtpAndPasswordStep(),
-                ],
+                children: [_buildEmailStep(), _buildOtpAndPasswordStep()],
               ),
             ),
           ],
@@ -117,13 +118,10 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
             const SizedBox(height: 20),
             Text(
               "enter_email_for_reset".tr,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
             const SizedBox(height: 30),
-            
+
             Text(
               "email".tr,
               style: TextStyle(
@@ -133,7 +131,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
               ),
             ),
             const SizedBox(height: 8),
-            
+
             InputField(
               widthPercentage: 1.0,
               heightPercentage: 0.08,
@@ -150,9 +148,9 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                 return null;
               },
             ),
-            
+
             const Spacer(),
-            
+
             AppButton(
               widthSize: 1.0,
               heightSize: 0.07,
@@ -179,13 +177,10 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
               const SizedBox(height: 20),
               Text(
                 "enter_verification_code_and_new_password".tr,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
               const SizedBox(height: 30),
-              
+
               // OTP Field
               Text(
                 "verification_code".tr,
@@ -196,14 +191,11 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                 ),
               ),
               const SizedBox(height: 8),
-              
-              OtpField(
-                widthMultiplier: 0.9,
-                controllers: _otpControllers,
-              ),
-              
+
+              OtpField(widthMultiplier: 0.9, controllers: _otpControllers),
+
               const SizedBox(height: 20),
-              
+
               // New Password Field
               Text(
                 "new_password".tr,
@@ -214,7 +206,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                 ),
               ),
               const SizedBox(height: 8),
-              
+
               InputField(
                 widthPercentage: 1.0,
                 heightPercentage: 0.08,
@@ -231,9 +223,9 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                   return null;
                 },
               ),
-              
+
               const SizedBox(height: 15),
-              
+
               // Confirm Password Field
               Text(
                 "confirm_password".tr,
@@ -244,7 +236,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                 ),
               ),
               const SizedBox(height: 8),
-              
+
               InputField(
                 widthPercentage: 1.0,
                 heightPercentage: 0.08,
@@ -261,9 +253,9 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                   return null;
                 },
               ),
-              
+
               const SizedBox(height: 30),
-              
+
               Row(
                 children: [
                   Expanded(
@@ -273,13 +265,15 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                       buttonColor: Colors.grey,
                       text: "back".tr,
                       textColor: whiteColor,
-                      onPressed: _isLoading ? null : () {
-                        _pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                        // Go back to email step
-                      },
+                      onPressed: _isLoading
+                          ? null
+                          : () {
+                              _pageController.previousPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                              // Go back to email step
+                            },
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -310,8 +304,10 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
     });
 
     try {
-      final response = await _authApiServices.forgotPasswordService(_emailController.text.trim());
-      
+      final response = await _authApiServices.forgotPasswordService(
+        _emailController.text.trim(),
+      );
+
       if (response.isSuccess) {
         Get.snackbar(
           "success".tr,
@@ -319,7 +315,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
           backgroundColor: Colors.green,
           colorText: whiteColor,
         );
-        
+
         _pageController.nextPage(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
@@ -327,26 +323,32 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
       } else {
         // Handle different error types with user-friendly messages
         String errorMessage = "failed_to_send_reset_code".tr;
-        
+
         if (response.apiError?.message != null) {
           final message = response.apiError!.message;
-          
+
           // Check for rate limiting
           if (message.contains("Rate limit exceeded")) {
             final retryTime = ErrorMessageMapper.extractRetryTime(message);
-            errorMessage = ErrorMessageMapper.getErrorMessage('RATE_LIMIT_EXCEEDED', retryAfter: retryTime);
+            errorMessage = ErrorMessageMapper.getErrorMessage(
+              'RATE_LIMIT_EXCEEDED',
+              retryAfter: retryTime,
+            );
           } else {
             // Try to extract error code from response or use message directly
-            errorMessage = ErrorMessageMapper.getErrorMessage(null) + ": $message";
+            errorMessage =
+                ErrorMessageMapper.getErrorMessage(null) + ": $message";
           }
         }
-        
+
         Get.snackbar(
           "error".tr,
           errorMessage,
           backgroundColor: Colors.red,
           colorText: whiteColor,
-          duration: const Duration(seconds: 5), // Longer duration for rate limit messages
+          duration: const Duration(
+            seconds: 5,
+          ), // Longer duration for rate limit messages
         );
       }
     } catch (e) {
@@ -365,8 +367,10 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
 
   Future<void> _resetPassword() async {
     if (!_passwordFormKey.currentState!.validate()) return;
-    
-    String otpCode = _otpControllers.map((controller) => controller.text).join();
+
+    String otpCode = _otpControllers
+        .map((controller) => controller.text)
+        .join();
     if (otpCode.length != 6) {
       Get.snackbar(
         "error".tr,
@@ -387,7 +391,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
         verificationCode: otpCode,
         newPassword: _newPasswordController.text,
       );
-      
+
       if (response.isSuccess) {
         Get.snackbar(
           "success".tr,
@@ -395,7 +399,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
           backgroundColor: Colors.green,
           colorText: whiteColor,
         );
-        
+
         Navigator.of(context).pop();
       } else {
         Get.snackbar(

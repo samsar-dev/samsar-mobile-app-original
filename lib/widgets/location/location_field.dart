@@ -27,130 +27,140 @@ class LocationField extends StatefulWidget {
 
 class _LocationFieldState extends State<LocationField> {
   final LocationController _locationController = Get.put(LocationController());
-  final ListingInputController _listingController = Get.find<ListingInputController>();
+  final ListingInputController _listingController =
+      Get.find<ListingInputController>();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Label
-        if (widget.label != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              children: [
-                Text(
-                  widget.label!,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
-                  ),
-                ),
-                if (widget.isRequired)
-                  const Text(
-                    ' *',
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-
-        // Location Field
-        Obx(() => GestureDetector(
-          onTap: _showLocationPicker,
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: widget.showValidationError && _listingController.location.value.isEmpty
-                    ? Colors.red
-                    : Colors.grey.shade300,
-                width: widget.showValidationError && _listingController.location.value.isEmpty ? 2 : 1,
-              ),
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.white,
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.location_on,
-                  color: _listingController.location.value.isNotEmpty
-                      ? Colors.blue
-                      : Colors.grey.shade500,
-                  size: 20,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    _listingController.location.value.isNotEmpty
-                        ? _locationController.formattedLocation
-                        : widget.hintText ?? 'select_location'.tr,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: _listingController.location.value.isNotEmpty
-                          ? Colors.black87
-                          : Colors.grey.shade500,
-                    ),
-                  ),
-                ),
-                Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.grey.shade500,
-                ),
-              ],
-            ),
-          ),
-        )),
-
-        // Error Message
-        if (widget.showValidationError && _listingController.location.value.isEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              'please_select_location'.tr,
-              style: TextStyle(
-                color: Colors.red.shade600,
-                fontSize: 14,
-              ),
-            ),
-          ),
-
-        // Current Location Info
-        Obx(() {
-          if (_locationController.errorMessage.value.isNotEmpty) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Label
+          if (widget.label != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.warning_amber,
-                    color: Colors.orange.shade600,
-                    size: 16,
-                  ),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      _locationController.errorMessage.value,
-                      style: TextStyle(
-                        color: Colors.orange.shade600,
-                        fontSize: 12,
-                      ),
+                  Text(
+                    widget.label!,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
                     ),
                   ),
+                  if (widget.isRequired)
+                    const Text(
+                      ' *',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                 ],
               ),
-            );
-          }
-          return const SizedBox.shrink();
-        }),
-      ],
+            ),
+
+          // Location Field
+          Obx(
+            () => GestureDetector(
+              onTap: _showLocationPicker,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color:
+                        widget.showValidationError &&
+                            _listingController.location.value.isEmpty
+                        ? Colors.red
+                        : Colors.grey.shade300,
+                    width:
+                        widget.showValidationError &&
+                            _listingController.location.value.isEmpty
+                        ? 2
+                        : 1,
+                  ),
+                  borderRadius: BorderRadius.circular(8.0),
+                  color: Colors.white,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.location_on,
+                      color: _listingController.location.value.isNotEmpty
+                          ? Colors.blue
+                          : Colors.grey.shade500,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        _listingController.location.value.isNotEmpty
+                            ? _locationController.formattedLocation
+                            : widget.hintText ?? 'select_location'.tr,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: _listingController.location.value.isNotEmpty
+                              ? Colors.black87
+                              : Colors.grey.shade500,
+                        ),
+                      ),
+                    ),
+                    Icon(Icons.arrow_drop_down, color: Colors.grey.shade500),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Error Message
+          if (widget.showValidationError &&
+              _listingController.location.value.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'please_select_location'.tr,
+                style: TextStyle(color: Colors.red.shade600, fontSize: 14),
+              ),
+            ),
+
+          // Current Location Info
+          Obx(() {
+            if (_locationController.errorMessage.value.isNotEmpty) {
+              return Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.warning_amber,
+                      color: Colors.orange.shade600,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        _locationController.errorMessage.value,
+                        style: TextStyle(
+                          color: Colors.orange.shade600,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }),
+        ],
+      ),
     );
   }
 
@@ -213,11 +223,7 @@ class LocationDisplayWidget extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.location_on,
-                color: Colors.blue.shade600,
-                size: 18,
-              ),
+              Icon(Icons.location_on, color: Colors.blue.shade600, size: 18),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -236,10 +242,7 @@ class LocationDisplayWidget extends StatelessWidget {
               padding: const EdgeInsets.only(top: 4, left: 26),
               child: Text(
                 'Lat: $latitude, Lng: $longitude',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.blue.shade600,
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.blue.shade600),
               ),
             ),
         ],

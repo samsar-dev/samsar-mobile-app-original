@@ -1,10 +1,6 @@
 class RealEstateFilters {
   // Base filters for all real estate
-  static const List<String> all = [
-    "location",
-    "price",
-    "sort"
-  ];
+  static const List<String> all = ["location", "price", "sort"];
 
   // House-specific filters
   static const List<String> house = [
@@ -21,7 +17,7 @@ class RealEstateFilters {
     "pool",
     "condition",
     "facing",
-    "stories"
+    "stories",
   ];
 
   // Apartment-specific filters
@@ -39,7 +35,7 @@ class RealEstateFilters {
     "balcony",
     "condition",
     "facing",
-    "yearBuilt"
+    "yearBuilt",
   ];
 
   // Office-specific filters
@@ -52,10 +48,9 @@ class RealEstateFilters {
     "totalFloors",
     "furnished",
     "parking",
-    "meetingRooms",
     "condition",
     "officeType",
-    "yearBuilt"
+    "yearBuilt",
   ];
 
   // Land-specific filters
@@ -68,7 +63,7 @@ class RealEstateFilters {
     "roadAccess",
     "utilities",
     "elevation",
-    "soilType"
+    "soilType",
   ];
 
   // Store-specific filters
@@ -82,7 +77,7 @@ class RealEstateFilters {
     "parking",
     "condition",
     "yearBuilt",
-    "footTraffic"
+    "footTraffic",
   ];
 
   // Villa-specific filters
@@ -101,7 +96,7 @@ class RealEstateFilters {
     "condition",
     "facing",
     "stories",
-    "gatedCommunity"
+    "gatedCommunity",
   ];
 
   // Get filters for specific subcategory
@@ -136,6 +131,6 @@ class RealEstateFilters {
     'villa',
     'office',
     'store',
-    'land'
+    'land',
   ];
 }

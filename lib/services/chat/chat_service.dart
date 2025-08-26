@@ -84,19 +84,19 @@ class ChatService {
   }
 
   Future<Conversation?> createConversationWithUser(String userId) async {
-  try {
-    final response = await dio.post(
-      createConversationRoute,
-      data: {"receiverId": userId},
-    );
+    try {
+      final response = await dio.post(
+        createConversationRoute,
+        data: {"receiverId": userId},
+      );
 
-    if (response.data['success']) {
-      return Conversation.fromJson(response.data['data']);
+      if (response.data['success']) {
+        return Conversation.fromJson(response.data['data']);
+      }
+      return null;
+    } catch (e) {
+      print("Create conversation error: $e");
+      return null;
     }
-    return null;
-  } catch (e) {
-    print("Create conversation error: $e");
-    return null;
   }
-}
 }

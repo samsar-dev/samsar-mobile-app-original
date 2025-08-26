@@ -16,31 +16,25 @@ class _CarFeaturesState extends State<CarFeatures> {
   final TextEditingController airbagsCountController = TextEditingController();
 
   final Map<String, bool> _features = {
+    // Safety & Driver Assistance (actually matter for buying decisions)
     'abs': false,
     'traction_control': false,
     'lane_assist': false,
     'blind_spot_monitor': false,
+    'cruise_control': false,
+    
+    // Parking & Cameras (valuable features)
     'parking_sensor': false,
     'rear_camera': false,
     '360_camera': false,
-    'cruise_control': false,
-    'led_headlights': false,
-    'fog_lights': false,
-    'bluetooth': false,
-    'apple_carplay': false,
-    'android_auto': false,
-    'wireless_charging': false,
-    'usb_ports': false,
+    
+    // Comfort Features (factory-installed, hard to retrofit)
     'sunroof': false,
     'panoramic_roof': false,
     'heated_seats': false,
     'cooled_seats': false,
     'leather_seats': false,
     'electric_seats': false,
-    'central_locking': false,
-    'power_steering': false,
-    'immobilizer': false,
-    'alarm_system': false,
   };
 
   @override
@@ -54,10 +48,12 @@ class _CarFeaturesState extends State<CarFeatures> {
     }
     _loadExistingFeatures();
     if (_listingInputController.noOfAirbags.value > 0) {
-      airbagsCountController.text = _listingInputController.noOfAirbags.value.toString();
+      airbagsCountController.text = _listingInputController.noOfAirbags.value
+          .toString();
     }
     airbagsCountController.addListener(() {
-      _listingInputController.noOfAirbags.value = int.tryParse(airbagsCountController.text) ?? 0;
+      _listingInputController.noOfAirbags.value =
+          int.tryParse(airbagsCountController.text) ?? 0;
     });
   }
 
@@ -79,17 +75,14 @@ class _CarFeaturesState extends State<CarFeatures> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
             Text(
               'car_features_title'.tr,
               style: TextStyle(
@@ -131,15 +124,21 @@ class _CarFeaturesState extends State<CarFeatures> {
                       if (isSelected) {
                         _listingInputController.selectedFeatures.add(feature);
                       } else {
-                        _listingInputController.selectedFeatures.remove(feature);
+                        _listingInputController.selectedFeatures.remove(
+                          feature,
+                        );
                       }
                     });
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: isSelected ? Theme.of(context).primaryColor : Colors.white,
+                      color: isSelected
+                          ? Theme.of(context).primaryColor
+                          : Colors.white,
                       border: Border.all(
-                        color: isSelected ? Theme.of(context).primaryColor : Colors.grey[300]!,
+                        color: isSelected
+                            ? Theme.of(context).primaryColor
+                            : Colors.grey[300]!,
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(8),
@@ -161,13 +160,14 @@ class _CarFeaturesState extends State<CarFeatures> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildAirbagsSection() {
     return Obx(() {
-      final hasAirbags = _listingInputController.selectedFeatures.contains('airbags');
+      final hasAirbags = _listingInputController.selectedFeatures.contains(
+        'airbags',
+      );
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -195,7 +195,11 @@ class _CarFeaturesState extends State<CarFeatures> {
     });
   }
 
-  Widget _buildFeatureToggle(String title, bool value, Function(bool) onChanged) {
+  Widget _buildFeatureToggle(
+    String title,
+    bool value,
+    Function(bool) onChanged,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(

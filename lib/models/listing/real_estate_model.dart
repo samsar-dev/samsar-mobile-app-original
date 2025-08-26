@@ -46,9 +46,11 @@ class RealEstateDetails {
   final String? pool;
   final String? officeType;
   final int? totalArea;
-  final int? meetingRooms;
   final String? zoning;
   final String? roadAccess;
+  final int? buildingAge;
+  final String? orientation;
+  final String? view;
 
   RealEstateDetails({
     required this.propertyType,
@@ -66,29 +68,33 @@ class RealEstateDetails {
     this.pool,
     this.officeType,
     this.totalArea,
-    this.meetingRooms,
     this.zoning,
     this.roadAccess,
+    this.buildingAge,
+    this.orientation,
+    this.view,
   });
 
   Map<String, dynamic> toJson() => {
-        'propertyType': propertyType,
-        if (bedrooms != null) 'bedrooms': bedrooms,
-        if (bathrooms != null) 'bathrooms': bathrooms,
-        if (furnishing != null) 'furnishing': furnishing,
-        if (floor != null) 'floor': floor,
-        if (totalFloors != null) 'totalFloors': totalFloors,
-        if (parking != null) 'parking': parking,
-        if (yearBuilt != null) 'yearBuilt': yearBuilt,
-        if (facing != null) 'facing': facing,
-        if (balconies != null) 'balconies': balconies,
-        if (plotSize != null) 'plotSize': plotSize,
-        if (garden != null) 'garden': garden,
-        if (pool != null) 'pool': pool,
-        if (officeType != null) 'officeType': officeType,
-        if (totalArea != null) 'totalArea': totalArea,
-        if (meetingRooms != null) 'meetingRooms': meetingRooms,
-        if (zoning != null) 'zoning': zoning,
-        if (roadAccess != null) 'roadAccess': roadAccess,
-      };
+    'propertyType': propertyType,
+    if (bedrooms != null) 'bedrooms': bedrooms,
+    if (bathrooms != null) 'bathrooms': bathrooms,
+    if (furnishing != null) 'furnishing': furnishing,
+    if (floor != null) 'floor': floor,
+    if (totalFloors != null) 'totalFloors': totalFloors,
+    if (parking != null) 'parking': parking,
+    if (yearBuilt != null) 'yearBuilt': yearBuilt,
+    if (facing != null) 'facing': facing,
+    if (balconies != null) 'balconies': balconies,
+    if (plotSize != null) 'plotSize': plotSize,
+    if (garden != null) 'garden': garden,
+    if (pool != null) 'pool': pool,
+    if (officeType != null) 'officeType': officeType,
+    if (totalArea != null) 'totalArea': totalArea,
+    if (zoning != null) 'zoning': zoning,
+    if (roadAccess != null) 'roadAccess': roadAccess,
+    if (buildingAge != null) 'buildingAge': buildingAge,
+    if (orientation != null) 'orientation': orientation,
+    if (view != null) 'view': view,
+  };
 }

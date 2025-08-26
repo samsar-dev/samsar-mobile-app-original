@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:samsar/constants/color_constants.dart';
 
-
 class SelectType extends StatefulWidget {
   final List<SelectTypeItem> items;
   final Function(int index) onItemSelected;
@@ -35,7 +34,7 @@ class _SelectTypeState extends State<SelectType> {
         padding: const EdgeInsets.all(8),
         itemCount: widget.items.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4, 
+          crossAxisCount: 4,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
           childAspectRatio: 1,
@@ -61,7 +60,10 @@ class _SelectTypeState extends State<SelectType> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(item.icon, color: isSelected ? Colors.white : Colors.black),
+                  Icon(
+                    item.icon,
+                    color: isSelected ? Colors.white : Colors.black,
+                  ),
                   const SizedBox(height: 8),
                   Text(
                     item.title,
@@ -85,8 +87,5 @@ class SelectTypeItem {
   final String title;
   final IconData icon;
 
-  SelectTypeItem({
-    required this.title,
-    required this.icon,
-  });
+  SelectTypeItem({required this.title, required this.icon});
 }

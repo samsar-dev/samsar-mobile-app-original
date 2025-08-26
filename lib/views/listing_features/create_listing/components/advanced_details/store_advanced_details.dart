@@ -15,21 +15,15 @@ class StoreAdvancedDetails extends StatefulWidget {
 class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
   // Get the ListingInputController instance
   late final ListingInputController _listingInputController;
-  
+
   // Controllers for store-specific fields
   final TextEditingController storeTypeController = TextEditingController();
   final TextEditingController floorAreaController = TextEditingController();
-  final TextEditingController storageAreaController = TextEditingController();
   final TextEditingController frontageController = TextEditingController();
-  final TextEditingController ceilingHeightController = TextEditingController();
   final TextEditingController parkingSpacesController = TextEditingController();
-  final TextEditingController loadingDockController = TextEditingController();
-  final TextEditingController securitySystemController = TextEditingController();
-  final TextEditingController hvacController = TextEditingController();
-  final TextEditingController lightingController = TextEditingController();
-  final TextEditingController accessibilityController = TextEditingController();
+  final TextEditingController securitySystemController =
+      TextEditingController();
   final TextEditingController zoningController = TextEditingController();
-  final TextEditingController businessLicenseController = TextEditingController();
   final TextEditingController footTrafficController = TextEditingController();
 
   // Dropdown options
@@ -43,7 +37,7 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
     'Clothing Store',
     'Hardware Store',
     'Bookstore',
-    'Other'
+    'Other',
   ];
 
   final List<String> securitySystems = [
@@ -51,8 +45,8 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
     'Alarm System',
     'Security Guard',
     'Access Control',
-    'Fire Safety System',
-    'None'
+    'Fire Safety',
+    'None',
   ];
 
   final List<String> hvacTypes = [
@@ -60,7 +54,7 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
     'Split AC',
     'Ducted AC',
     'Ventilation Only',
-    'None'
+    'None',
   ];
 
   final List<String> lightingTypes = [
@@ -68,7 +62,7 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
     'Fluorescent',
     'Natural Light',
     'Mixed Lighting',
-    'Basic Lighting'
+    'Basic Lighting',
   ];
 
   final List<String> accessibilityFeatures = [
@@ -77,7 +71,7 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
     'Ramp Access',
     'Wide Doorways',
     'Accessible Restrooms',
-    'None'
+    'None',
   ];
 
   final List<String> zoningTypes = [
@@ -85,7 +79,7 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
     'Mixed Use',
     'Retail',
     'Industrial',
-    'Other'
+    'Other',
   ];
 
   final List<String> footTrafficLevels = [
@@ -93,7 +87,7 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
     'High',
     'Medium',
     'Low',
-    'Very Low'
+    'Very Low',
   ];
 
   @override
@@ -105,21 +99,16 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
     } else {
       _listingInputController = Get.put(ListingInputController());
     }
-    
+
     // Initialize controllers with existing data
     storeTypeController.text = _listingInputController.storeType.value;
     floorAreaController.text = _listingInputController.floorArea.value;
-    storageAreaController.text = _listingInputController.storageArea.value;
     frontageController.text = _listingInputController.frontage.value;
-    ceilingHeightController.text = _listingInputController.ceilingHeight.value;
-    parkingSpacesController.text = _listingInputController.parking.value.toString();
-    loadingDockController.text = _listingInputController.loadingDock.value;
-    securitySystemController.text = _listingInputController.security.value;
-    hvacController.text = _listingInputController.hvac.value;
-    lightingController.text = _listingInputController.lighting.value;
-    accessibilityController.text = _listingInputController.accessibility.value;
+    parkingSpacesController.text = _listingInputController.parking.value.toString() != '0'
+        ? _listingInputController.parking.value.toString()
+        : '';
+    // securitySystemController.text = '';
     zoningController.text = _listingInputController.zoning.value;
-    businessLicenseController.text = _listingInputController.businessLicense.value;
     footTrafficController.text = _listingInputController.footTraffic.value;
 
     // Add listeners to update the main controller when text changes
@@ -129,38 +118,16 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
     floorAreaController.addListener(() {
       _listingInputController.floorArea.value = floorAreaController.text;
     });
-    storageAreaController.addListener(() {
-      _listingInputController.storageArea.value = storageAreaController.text;
-    });
     frontageController.addListener(() {
       _listingInputController.frontage.value = frontageController.text;
     });
-    ceilingHeightController.addListener(() {
-      _listingInputController.ceilingHeight.value = ceilingHeightController.text;
-    });
     parkingSpacesController.addListener(() {
+      // Convert to string for consistency with other fields
       _listingInputController.parking.value = parkingSpacesController.text;
     });
-    loadingDockController.addListener(() {
-      _listingInputController.loadingDock.value = loadingDockController.text;
-    });
-    securitySystemController.addListener(() {
-      _listingInputController.security.value = securitySystemController.text;
-    });
-    hvacController.addListener(() {
-      _listingInputController.hvac.value = hvacController.text;
-    });
-    lightingController.addListener(() {
-      _listingInputController.lighting.value = lightingController.text;
-    });
-    accessibilityController.addListener(() {
-      _listingInputController.accessibility.value = accessibilityController.text;
-    });
+    // Security system listener removed
     zoningController.addListener(() {
       _listingInputController.zoning.value = zoningController.text;
-    });
-    businessLicenseController.addListener(() {
-      _listingInputController.businessLicense.value = businessLicenseController.text;
     });
     footTrafficController.addListener(() {
       _listingInputController.footTraffic.value = footTrafficController.text;
@@ -172,17 +139,10 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
     // Dispose all controllers
     storeTypeController.dispose();
     floorAreaController.dispose();
-    storageAreaController.dispose();
     frontageController.dispose();
-    ceilingHeightController.dispose();
     parkingSpacesController.dispose();
-    loadingDockController.dispose();
     securitySystemController.dispose();
-    hvacController.dispose();
-    lightingController.dispose();
-    accessibilityController.dispose();
     zoningController.dispose();
-    businessLicenseController.dispose();
     footTrafficController.dispose();
     super.dispose();
   }
@@ -190,7 +150,7 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -255,25 +215,22 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
           const Divider(),
           const SizedBox(height: 8),
 
-          // 5. Ceiling Height - Moderate importance for storage/display
-          BuildInput(
-            title: 'ceiling_height'.tr,
-            label: 'enter_ceiling_height_meters'.tr,
-            textController: ceilingHeightController,
-            keyboardType: TextInputType.number,
-          ),
 
           const SizedBox(height: 24),
-
-     
 
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Get.isDarkMode ? subDarkColor.withOpacity(0.3) : Colors.orange[50],
+              color: Get.isDarkMode
+                  ? subDarkColor.withOpacity(0.3)
+                  : Colors.orange[50],
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Get.isDarkMode ? Colors.orange[800]! : Colors.orange[200]!),
+              border: Border.all(
+                color: Get.isDarkMode
+                    ? Colors.orange[800]!
+                    : Colors.orange[200]!,
+              ),
             ),
             child: Column(
               children: [

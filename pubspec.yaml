@@ -35,8 +35,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   get: ^4.7.2
-  flutter_secure_storage: ^9.0.0  # Latest stable version
+  flutter_secure_storage: ^9.2.4  # Keep current - newer versions may break compatibility
   shared_preferences: ^2.2.2
+  provider: ^6.1.2
   image_picker: ^1.1.2
   dio: ^5.8.0+1
   # google_fonts: ^6.2.1  # Removed - not used, saves ~3MB
@@ -49,8 +50,9 @@ dependencies:
   path: ^1.9.0  # Updated for better path handling
   geolocator: ^14.0.2
   geocoding: ^4.0.0
-  characters: 1.4.0  # Pinned to match Flutter SDK requirement  # For better text handling
+  characters: ^1.4.0  # For better text handling - pinned by Flutter SDK
   meta: ^1.16.0  # Aligned with Flutter SDK version
+  dio_cache_interceptor: ^4.0.3
 
 dev_dependencies:
   flutter_test:

@@ -6,7 +6,9 @@ import 'package:samsar/models/api_response.dart';
 class IndividualListingServices {
   final Dio _dio = Dio();
 
-  Future<ApiResponse<Map<String, dynamic>>> individualListingDetailService(String id) async {
+  Future<ApiResponse<Map<String, dynamic>>> individualListingDetailService(
+    String id,
+  ) async {
     try {
       final response = await _dio.get(individualListingDetailsRoute(id));
 
@@ -21,19 +23,12 @@ class IndividualListingServices {
       }
 
       return ApiResponse.failure(
-        ApiError(
-          fastifyErrorResponse: null,
-          errorResponse: null,
-        ),
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     } catch (e) {
       return ApiResponse.failure(
-        ApiError(
-          fastifyErrorResponse: null,
-          errorResponse: null,
-        ),
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     }
   }
-
 }

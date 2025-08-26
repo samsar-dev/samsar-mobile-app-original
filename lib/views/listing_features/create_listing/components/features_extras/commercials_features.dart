@@ -14,18 +14,18 @@ class _CommercialsFeaturesState extends State<CommercialsFeatures> {
   late final ListingInputController _listingInputController;
 
   final Map<String, bool> _features = {
+    // Cargo functionality (affects commercial capability)
     'hydraulic_lift': false,
-    'cargo_cover': false,
-    'tie_down_points': false,
     'loading_ramp': false,
     'refrigeration': false,
-    'gps_tracking': false,
-    'backup_camera': false,
-    'air_conditioning': false,
-    'power_steering': false,
-    'abs_brakes': false,
-    'commercial_license': false,
     'cargo_barrier': false,
+    
+    // Safety features (critical for commercial operation)
+    'abs_brakes': false,
+    'backup_camera': false,
+    
+    // Documentation (legal requirement)
+    'commercial_license': false,
   };
 
   @override
@@ -55,7 +55,7 @@ class _CommercialsFeaturesState extends State<CommercialsFeatures> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -80,7 +80,7 @@ class _CommercialsFeaturesState extends State<CommercialsFeatures> {
               ),
             ),
             SizedBox(height: 24),
-            
+
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -93,7 +93,7 @@ class _CommercialsFeaturesState extends State<CommercialsFeatures> {
                 itemBuilder: (context, index) {
                   final feature = _features.keys.elementAt(index);
                   final isSelected = _features[feature]!;
-                  
+
                   return GestureDetector(
                     onTap: () {
                       setState(() {
@@ -102,15 +102,21 @@ class _CommercialsFeaturesState extends State<CommercialsFeatures> {
                         if (isSelected) {
                           _listingInputController.selectedFeatures.add(feature);
                         } else {
-                          _listingInputController.selectedFeatures.remove(feature);
+                          _listingInputController.selectedFeatures.remove(
+                            feature,
+                          );
                         }
                       });
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: isSelected ? Theme.of(context).primaryColor : Colors.white,
+                        color: isSelected
+                            ? Theme.of(context).primaryColor
+                            : Colors.white,
                         border: Border.all(
-                          color: isSelected ? Theme.of(context).primaryColor : Colors.grey[300]!,
+                          color: isSelected
+                              ? Theme.of(context).primaryColor
+                              : Colors.grey[300]!,
                           width: 1.5,
                         ),
                         borderRadius: BorderRadius.circular(8),

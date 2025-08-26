@@ -11,7 +11,7 @@ class OtpField extends StatefulWidget {
     super.key,
     // required this.heightMultiplier,
     required this.widthMultiplier,
-    required this.controllers
+    required this.controllers,
   });
 
   @override
@@ -19,7 +19,6 @@ class OtpField extends StatefulWidget {
 }
 
 class _OtpFieldState extends State<OtpField> {
-  
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
 
   @override
@@ -47,7 +46,7 @@ class _OtpFieldState extends State<OtpField> {
   void _checkForPastedContent(int index) async {
     // Small delay to allow paste operation to complete
     await Future.delayed(const Duration(milliseconds: 50));
-    
+
     if (mounted && widget.controllers[index].text.length > 1) {
       _handlePaste(widget.controllers[index].text, index);
     }
@@ -56,28 +55,32 @@ class _OtpFieldState extends State<OtpField> {
   void _handlePaste(String pastedText, int startIndex) {
     // Clean the pasted text to only include digits
     String cleanText = pastedText.replaceAll(RegExp(r'[^0-9]'), '');
-    
+
     // Limit to 6 digits maximum
     if (cleanText.length > 6) {
       cleanText = cleanText.substring(0, 6);
     }
-    
+
     if (cleanText.isEmpty) return;
-    
+
     // Clear all fields first
     for (int i = 0; i < widget.controllers.length; i++) {
       widget.controllers[i].clear();
     }
-    
+
     // Fill the fields with the pasted digits
-    for (int i = 0; i < cleanText.length && i < widget.controllers.length; i++) {
+    for (
+      int i = 0;
+      i < cleanText.length && i < widget.controllers.length;
+      i++
+    ) {
       widget.controllers[i].text = cleanText[i];
       // Ensure the text is properly set
       widget.controllers[i].selection = TextSelection.fromPosition(
         TextPosition(offset: 1),
       );
     }
-    
+
     // Focus on the next empty field or unfocus if all are filled
     if (cleanText.length >= 6) {
       _focusNodes[5].unfocus();
@@ -87,7 +90,7 @@ class _OtpFieldState extends State<OtpField> {
         FocusScope.of(context).requestFocus(_focusNodes[nextIndex]);
       }
     }
-    
+
     setState(() {}); // trigger UI update
   }
 
@@ -122,10 +125,7 @@ class _OtpFieldState extends State<OtpField> {
       color: whiteColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(
-          6,
-          (index) => _buildOtpField(context, index),
-        ),
+        children: List.generate(6, (index) => _buildOtpField(context, index)),
       ),
     );
   }
@@ -140,18 +140,14 @@ class _OtpFieldState extends State<OtpField> {
         textAlignVertical: TextAlignVertical.center,
         keyboardType: TextInputType.number,
         maxLength: 1,
-        style: TextStyle(
-          fontSize: 20,
-          height: 1.2,
-          color: blackColor,
-        ),
+        style: TextStyle(fontSize: 20, height: 1.2, color: blackColor),
         onChanged: (value) {
           // Handle paste of multiple digits
           if (value.length > 1) {
             _handlePaste(value, index);
             return;
           }
-          
+
           // Filter out non-numeric characters
           String filteredValue = value.replaceAll(RegExp(r'[^0-9]'), '');
           if (filteredValue != value) {
@@ -161,7 +157,7 @@ class _OtpFieldState extends State<OtpField> {
             );
             return;
           }
-          
+
           if (filteredValue.isNotEmpty) {
             if (index < widget.controllers.length - 1) {
               FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
@@ -182,9 +178,7 @@ class _OtpFieldState extends State<OtpField> {
           fillColor: Colors.white,
           counterText: "",
           contentPadding: EdgeInsets.symmetric(vertical: 14),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(18),
             borderSide: BorderSide(color: blueColor, width: 2.0),
@@ -196,9 +190,9 @@ class _OtpFieldState extends State<OtpField> {
           ),
 
           disabledBorder: OutlineInputBorder(
-             borderRadius: BorderRadius.circular(18),
-             borderSide: BorderSide(color: blackColor),
-          )
+            borderRadius: BorderRadius.circular(18),
+            borderSide: BorderSide(color: blackColor),
+          ),
         ),
       ),
     );

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppButton extends StatelessWidget {
-  final double widthSize;     // e.g., 0.8 for 80% of screen width
-  final double heightSize;    // e.g., 0.06 for 6% of screen height
+  final double widthSize; // e.g., 0.8 for 80% of screen width
+  final double heightSize; // e.g., 0.06 for 6% of screen height
   final Color buttonColor;
   final String text;
   final Color textColor;

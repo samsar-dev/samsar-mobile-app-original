@@ -22,12 +22,20 @@ class _FeaturesAndExtrasState extends State<FeaturesAndExtras> {
     if (Get.isRegistered<ListingInputController>()) {
       _listingInputController = Get.find<ListingInputController>();
     } else {
-      _listingInputController = Get.put(ListingInputController(), permanent: true);
+      _listingInputController = Get.put(
+        ListingInputController(),
+        permanent: true,
+      );
     }
-    
+
+    // Clear subcategory-specific features to ensure clean state for current subcategory
+    _listingInputController.clearSubcategorySpecificFeatures(_listingInputController.subCategory.value);
+
     print('🚀 FeaturesAndExtras initState() called');
     print('📊 Controller state at features screen:');
-    print('   📝 Main Category: "${_listingInputController.mainCategory.value}"');
+    print(
+      '   📝 Main Category: "${_listingInputController.mainCategory.value}"',
+    );
     print('   🚗 Sub Category: "${_listingInputController.subCategory.value}"');
     print('   📝 Title: "${_listingInputController.title.value}"');
     print('   💰 Price: ${_listingInputController.price.value}');
@@ -42,7 +50,10 @@ class _FeaturesAndExtrasState extends State<FeaturesAndExtras> {
       backgroundColor: whiteColor,
       appBar: AppBar(
         backgroundColor: whiteColor,
-        title: Text("Features and Extras", style: TextStyle(color: blackColor, fontWeight: FontWeight.bold)),
+        title: Text(
+          "Features and Extras",
+          style: TextStyle(color: blackColor, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -52,21 +63,27 @@ class _FeaturesAndExtrasState extends State<FeaturesAndExtras> {
           currentStep: 0, // Single step for features
           onNext: () {
             print('🚀 Features completed, navigating to review...');
-            
+
             // Debug controller state before navigation
             print('📊 Controller state before review navigation:');
             print('   📝 Title: "${_listingInputController.title.value}"');
             print('   💰 Price: ${_listingInputController.price.value}');
             print('   🚗 Make: "${_listingInputController.make.value}"');
             print('   🚗 Model: "${_listingInputController.model.value}"');
-            print('   🖼️ Images: ${_listingInputController.listingImage.length}');
-            print('   🎯 Features: ${_listingInputController.selectedFeatures.length}');
-            
+            print(
+              '   🖼️ Images: ${_listingInputController.listingImage.length}',
+            );
+            print(
+              '   🎯 Features: ${_listingInputController.selectedFeatures.length}',
+            );
+
             // Navigate to review screen
-            Get.to(ReviewListing(
-              isVehicle: true,
-              imageUrls: _listingInputController.listingImage.toList(),
-            ));
+            Get.to(
+              ReviewListing(
+                isVehicle: true,
+                imageUrls: _listingInputController.listingImage.toList(),
+              ),
+            );
           },
           onPrevious: () {
             Get.back(); // Go back to previous step
@@ -75,5 +92,4 @@ class _FeaturesAndExtrasState extends State<FeaturesAndExtras> {
       ),
     );
   }
-
 }

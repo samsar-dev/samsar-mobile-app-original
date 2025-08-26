@@ -6,7 +6,7 @@ import 'package:samsar/services/listing/listing_service.dart';
 class ListingController extends GetxController {
   final ListingService _service = ListingService();
   late final FilterController _filterController;
-  
+
   @override
   void onInit() {
     super.onInit();
@@ -26,7 +26,10 @@ class ListingController extends GetxController {
   // Main category filter (vehicles or real_estate)
   var selectedCategory = ''.obs;
 
-  Future<void> fetchListings({bool isInitial = false}) async {
+  Future<void> fetchListings({
+    bool isInitial = false,
+    bool forceRefresh = false,
+  }) async {
     if (isInitial) {
       _page = 1;
       print('🧹 CLEARING LISTINGS - Current count: ${listings.length}');
@@ -41,15 +44,25 @@ class ListingController extends GetxController {
     isLoading.value = isInitial;
 
     // Get filter values from FilterController
-    final mainCategory = selectedCategory.value.isNotEmpty ? selectedCategory.value : null;
-    final subCategory = _filterController.selectedSubcategory.value.isNotEmpty ? _filterController.selectedSubcategory.value : null;
-    final listingAction = _filterController.selectedListingType.value.isNotEmpty ? _filterController.selectedListingType.value : null;
-    final sortBy = _filterController.selectedSort.value.isNotEmpty ? _getSortByValue(_filterController.selectedSort.value) : null;
-    final sortOrder = _filterController.selectedSort.value.isNotEmpty ? _getSortOrderValue(_filterController.selectedSort.value) : null;
+    final mainCategory = selectedCategory.value.isNotEmpty
+        ? selectedCategory.value
+        : null;
+    final subCategory = _filterController.selectedSubcategory.value.isNotEmpty
+        ? _filterController.selectedSubcategory.value
+        : null;
+    final listingAction = _filterController.selectedListingType.value.isNotEmpty
+        ? _filterController.selectedListingType.value
+        : null;
+    final sortBy = _filterController.selectedSort.value.isNotEmpty
+        ? _getSortByValue(_filterController.selectedSort.value)
+        : null;
+    final sortOrder = _filterController.selectedSort.value.isNotEmpty
+        ? _getSortOrderValue(_filterController.selectedSort.value)
+        : null;
     final year = _filterController.selectedYear.value;
     final minPrice = _filterController.minPrice.value;
     final maxPrice = _filterController.maxPrice.value;
-    
+
     print('🏠 FETCHING LISTINGS WITH BACKEND FILTERS:');
     print('  mainCategory: $mainCategory');
     print('  subCategory: $subCategory');
@@ -58,29 +71,42 @@ class ListingController extends GetxController {
     print('  year: $year');
     print('  minPrice: $minPrice, maxPrice: $maxPrice');
     print('  page: $_page, limit: $_limit');
+    print('  forceRefresh: $forceRefresh');
 
-    final response = await _service.getListingsService();
+    final response = await _service.getListingsService(
+      forceRefresh: forceRefresh,
+    );
 
     if (response.successResponse != null) {
       try {
         print('📝 RAW API RESPONSE: ${response.successResponse}');
-        final listingResponse = ListingResponse.fromJson(response.successResponse!);
+        final listingResponse = ListingResponse.fromJson(
+          response.successResponse!,
+        );
         final newItems = listingResponse.data?.items ?? [];
 
         // Prevent duplicates by checking if items already exist
         final existingIds = listings.map((item) => item.id).toSet();
-        final uniqueNewItems = newItems.where((item) => !existingIds.contains(item.id)).toList();
-        
-        print('  New items: ${newItems.length}, Unique new items: ${uniqueNewItems.length}');
+        final uniqueNewItems = newItems
+            .where((item) => !existingIds.contains(item.id))
+            .toList();
+
+        print(
+          '  New items: ${newItems.length}, Unique new items: ${uniqueNewItems.length}',
+        );
 
         // Apply client-side filtering since Railway backend doesn't support the new filters yet
         final filtered = _applyAllFilters(uniqueNewItems);
         listings.addAll(filtered);
-        
-        print('✅ FETCHED ${newItems.length} ITEMS, UNIQUE: ${uniqueNewItems.length}, FILTERED TO ${filtered.length}');
+
+        print(
+          '✅ FETCHED ${newItems.length} ITEMS, UNIQUE: ${uniqueNewItems.length}, FILTERED TO ${filtered.length}',
+        );
         print('📝 FINAL FILTERED ITEMS BEING DISPLAYED:');
         for (int i = 0; i < filtered.length; i++) {
-          print('  $i: ${filtered[i].title} (${filtered[i].year ?? 'no year'})');
+          print(
+            '  $i: ${filtered[i].title} (${filtered[i].year ?? 'no year'})',
+          );
         }
         print('📊 TOTAL LISTINGS NOW: ${listings.length}');
 
@@ -102,9 +128,9 @@ class ListingController extends GetxController {
   void setCategory(String category) {
     print('🏷️ SETTING CATEGORY: $category');
     selectedCategory.value = category;
-    fetchListings(isInitial: true);
+    fetchListings(isInitial: true, forceRefresh: true);
   }
-  
+
   /// Apply filters to current listings without refetching from API
   void applyFilters() {
     print('🔄 APPLYING FILTERS TO EXISTING LISTINGS');
@@ -115,13 +141,21 @@ class ListingController extends GetxController {
       listings.clear();
       final filtered = _applyAllFilters(originalItems);
       listings.addAll(filtered);
-      print('✅ Re-filtered ${originalItems.length} items to ${filtered.length}');
+      print(
+        '✅ Re-filtered ${originalItems.length} items to ${filtered.length}',
+      );
     } else {
       // If no listings, fetch fresh data
-      fetchListings(isInitial: true);
+      fetchListings(isInitial: true, forceRefresh: true);
     }
   }
-  
+
+  /// Force refresh listings from backend (for pull-to-refresh)
+  Future<void> refreshListings() async {
+    print('🔄 FORCE REFRESHING LISTINGS FROM BACKEND');
+    await fetchListings(isInitial: true, forceRefresh: true);
+  }
+
   /// Convert filter sort value to backend sortBy parameter
   String? _getSortByValue(String sortValue) {
     switch (sortValue) {
@@ -137,7 +171,7 @@ class ListingController extends GetxController {
         return null;
     }
   }
-  
+
   /// Convert filter sort value to backend sortOrder parameter
   String? _getSortOrderValue(String sortValue) {
     switch (sortValue) {
@@ -158,130 +192,154 @@ class ListingController extends GetxController {
       fetchListings();
     }
   }
-  
+
   /// Apply client-side filters to items (temporary solution until Railway backend is updated)
   List<Item> _applyAllFilters(List<Item> items) {
     print('🏠 APPLYING CLIENT-SIDE FILTERS:');
     print('  Total items before filtering: ${items.length}');
-    
+
     var filtered = items;
-    
+
     // Apply main category filter (vehicles/real_estate)
     if (selectedCategory.value.isNotEmpty) {
       filtered = filtered.where((item) {
         // Handle category mapping: API returns 'VEHICLES' but filter uses 'vehicles'
         final itemCategory = item.mainCategory?.toLowerCase();
         final filterCategory = selectedCategory.value.toLowerCase();
-        
+
         // Map API categories to filter categories
         String? mappedCategory;
-        if (itemCategory == 'vehicles') mappedCategory = 'vehicles';
-        else if (itemCategory == 'real_estate' || itemCategory == 'realestate') mappedCategory = 'real_estate';
-        else mappedCategory = itemCategory;
-        
+        if (itemCategory == 'vehicles')
+          mappedCategory = 'vehicles';
+        else if (itemCategory == 'real_estate' || itemCategory == 'realestate')
+          mappedCategory = 'real_estate';
+        else
+          mappedCategory = itemCategory;
+
         final matches = mappedCategory == filterCategory;
-        print('    Category check: item="$itemCategory" -> mapped="$mappedCategory" vs filter="$filterCategory" = $matches');
+        print(
+          '    Category check: item="$itemCategory" -> mapped="$mappedCategory" vs filter="$filterCategory" = $matches',
+        );
         return matches;
       }).toList();
       print('  After category filter: ${filtered.length} items');
     }
-    
+
     // Apply subcategory filter
     if (_filterController.selectedSubcategory.value.isNotEmpty) {
       // Backend expects subcategory in uppercase (CARS, MOTORCYCLES, etc.)
-      final subcategory = _filterController.selectedSubcategory.value.toUpperCase();
+      final subcategory = _filterController.selectedSubcategory.value
+          .toUpperCase();
       filtered = filtered.where((item) {
         // Compare both in uppercase to ensure case-insensitive match
         final itemSubcategory = item.subCategory?.toUpperCase() ?? '';
         final matches = itemSubcategory == subcategory;
         if (matches) {
-          print('    ✓ Matches subcategory: ${item.subCategory} == $subcategory');
+          print(
+            '    ✓ Matches subcategory: ${item.subCategory} == $subcategory',
+          );
         }
         return matches;
       }).toList();
-      print('  After subcategory filter ($subcategory): ${filtered.length} items');
+      print(
+        '  After subcategory filter ($subcategory): ${filtered.length} items',
+      );
     }
-    
+
     // Apply listing type filter (for_sale/for_rent)
     if (_filterController.selectedListingType.value.isNotEmpty) {
       final listingType = _filterController.selectedListingType.value;
       filtered = filtered.where((item) {
         final itemListingAction = item.listingAction?.toLowerCase() ?? '';
-        
+
         // Handle format mismatch: filter uses "for_sale"/"for_rent", API returns "SALE"/"RENT"
         bool matches = false;
-        if (listingType.toLowerCase() == 'for_sale' && itemListingAction == 'sale') {
+        if (listingType.toLowerCase() == 'for_sale' &&
+            itemListingAction == 'sale') {
           matches = true;
-        } else if (listingType.toLowerCase() == 'for_rent' && itemListingAction == 'rent') {
+        } else if (listingType.toLowerCase() == 'for_rent' &&
+            itemListingAction == 'rent') {
           matches = true;
         } else if (itemListingAction == listingType.toLowerCase()) {
           matches = true; // Direct match fallback
         }
-        
-        print('    Checking item: ${item.title} - listingAction: "$itemListingAction" vs filter: "${listingType.toLowerCase()}" = $matches');
+
+        print(
+          '    Checking item: ${item.title} - listingAction: "$itemListingAction" vs filter: "${listingType.toLowerCase()}" = $matches',
+        );
         return matches;
       }).toList();
-      print('  After listing type filter ($listingType): ${filtered.length} items');
+      print(
+        '  After listing type filter ($listingType): ${filtered.length} items',
+      );
     }
-    
+
     // Apply city filter
     if (_filterController.selectedCity.value.isNotEmpty) {
       final city = _filterController.selectedCity.value;
       filtered = filtered.where((item) {
-        final matches = item.location?.toLowerCase().contains(city.toLowerCase()) ?? false;
+        final matches =
+            item.location?.toLowerCase().contains(city.toLowerCase()) ?? false;
         return matches;
       }).toList();
       print('  After city filter ($city): ${filtered.length} items');
     }
-    
+
     // Apply year filter
     if (_filterController.selectedYear.value != null) {
       final year = _filterController.selectedYear.value!;
       filtered = filtered.where((item) {
         // Try to get year from item fields first
         int? itemYear = item.year ?? item.yearBuilt;
-        
+
         // If no year in fields, try to extract from title (fallback)
         if (itemYear == null) {
           final title = item.title ?? '';
-          final yearRegex = RegExp(r'\b(19|20)\d{2}\b'); // Match 4-digit years starting with 19 or 20
+          final yearRegex = RegExp(
+            r'\b(19|20)\d{2}\b',
+          ); // Match 4-digit years starting with 19 or 20
           final match = yearRegex.firstMatch(title);
           if (match != null) {
             itemYear = int.tryParse(match.group(0) ?? '');
           }
         }
-        
+
         final matches = itemYear == year;
-        
-        print('    Checking item: ${item.title} - year: ${item.year}, yearBuilt: ${item.yearBuilt}, extracted: $itemYear vs filter: $year = $matches');
+
+        print(
+          '    Checking item: ${item.title} - year: ${item.year}, yearBuilt: ${item.yearBuilt}, extracted: $itemYear vs filter: $year = $matches',
+        );
         return matches;
       }).toList();
       print('  After year filter ($year): ${filtered.length} items');
     }
-    
+
     // Apply price range filter
-    if (_filterController.minPrice.value != null || _filterController.maxPrice.value != null) {
+    if (_filterController.minPrice.value != null ||
+        _filterController.maxPrice.value != null) {
       final minPrice = _filterController.minPrice.value;
       final maxPrice = _filterController.maxPrice.value;
-      
+
       filtered = filtered.where((item) {
         final price = item.price;
         if (price == null) return true;
-        
+
         bool matches = true;
         if (minPrice != null && price < minPrice) matches = false;
         if (maxPrice != null && price > maxPrice) matches = false;
-        
+
         return matches;
       }).toList();
-      print('  After price filter ($minPrice-$maxPrice): ${filtered.length} items');
+      print(
+        '  After price filter ($minPrice-$maxPrice): ${filtered.length} items',
+      );
     }
-    
+
     // Apply sorting
     if (_filterController.selectedSort.value.isNotEmpty) {
       final sortBy = _filterController.selectedSort.value;
       print('  Applying sort: $sortBy');
-      
+
       switch (sortBy) {
         case 'newest_first':
           filtered.sort((a, b) {
@@ -320,7 +378,7 @@ class ListingController extends GetxController {
           break;
       }
     }
-    
+
     print('  Final filtered count: ${filtered.length}');
     return filtered;
   }

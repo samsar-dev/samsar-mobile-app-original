@@ -12,7 +12,6 @@ import 'package:samsar/views/listing_features/create_listing/components/features
 import 'package:samsar/views/listing_features/create_listing/components/features_extras/offices_features.dart';
 import 'package:samsar/views/listing_features/create_listing/components/features_extras/land_features.dart';
 import 'package:samsar/views/listing_features/create_listing/components/features_extras/stores_features.dart';
- 
 
 class FeaturesWrapper extends StatelessWidget {
   final String category;
@@ -21,7 +20,8 @@ class FeaturesWrapper extends StatelessWidget {
   final VoidCallback? onNext;
   final VoidCallback? onPrevious;
 
-  const FeaturesWrapper({super.key, 
+  const FeaturesWrapper({
+    super.key,
     required this.category,
     this.subCategory,
     required this.currentStep,
@@ -33,78 +33,125 @@ class FeaturesWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final categoryUpper = category.toUpperCase();
     final subCategoryUpper = subCategory?.toUpperCase() ?? '';
-    
+
     print('🔍 FeaturesWrapper DEBUG:');
     print('   📝 Raw category: "$category"');
     print('   📝 Raw subCategory: "$subCategory"');
     print('   📝 categoryUpper: "$categoryUpper"');
     print('   📝 subCategoryUpper: "$subCategoryUpper"');
-    
+    print('   📝 subCategory is null: ${subCategory == null}');
+    print('   📝 subCategory is empty: ${subCategory?.isEmpty ?? true}');
+
     Widget formContent;
-    
+
     if (categoryUpper == 'VEHICLES') {
-      switch (subCategoryUpper) {
+      print('🚗 Processing VEHICLES category');
+      
+      // Handle empty subcategory for vehicles - default to CARS
+      String effectiveSubCategory = subCategoryUpper.isEmpty ? 'CARS' : subCategoryUpper;
+      print('   📝 effectiveSubCategory: "$effectiveSubCategory"');
+      
+      switch (effectiveSubCategory) {
         case 'CARS':
+          print('   ✅ Loading CarFeatures');
           formContent = CarFeatures();
           break;
         case 'MOTORCYCLES':
+          print('   ✅ Loading MotorcycleFeatures');
           formContent = MotorcycleFeatures();
           break;
         case 'PASSENGER_VEHICLES':
+          print('   ✅ Loading PassengersFeatures');
           formContent = PassengersFeatures();
           break;
         case 'COMMERCIAL_TRANSPORT':
+          print('   ✅ Loading CommercialsFeatures');
           formContent = CommercialsFeatures();
           break;
         case 'CONSTRUCTION_VEHICLES':
+          print('   ✅ Loading ConstructionsFeatures');
           formContent = ConstructionsFeatures();
           break;
         default:
-          formContent = _buildPlaceholder(context, 'vehicle_features_extras'.tr);
+          print('   ❌ Unknown vehicle subcategory: "$effectiveSubCategory" - showing placeholder');
+          formContent = _buildPlaceholder(
+            context,
+            'vehicle_features_extras'.tr,
+          );
       }
     } else if (categoryUpper == 'REAL_ESTATE') {
-      switch (subCategoryUpper) {
+      print('🏠 Processing REAL_ESTATE category');
+      
+      // Handle empty subcategory for real estate - default to APARTMENT
+      String effectiveSubCategory = subCategoryUpper.isEmpty ? 'APARTMENT' : subCategoryUpper;
+      print('   📝 effectiveSubCategory: "$effectiveSubCategory"');
+      
+      switch (effectiveSubCategory) {
         case 'APARTMENT':
+          print('   ✅ Loading ApartmentsFeatures');
           formContent = ApartmentsFeatures();
           break;
         case 'HOUSE':
+          print('   ✅ Loading HousesFeatures');
           formContent = HousesFeatures();
           break;
         case 'VILLA':
+          print('   ✅ Loading VillasFeatures');
           formContent = VillasFeatures();
           break;
         case 'OFFICE':
+          print('   ✅ Loading OfficesFeatures');
           formContent = OfficesFeatures();
           break;
         case 'LAND':
+          print('   ✅ Loading LandFeatures');
           formContent = LandFeatures();
           break;
         case 'STORE':
+          print('   ✅ Loading StoresFeatures');
           formContent = StoresFeatures();
           break;
         default:
-          formContent = _buildPlaceholder(context, 'real_estate_features_extras'.tr);
+          print('   ❌ Unknown real estate subcategory: "$effectiveSubCategory" - showing placeholder');
+          formContent = _buildPlaceholder(
+            context,
+            'real_estate_features_extras'.tr,
+          );
       }
     } else {
+      print('❌ Unknown category: "$categoryUpper" - showing error message');
       formContent = Center(
-        child: Text('unknown_category'.tr + ': $category'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error, size: 50, color: Colors.red),
+            SizedBox(height: 16),
+            Text(
+              'unknown_category'.tr + ': $category',
+              style: TextStyle(fontSize: 18, color: Colors.red),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Please select a valid category in step 1',
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            ),
+          ],
+        ),
       );
     }
 
     return Column(
       children: [
-        Expanded(
-          child: formContent,
-        ),
+        Expanded(child: formContent),
         // Navigation buttons at the bottom of form content
         _buildNavigationButtons(context),
       ],
     );
   }
-  
+
   Widget _buildPlaceholder(BuildContext context, String title) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    
+
     return SingleChildScrollView(
       padding: EdgeInsets.all(16),
       child: Column(
@@ -119,7 +166,7 @@ class FeaturesWrapper extends StatelessWidget {
             ),
           ),
           SizedBox(height: 16),
-          
+
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(20),
@@ -144,10 +191,7 @@ class FeaturesWrapper extends StatelessWidget {
                 Text(
                   "select_vehicle_type_step1".tr,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey[500],
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.grey[500], fontSize: 14),
                 ),
               ],
             ),
@@ -159,7 +203,7 @@ class FeaturesWrapper extends StatelessWidget {
 
   Widget _buildNavigationButtons(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Container(
       padding: EdgeInsets.all(16),
       child: Row(
@@ -175,7 +219,7 @@ class FeaturesWrapper extends StatelessWidget {
             )
           else
             SizedBox(width: screenWidth * 0.35),
-          
+
           if (onNext != null)
             _buildButton(
               width: screenWidth * 0.35,
@@ -203,16 +247,11 @@ class FeaturesWrapper extends StatelessWidget {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         child: Text(
           text,
-          style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(color: textColor, fontWeight: FontWeight.w600),
         ),
       ),
     );

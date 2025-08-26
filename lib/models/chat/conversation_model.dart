@@ -1,5 +1,3 @@
-
-
 import 'package:samsar/models/chat/chat_user.dart';
 import 'package:samsar/models/chat/message.dart';
 
@@ -28,7 +26,8 @@ class Conversation {
       lastMessageAt: json['lastMessageAt'] != null
           ? DateTime.parse(json['lastMessageAt'])
           : null,
-      recentMessage: json['lastMessage'] != null &&
+      recentMessage:
+          json['lastMessage'] != null &&
               json['lastMessage'] is Map<String, dynamic>
           ? Message.fromJson(json['lastMessage'])
           : null,

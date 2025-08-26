@@ -1,18 +1,18 @@
 import 'dart:convert';
 import 'package:samsar/models/listing/vehicle_model.dart' as car_listing;
-import 'package:samsar/models/listing/real_estate_model.dart' as real_estate_listing;
+import 'package:samsar/models/listing/real_estate_model.dart'
+    as real_estate_listing;
 import 'package:dio/dio.dart';
 import 'package:samsar/constants/api_route_constants.dart';
 import 'package:samsar/models/api_error.dart';
 import 'package:samsar/models/api_response.dart';
 import 'package:samsar/models/listing/create_listing/create_vehicle_listing.dart';
 import 'package:samsar/models/listing/create_listing/create_real_estate_listing.dart';
-import 'package:http_parser/http_parser.dart';         
-import 'package:mime/mime.dart';                     
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 import 'package:path/path.dart';
 import 'package:get/get.dart' as GetX;
-import 'package:samsar/controllers/listing/listing_input_controller.dart';  
-
+import 'package:samsar/controllers/listing/listing_input_controller.dart';
 
 class CreateListingService {
   final _dio = Dio();
@@ -34,7 +34,7 @@ class CreateListingService {
       print("location: ${commercialDetails.location}");
       print("condition: ${commercialDetails.condition}");
       print("vehicles details: ${commercialDetails.details.toJson()}");
-      
+
       final formData = FormData.fromMap({
         'title': commercialDetails.title,
         'description': commercialDetails.description,
@@ -52,17 +52,24 @@ class CreateListingService {
         'year': commercialDetails.details.year.toString(),
         'sellerType': _mapSellerType(commercialDetails.sellerType),
         'bodyType': commercialDetails.details.bodyType,
-        'fuelType': _mapFuelType(commercialDetails.details.fuelType?.toString()),
-        'transmission': _mapTransmissionType(commercialDetails.details.transmissionType?.toString()), // Changed from transmissionType
+        'fuelType': _mapFuelType(
+          commercialDetails.details.fuelType?.toString(),
+        ),
+        'transmission': _mapTransmissionType(
+          commercialDetails.details.transmissionType?.toString(),
+        ), // Changed from transmissionType
         'exteriorColor': commercialDetails.details.color, // Changed from color
         'engineSize': commercialDetails.details.engineSize?.toString() ?? '',
         'mileage': commercialDetails.details.mileage?.toString() ?? '',
-        'accidental': commercialDetails.details.accidentFree == true ? 'no' : 'yes',
-        'registrationExpiry': commercialDetails.details.registrationExpiry ?? '',
+        'accidental': commercialDetails.details.accidentFree == true
+            ? 'no'
+            : 'yes',
+        'registrationExpiry':
+            commercialDetails.details.registrationExpiry ?? '',
         // Keep other fields as JSON in details
         'details': jsonEncode({
           'vehicles': {
-            'vehicleType': commercialDetails.subCategory.toUpperCase(),
+            // vehicleType removed - it's already saved as subCategory
             'vehicleSubtype': commercialDetails.details.vehicleSubtype,
             'mileage': commercialDetails.details.mileage?.toString(),
             'previousOwners': commercialDetails.details.previousOwners,
@@ -82,7 +89,7 @@ class CreateListingService {
             'gvw': commercialDetails.details.gvw,
             'airConditioning': commercialDetails.details.airConditioning,
             'powerSteering': commercialDetails.details.powerSteering,
-          }
+          },
         }),
         'listingImage': await Future.wait(
           commercialDetails.listingImage.map((filePath) async {
@@ -112,45 +119,43 @@ class CreateListingService {
       print("Response data: ${response.data}");
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        print("=== SUCCESS: Commercial vehicle listing created successfully ===");
-        
+        print(
+          "=== SUCCESS: Commercial vehicle listing created successfully ===",
+        );
+
         Map<String, dynamic> responseMap;
         if (response.data is String) {
           try {
             responseMap = json.decode(response.data);
           } catch (e) {
             print("=== ERROR: Failed to parse string response as JSON ===");
-            return ApiResponse.failure(ApiError(
-              fastifyErrorResponse: null, 
-              errorResponse: null
-            ));
+            return ApiResponse.failure(
+              ApiError(fastifyErrorResponse: null, errorResponse: null),
+            );
           }
         } else if (response.data is Map<String, dynamic>) {
           responseMap = response.data;
         } else {
           print("=== ERROR: Unexpected response data type ===");
-          return ApiResponse.failure(ApiError(
-            fastifyErrorResponse: null, 
-            errorResponse: null
-          ));
+          return ApiResponse.failure(
+            ApiError(fastifyErrorResponse: null, errorResponse: null),
+          );
         }
-        
+
         final model = CreateCarListing.fromJson(responseMap);
         return ApiResponse.success(model);
       } else {
         print("=== ERROR: Commercial vehicle listing creation failed ===");
-        return ApiResponse.failure(ApiError(
-          fastifyErrorResponse: null, 
-          errorResponse: null
-        ));
+        return ApiResponse.failure(
+          ApiError(fastifyErrorResponse: null, errorResponse: null),
+        );
       }
     } catch (e) {
       print("=== EXCEPTION in createCommercialVehicleService ===");
       print("Exception: $e");
-      return ApiResponse.failure(ApiError(
-        fastifyErrorResponse: null, 
-        errorResponse: null
-      ));
+      return ApiResponse.failure(
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
+      );
     }
   }
 
@@ -168,19 +173,50 @@ class CreateListingService {
         'location': realEstateDetails.location,
         'latitude': realEstateDetails.latitude,
         'longitude': realEstateDetails.longitude,
-        'condition': realEstateDetails.condition,
+        'condition': realEstateDetails.condition,  // Save exact value without mapping
         'listingAction': realEstateDetails.listingAction,
-        // Send these fields separately instead of JSON
+        // Send these fields separately instead of JSON - match backend column names
         'sellerType': realEstateDetails.sellerType,
-        'area': realEstateDetails.details.totalArea?.toString(),
+        'totalArea': realEstateDetails.details.totalArea?.toString(),
         'bathrooms': realEstateDetails.details.bathrooms?.toString(),
         'bedrooms': realEstateDetails.details.bedrooms?.toString(),
-        // Keep other fields as JSON in details
+        // Only essential fields as separate columns
+        'yearBuilt': realEstateDetails.details.yearBuilt?.toString(),
+        'furnishing': realEstateDetails.details.furnishing,
+        // Only include fields that have actual values (not empty/default)
         'details': jsonEncode({
           'realEstate': {
-            ...realEstateDetails.details.toJson(),
-            // Remove the fields that are now sent separately
-          }..removeWhere((key, value) => ['totalArea', 'bathrooms', 'bedrooms'].contains(key)),
+            if (realEstateDetails.details.propertyType.isNotEmpty)
+              'propertyType': realEstateDetails.details.propertyType,
+            if (realEstateDetails.details.floor != null && realEstateDetails.details.floor! > 0)
+              'floor': realEstateDetails.details.floor,
+            if (realEstateDetails.details.totalFloors != null && realEstateDetails.details.totalFloors! > 0)
+              'totalFloors': realEstateDetails.details.totalFloors,
+            if (realEstateDetails.details.parking?.isNotEmpty == true)
+              'parking': realEstateDetails.details.parking,
+            if (realEstateDetails.details.facing?.isNotEmpty == true)
+              'facing': realEstateDetails.details.facing,
+            if (realEstateDetails.details.balconies != null && realEstateDetails.details.balconies! > 0)
+              'balconies': realEstateDetails.details.balconies,
+            if (realEstateDetails.details.plotSize != null && realEstateDetails.details.plotSize! > 0)
+              'plotSize': realEstateDetails.details.plotSize,
+            if (realEstateDetails.details.garden?.isNotEmpty == true)
+              'garden': realEstateDetails.details.garden,
+            if (realEstateDetails.details.pool?.isNotEmpty == true)
+              'pool': realEstateDetails.details.pool,
+            if (realEstateDetails.details.officeType?.isNotEmpty == true)
+              'officeType': realEstateDetails.details.officeType,
+            if (realEstateDetails.details.zoning?.isNotEmpty == true)
+              'zoning': realEstateDetails.details.zoning,
+            if (realEstateDetails.details.roadAccess?.isNotEmpty == true)
+              'roadAccess': realEstateDetails.details.roadAccess,
+            if (realEstateDetails.details.buildingAge != null && realEstateDetails.details.buildingAge! > 0)
+              'buildingAge': realEstateDetails.details.buildingAge,
+            if (realEstateDetails.details.orientation?.isNotEmpty == true)
+              'orientation': realEstateDetails.details.orientation,
+            if (realEstateDetails.details.view?.isNotEmpty == true)
+              'view': realEstateDetails.details.view,
+          },
         }),
         'listingImage': await Future.wait(
           realEstateDetails.listingImage.map((filePath) async {
@@ -209,12 +245,14 @@ class CreateListingService {
         final model = CreateRealEstateListing.fromJson(response.data);
         return ApiResponse.success(model);
       } else {
-         final apiError = ApiError.fromJson(response.data);
+        final apiError = ApiError.fromJson(response.data);
         return ApiResponse.failure(apiError);
       }
     } on DioException catch (e) {
-        final apiError = e.response?.data != null ? ApiError.fromJson(e.response!.data) : ApiError();
-        return ApiResponse.failure(apiError);
+      final apiError = e.response?.data != null
+          ? ApiError.fromJson(e.response!.data)
+          : ApiError();
+      return ApiResponse.failure(apiError);
     } catch (e) {
       return ApiResponse.failure(ApiError());
     }
@@ -226,8 +264,10 @@ class CreateListingService {
   ) async {
     try {
       print("\n📡 === CREATE LISTING SERVICE START ===");
-      print("🔐 Access Token: ${accessToken.isNotEmpty ? 'Present (${accessToken.length} chars)' : 'Missing'}");
-      
+      print(
+        "🔐 Access Token: ${accessToken.isNotEmpty ? 'Present (${accessToken.length} chars)' : 'Missing'}",
+      );
+
       print("\n📋 RECEIVED CAR MODEL:");
       print("  Type: ${carModel.runtimeType}");
       print("  Title: '${carModel.title}'");
@@ -242,15 +282,16 @@ class CreateListingService {
       print("  Listing Action: '${carModel.listingAction}'");
       print("  Seller Type: '${carModel.sellerType}'");
       print("  Images count: ${carModel.listingImage.length}");
-      
+
       print("\n🔍 DETAILS ANALYSIS:");
       print("  Details type: ${carModel.details.runtimeType}");
       print("  Details.json type: ${carModel.details.json.runtimeType}");
       print("  Details.json keys: ${carModel.details.json.keys.toList()}");
       print("  Full details content: ${carModel.details.json}");
-      
+
       print("\n🔧 EXTRACTING VEHICLE FIELDS FROM NESTED STRUCTURE:");
-      final vehicleData = carModel.details.json['vehicles'] as Map<String, dynamic>?;
+      final vehicleData =
+          carModel.details.json['vehicles'] as Map<String, dynamic>?;
       if (vehicleData != null) {
         print("  ✅ Vehicle data found in nested structure");
         print("  Raw make: '${vehicleData['make']}'");
@@ -263,15 +304,19 @@ class CreateListingService {
         print("  Raw bodyType: '${vehicleData['bodyType']}'");
         print("  Raw exteriorColor: '${vehicleData['exteriorColor']}'");
         print("  Raw accidentFree: '${vehicleData['accidentFree']}'");
-        print("  Raw doors: '${vehicleData['doors']}'");
-        print("  Raw seatingCapacity: '${vehicleData['seatingCapacity']}'");
+        print("  Raw importStatus: '${vehicleData['importStatus']}'");
+        // doors and seatingCapacity moved to JSON details only
         print("  Raw interiorColor: '${vehicleData['interiorColor']}'");
-        
+
         print("\n🔄 MAPPED VALUES:");
         print("  Mapped fuelType: '${_mapFuelType(vehicleData['fuelType'])}'");
-        print("  Mapped transmission: '${_mapTransmissionType(vehicleData['transmission'])}'");
+        print(
+          "  Mapped transmission: '${_mapTransmissionType(vehicleData['transmission'])}'",
+        );
         print("  Mapped sellerType: '${_mapSellerType(carModel.sellerType)}'");
-        print("  Mapped listingAction: '${_mapListingAction(carModel.listingAction)}'");
+        print(
+          "  Mapped listingAction: '${_mapListingAction(carModel.listingAction)}'",
+        );
       } else {
         print("  ❌ No vehicle data found in nested structure!");
         print("  Available keys: ${carModel.details.json.keys.toList()}");
@@ -279,7 +324,7 @@ class CreateListingService {
 
       print("\n🏗️ BUILDING FORM DATA:");
       // Extract vehicle fields directly from nested structure and add to root level
-      
+
       final Map<String, dynamic> formFields = {
         'title': carModel.title,
         'description': carModel.description,
@@ -293,7 +338,7 @@ class CreateListingService {
         'listingAction': _mapListingAction(carModel.listingAction),
         'sellerType': _mapSellerType(carModel.sellerType),
       };
-      
+
       // Add ALL vehicle fields from nested structure OR fallback to controller values
       if (vehicleData != null) {
         print("\n🔧 ADDING VEHICLE FIELDS TO FORM:");
@@ -302,26 +347,37 @@ class CreateListingService {
         _addFieldIfExists(formFields, 'model', vehicleData['model']);
         _addFieldIfExists(formFields, 'year', vehicleData['year']);
         _addFieldIfExists(formFields, 'bodyType', vehicleData['bodyType']);
-        _addFieldIfExists(formFields, 'exteriorColor', vehicleData['exteriorColor']);
-        _addFieldIfExists(formFields, 'interiorColor', vehicleData['interiorColor']);
+        _addFieldIfExists(
+          formFields,
+          'exteriorColor',
+          vehicleData['exteriorColor'],
+        );
         _addFieldIfExists(formFields, 'engineSize', vehicleData['engineSize']);
         _addFieldIfExists(formFields, 'mileage', vehicleData['mileage']);
         _addFieldIfExists(formFields, 'horsepower', vehicleData['horsepower']);
-        _addFieldIfExists(formFields, 'doors', vehicleData['doors']);
-        _addFieldIfExists(formFields, 'seatingCapacity', vehicleData['seatingCapacity']);
-        _addFieldIfExists(formFields, 'registrationExpiry', vehicleData['registrationExpiry']);
-        
+        // doors and seatingCapacity moved to JSON details only
+        _addFieldIfExists(
+          formFields,
+          'registrationExpiry',
+          vehicleData['registrationExpiry'],
+        );
+        _addFieldIfExists(formFields, 'importStatus', vehicleData['importStatus']);
+
         // Handle mapped fields
         if (vehicleData['fuelType'] != null) {
           formFields['fuelType'] = _mapFuelType(vehicleData['fuelType']);
           print("  ✅ Added fuelType: ${formFields['fuelType']}");
         }
         if (vehicleData['transmission'] != null) {
-          formFields['transmission'] = _mapTransmissionType(vehicleData['transmission']);
+          formFields['transmission'] = _mapTransmissionType(
+            vehicleData['transmission'],
+          );
           print("  ✅ Added transmission: ${formFields['transmission']}");
         }
         if (vehicleData['accidentFree'] != null) {
-          formFields['accidental'] = vehicleData['accidentFree'] == true ? 'no' : 'yes';
+          formFields['accidental'] = vehicleData['accidentFree'] == true
+              ? 'no'
+              : 'yes';
           print("  ✅ Added accidental: ${formFields['accidental']}");
         }
       } else {
@@ -330,38 +386,59 @@ class CreateListingService {
         final mainDetails = carModel.details.json;
         print("  Main details keys: ${mainDetails.keys.toList()}");
         print("  Full details content: $mainDetails");
-        
+
         // Try to extract from controller directly as fallback
         print("\n🔄 FALLBACK: EXTRACTING FROM CONTROLLER:");
         final controller = GetX.Get.find<ListingInputController>();
-        
+
         _addFieldIfExists(formFields, 'make', controller.make.value);
         _addFieldIfExists(formFields, 'model', controller.model.value);
         _addFieldIfExists(formFields, 'year', controller.year.value);
         _addFieldIfExists(formFields, 'bodyType', controller.bodyType.value);
-        _addFieldIfExists(formFields, 'exteriorColor', controller.exteriorColor.value);
-        _addFieldIfExists(formFields, 'interiorColor', controller.interiorColor.value);
-        _addFieldIfExists(formFields, 'engineSize', controller.engineSize.value);
+        _addFieldIfExists(
+          formFields,
+          'exteriorColor',
+          controller.exteriorColor.value,
+        );
+        _addFieldIfExists(
+          formFields,
+          'engineSize',
+          controller.engineSize.value,
+        );
         _addFieldIfExists(formFields, 'mileage', controller.mileage.value);
-        _addFieldIfExists(formFields, 'horsepower', controller.horsepower.value);
-        _addFieldIfExists(formFields, 'doors', controller.doors.value);
-        _addFieldIfExists(formFields, 'seatingCapacity', controller.seatingCapacity.value);
-        
+        _addFieldIfExists(
+          formFields,
+          'horsepower',
+          controller.horsepower.value,
+        );
+        _addFieldIfExists(formFields, 'importStatus', controller.importStatus.value);
+        // doors and seatingCapacity moved to JSON details only
+
         // Handle mapped fields from controller
         if (controller.fuelType.value.isNotEmpty) {
           formFields['fuelType'] = _mapFuelType(controller.fuelType.value);
-          print("  ✅ Added fuelType from controller: ${formFields['fuelType']}");
+          print(
+            "  ✅ Added fuelType from controller: ${formFields['fuelType']}",
+          );
         }
         if (controller.transmissionType.value.isNotEmpty) {
-          formFields['transmission'] = _mapTransmissionType(controller.transmissionType.value);
-          print("  ✅ Added transmission from controller: ${formFields['transmission']}");
+          formFields['transmission'] = _mapTransmissionType(
+            controller.transmissionType.value,
+          );
+          print(
+            "  ✅ Added transmission from controller: ${formFields['transmission']}",
+          );
         }
         if (controller.accidental.value.isNotEmpty) {
-          formFields['accidental'] = controller.accidental.value == "No" ? 'no' : 'yes';
-          print("  ✅ Added accidental from controller: ${formFields['accidental']}");
+          formFields['accidental'] = controller.accidental.value == "No"
+              ? 'no'
+              : 'yes';
+          print(
+            "  ✅ Added accidental from controller: ${formFields['accidental']}",
+          );
         }
       }
-      
+
       print("\n🚀 FINAL FORM FIELDS TO SEND:");
       formFields.forEach((key, value) {
         print("  '$key': '$value'");
@@ -371,29 +448,59 @@ class CreateListingService {
       print("\n📦 CREATING MULTIPART FORM DATA:");
       final formData = FormData.fromMap({
         ...formFields,
-        // Keep only features and non-main fields in details JSON
+        // Keep only features and non-main fields in details JSON - only include non-null/non-empty values
         'details': jsonEncode({
           'vehicles': {
-            'vehicleType': carModel.subCategory.toUpperCase(),
-            // Keep features and advanced fields that don't have dedicated database columns
-            'previousOwners': carModel.details.json['vehicles']?['previousOwners'],
-            'registrationStatus': carModel.details.json['vehicles']?['registrationStatus'],
-            'serviceHistory': carModel.details.json['vehicles']?['serviceHistory'],
-            'warranty': carModel.details.json['vehicles']?['warranty'],
-            'customsCleared': carModel.details.json['vehicles']?['customsCleared'],
-            'airbags': carModel.details.json['vehicles']?['airbags'],
-            'abs': carModel.details.json['vehicles']?['abs'],
-            'tractionControl': carModel.details.json['vehicles']?['tractionControl'],
-            'laneAssist': carModel.details.json['vehicles']?['laneAssist'],
-            'features': carModel.details.json['vehicles']?['features'],
-            'driveType': carModel.details.json['vehicles']?['driveType'],
-            'wheelSize': carModel.details.json['vehicles']?['wheelSize'],
-            'wheelType': carModel.details.json['vehicles']?['wheelType'],
-            'fuelEfficiency': carModel.details.json['vehicles']?['fuelEfficiency'],
-            'emissionClass': carModel.details.json['vehicles']?['emissionClass'],
-            'parkingSensor': carModel.details.json['vehicles']?['parkingSensor'],
-            'parkingBreak': carModel.details.json['vehicles']?['parkingBreak'],
-          }
+            // vehicleType removed - it's already saved as subCategory
+            // Only include fields that have actual values
+            if (carModel.details.json['vehicles']?['previousOwners'] != null)
+              'previousOwners': carModel.details.json['vehicles']['previousOwners'],
+            if (carModel.details.json['vehicles']?['importStatus'] != null &&
+                carModel.details.json['vehicles']['importStatus'].toString().isNotEmpty)
+              'importStatus': carModel.details.json['vehicles']['importStatus'],
+            if (carModel.details.json['vehicles']?['serviceHistory'] != null &&
+                (carModel.details.json['vehicles']['serviceHistory'] as List?)?.isNotEmpty == true)
+              'serviceHistory': carModel.details.json['vehicles']['serviceHistory'],
+            if (carModel.details.json['vehicles']?['warranty'] != null &&
+                carModel.details.json['vehicles']['warranty'].toString().isNotEmpty)
+              'warranty': carModel.details.json['vehicles']['warranty'],
+            if (carModel.details.json['vehicles']?['customsCleared'] == true)
+              'customsCleared': carModel.details.json['vehicles']['customsCleared'],
+            if (carModel.details.json['vehicles']?['airbags'] != null &&
+                carModel.details.json['vehicles']['airbags'] > 0)
+              'airbags': carModel.details.json['vehicles']['airbags'],
+            if (carModel.details.json['vehicles']?['abs'] == true)
+              'abs': carModel.details.json['vehicles']['abs'],
+            if (carModel.details.json['vehicles']?['tractionControl'] == true)
+              'tractionControl': carModel.details.json['vehicles']['tractionControl'],
+            if (carModel.details.json['vehicles']?['laneAssist'] == true)
+              'laneAssist': carModel.details.json['vehicles']['laneAssist'],
+            if (carModel.details.json['vehicles']?['features'] != null &&
+                (carModel.details.json['vehicles']['features'] as List?)?.isNotEmpty == true)
+              'features': carModel.details.json['vehicles']['features'],
+            if (carModel.details.json['vehicles']?['driveType'] != null &&
+                carModel.details.json['vehicles']['driveType'].toString().isNotEmpty)
+              'driveType': carModel.details.json['vehicles']['driveType'],
+            if (carModel.details.json['vehicles']?['wheelSize'] != null &&
+                carModel.details.json['vehicles']['wheelSize'].toString().isNotEmpty)
+              'wheelSize': carModel.details.json['vehicles']['wheelSize'],
+            if (carModel.details.json['vehicles']?['wheelType'] != null &&
+                carModel.details.json['vehicles']['wheelType'].toString().isNotEmpty)
+              'wheelType': carModel.details.json['vehicles']['wheelType'],
+            if (carModel.details.json['vehicles']?['fuelEfficiency'] != null &&
+                carModel.details.json['vehicles']['fuelEfficiency'].toString().isNotEmpty)
+              'fuelEfficiency': carModel.details.json['vehicles']['fuelEfficiency'],
+            if (carModel.details.json['vehicles']?['emissionClass'] != null &&
+                carModel.details.json['vehicles']['emissionClass'].toString().isNotEmpty)
+              'emissionClass': carModel.details.json['vehicles']['emissionClass'],
+            if (carModel.details.json['vehicles']?['parkingSensor'] != null &&
+                carModel.details.json['vehicles']['parkingSensor'].toString().isNotEmpty &&
+                carModel.details.json['vehicles']['parkingSensor'].toString() != 'No')
+              'parkingSensor': carModel.details.json['vehicles']['parkingSensor'],
+            if (carModel.details.json['vehicles']?['parkingBreak'] != null &&
+                carModel.details.json['vehicles']['parkingBreak'].toString().isNotEmpty)
+              'parkingBreak': carModel.details.json['vehicles']['parkingBreak'],
+          }..removeWhere((key, value) => value == null),
         }),
         'listingImage': await Future.wait(
           carModel.listingImage.map((filePath) async {
@@ -407,8 +514,10 @@ class CreateListingService {
           }),
         ),
       });
-      
-      print("  ✅ FormData created with ${formData.fields.length} fields and ${formData.files.length} files");
+
+      print(
+        "  ✅ FormData created with ${formData.fields.length} fields and ${formData.files.length} files",
+      );
 
       final response = await _dio.post(
         createListingRoute,
@@ -426,7 +535,7 @@ class CreateListingService {
       print("📊 Response headers: ${response.headers}");
       print("📊 Response data type: ${response.data.runtimeType}");
       print("📊 Response data: ${response.data}");
-      
+
       if (response.data is Map<String, dynamic>) {
         final responseMap = response.data as Map<String, dynamic>;
         if (responseMap.containsKey('data')) {
@@ -459,10 +568,9 @@ class CreateListingService {
             print("Error: $e");
             print("Error type: ${e.runtimeType}");
             print("Raw response data: ${response.data}");
-            return ApiResponse.failure(ApiError(
-              fastifyErrorResponse: null, 
-              errorResponse: null
-            ));
+            return ApiResponse.failure(
+              ApiError(fastifyErrorResponse: null, errorResponse: null),
+            );
           }
         } else if (response.data is Map<String, dynamic>) {
           responseMap = response.data;
@@ -471,12 +579,11 @@ class CreateListingService {
           print("=== ERROR: Unexpected response data type ===");
           print("Error response: ${response.data}");
           print("Error response type: ${response.data.runtimeType}");
-          return ApiResponse.failure(ApiError(
-            fastifyErrorResponse: null, 
-            errorResponse: null
-          ));
+          return ApiResponse.failure(
+            ApiError(fastifyErrorResponse: null, errorResponse: null),
+          );
         }
-        
+
         final model = CreateCarListing.fromJson(responseMap);
         return ApiResponse.success(model);
       } else {
@@ -494,13 +601,15 @@ class CreateListingService {
       print("DioException response data: ${dioError.response?.data}");
       print("DioException request URL: ${dioError.requestOptions.path}");
       print("DioException request method: ${dioError.requestOptions.method}");
-      
+
       if (dioError.response != null && dioError.response?.data != null) {
         print("Processing error response from server...");
         return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
       }
       print("DioException has no response data, returning generic error");
-      return ApiResponse.failure(ApiError(fastifyErrorResponse: null, errorResponse: null));
+      return ApiResponse.failure(
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
+      );
     } catch (e) {
       print("\n❌ === ERROR CREATING CAR LISTING ===");
       print("🚨 Error type: ${e.runtimeType}");
@@ -510,14 +619,16 @@ class CreateListingService {
         print("🚨 Dio response: ${e.response?.data}");
         print("🚨 Dio status code: ${e.response?.statusCode}");
       }
-      return ApiResponse.failure(ApiError(fastifyErrorResponse: null, errorResponse: null));
+      return ApiResponse.failure(
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
+      );
     }
   }
 
   // Helper method to map listing action
   String _mapListingAction(String? listingAction) {
     if (listingAction == null) return 'SALE';
-    
+
     switch (listingAction.toUpperCase()) {
       case 'FOR_SALE':
         return 'SALE';
@@ -533,28 +644,26 @@ class CreateListingService {
 
   // Helper method to map seller type
   String _mapSellerType(String? sellerType) {
-    if (sellerType == null) return 'INDIVIDUAL';
-    
+    if (sellerType == null) return 'BROKER';
+
     switch (sellerType.toLowerCase()) {
       case 'owner':
-      case 'individual':
-        return 'INDIVIDUAL';
+        return 'OWNER';
       case 'broker':
-      case 'dealer':
-        return 'DEALER';
       case 'business':
       case 'business_owner':
       case 'businessowner':
+      case 'business_firm':
         return 'BUSINESS';
       default:
-        return 'INDIVIDUAL';
+        return 'BROKER';
     }
   }
 
   // Helper method to map transmission type
   String _mapTransmissionType(String? transmissionType) {
     if (transmissionType == null) return 'MANUAL';
-    
+
     switch (transmissionType.toLowerCase()) {
       case 'automatic':
       case 'أوتوماتيك':
@@ -562,13 +671,6 @@ class CreateListingService {
       case 'manual':
       case 'يدوي':
         return 'MANUAL';
-      case 'continuouslyvariable':
-      case 'continuously_variable':
-      case 'cvt':
-        return 'AUTOMATIC_MANUAL'; // Map CVT to valid enum
-      case 'automaticmanual':
-      case 'automatic_manual':
-        return 'AUTOMATIC_MANUAL';
       default:
         return 'MANUAL';
     }
@@ -577,40 +679,48 @@ class CreateListingService {
   // Helper method to map fuel type
   String _mapFuelType(String? fuelType) {
     if (fuelType == null) return 'GASOLINE';
-    
+
     switch (fuelType.toLowerCase()) {
-      case 'gasoline':
-      case 'petrol':
+      case 'benzin':
       case 'بنزين':
-        return 'GASOLINE';
+        return 'BENZIN';
       case 'diesel':
-      case 'ديزل':
+      case 'مازوت':
         return 'DIESEL';
       case 'electric':
-      case 'كهربائي':
+      case 'كهرباء':
         return 'ELECTRIC';
       case 'hybrid':
       case 'هجين':
         return 'HYBRID';
-      case 'lpg':
-        return 'LPG';
-      case 'cng':
-        return 'CNG';
-      default:
+      case 'gasoline':
+      case 'غازولين':
         return 'GASOLINE';
+      case 'other':
+      case 'أخرى':
+        return 'OTHER';
+      default:
+        return 'OTHER';
     }
   }
 
+
+
   // Helper method to add field only if it exists and is not empty
-  void _addFieldIfExists(Map<String, dynamic> formFields, String key, dynamic value) {
-    if (value != null && value.toString().isNotEmpty && value.toString() != '0') {
+  void _addFieldIfExists(
+    Map<String, dynamic> formFields,
+    String key,
+    dynamic value,
+  ) {
+    if (value != null &&
+        value.toString().isNotEmpty &&
+        value.toString() != '0') {
       formFields[key] = value.toString();
       print("    ✅ Added $key: '${value.toString()}'");
     } else {
       print("    ❌ Skipped $key: '$value' (null/empty/zero)");
     }
   }
-
 }
 
 class Details {
@@ -824,7 +934,7 @@ class CommercialDetails {
   final int? previousOwners;
   final double? engineSize;
   final String? engineNumber;
- 
+
   final String? transmissionType;
   final String? fuelType;
   final String? color;
@@ -835,7 +945,7 @@ class CommercialDetails {
   final bool? accidentFree;
   final bool? customsCleared;
   final List<String>? features;
-  
+
   // Commercial-specific fields
   final double? payloadCapacity;
   final double? cargoVolume;
@@ -887,20 +997,20 @@ class CommercialDetails {
       previousOwners: json['previousOwners'],
       engineSize: json['engineSize']?.toDouble(),
       engineNumber: json['engineNumber'],
- 
+
       transmissionType: json['transmissionType'],
       fuelType: json['fuelType'],
       color: json['color'],
       registrationStatus: json['registrationStatus'],
       registrationExpiry: json['registrationExpiry'],
-      serviceHistory: json['serviceHistory'] != null 
-          ? List<String>.from(json['serviceHistory']) 
+      serviceHistory: json['serviceHistory'] != null
+          ? List<String>.from(json['serviceHistory'])
           : null,
       warranty: json['warranty'],
       accidentFree: json['accidentFree'],
       customsCleared: json['customsCleared'],
-      features: json['features'] != null 
-          ? List<String>.from(json['features']) 
+      features: json['features'] != null
+          ? List<String>.from(json['features'])
           : null,
       payloadCapacity: json['payloadCapacity']?.toDouble(),
       cargoVolume: json['cargoVolume']?.toDouble(),
@@ -924,7 +1034,7 @@ class CommercialDetails {
       'previousOwners': previousOwners,
       'engineSize': engineSize,
       'engineNumber': engineNumber,
- 
+
       'transmissionType': transmissionType?.toString().toUpperCase(),
       'fuelType': fuelType?.toString().toUpperCase(),
       'color': color,

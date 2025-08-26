@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:samsar/constants/color_constants.dart';
+import 'package:samsar/utils/location_display_utils.dart';
 import 'package:samsar/widgets/app_button/app_button.dart';
 
 class UserListingCard extends StatelessWidget {
@@ -27,7 +28,6 @@ class UserListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -35,16 +35,13 @@ class UserListingCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       child: Card(
         elevation: 3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         color: whiteColor,
 
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(
             children: [
-
               imageSection(screenHeight, screenWidth, imageUrl),
 
               SizedBox(width: screenWidth * 0.035),
@@ -54,14 +51,19 @@ class UserListingCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-
-                    detailSection(title, price, location, date, screenHeight, screenWidth),
+                    detailSection(
+                      title,
+                      price,
+                      location,
+                      date,
+                      screenHeight,
+                      screenWidth,
+                    ),
 
                     SizedBox(height: screenHeight * 0.015),
 
                     // Conditionally render action buttons
-                    if (!isFavourite) actionButtons()
-
+                    if (!isFavourite) actionButtons(),
                   ],
                 ),
               ),
@@ -72,7 +74,11 @@ class UserListingCard extends StatelessWidget {
     );
   }
 
-  Widget imageSection(double screenHeight, double screenWidth, String imageUrl) {
+  Widget imageSection(
+    double screenHeight,
+    double screenWidth,
+    String imageUrl,
+  ) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12.0),
       child: Image.network(
@@ -114,7 +120,14 @@ class UserListingCard extends StatelessWidget {
     );
   }
 
-  Widget detailSection(String title, String price, String location, String date, double screenHeight, double screenWidth) {
+  Widget detailSection(
+    String title,
+    String price,
+    String location,
+    String date,
+    double screenHeight,
+    double screenWidth,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -139,10 +152,7 @@ class UserListingCard extends StatelessWidget {
         SizedBox(height: screenHeight * 0.004),
         locationBadge(Icons.location_pin, location),
         SizedBox(height: screenHeight * 0.004),
-        Text(
-          date,
-          style: TextStyle(color: greyColor, fontSize: 14),
-        ),
+        Text(date, style: TextStyle(color: greyColor, fontSize: 14)),
       ],
     );
   }
@@ -154,7 +164,7 @@ class UserListingCard extends StatelessWidget {
         const SizedBox(width: 4),
         Expanded(
           child: Text(
-            location,
+            LocationDisplayUtils.formatLocationForDisplay(location),
             style: TextStyle(color: greyColor, fontSize: 14),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

@@ -31,9 +31,7 @@ class _AnimatedInputWrapperState extends State<AnimatedInputWrapper>
     _offsetAnimation = Tween<Offset>(
       begin: const Offset(0.0, 0.2),
       end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     Future.delayed(Duration(milliseconds: widget.delayMilliseconds), () {
       if (mounted) _controller.forward();
@@ -50,10 +48,7 @@ class _AnimatedInputWrapperState extends State<AnimatedInputWrapper>
   Widget build(BuildContext context) {
     return SlideTransition(
       position: _offsetAnimation,
-      child: FadeTransition(
-        opacity: _controller,
-        child: widget.child,
-      ),
+      child: FadeTransition(opacity: _controller, child: widget.child),
     );
   }
 }

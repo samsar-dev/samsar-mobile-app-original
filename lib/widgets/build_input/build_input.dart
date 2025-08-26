@@ -60,23 +60,17 @@ class BuildInput extends StatelessWidget {
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                  color: Colors.red,
-                  width: 2.0,
-                ),
+                borderSide: const BorderSide(color: Colors.red, width: 2.0),
               ),
               focusedErrorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                  color: Colors.red,
-                  width: 2.0,
-                ),
+                borderSide: const BorderSide(color: Colors.red, width: 2.0),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              errorStyle: const TextStyle(
-                color: Colors.red,
-                fontSize: 12,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
               ),
+              errorStyle: const TextStyle(color: Colors.red, fontSize: 12),
             ),
           ),
         ),

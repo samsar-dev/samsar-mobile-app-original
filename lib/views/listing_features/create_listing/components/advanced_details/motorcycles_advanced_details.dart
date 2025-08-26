@@ -10,30 +10,32 @@ class MotorcyclesAdvancedDetails extends StatefulWidget {
   const MotorcyclesAdvancedDetails({super.key});
 
   @override
-  State<MotorcyclesAdvancedDetails> createState() => _MotorcyclesAdvancedDetailsState();
+  State<MotorcyclesAdvancedDetails> createState() =>
+      _MotorcyclesAdvancedDetailsState();
 }
 
-class _MotorcyclesAdvancedDetailsState extends State<MotorcyclesAdvancedDetails> {
+class _MotorcyclesAdvancedDetailsState
+    extends State<MotorcyclesAdvancedDetails> {
   // Get the ListingInputController instance
   late final ListingInputController _listingInputController;
-  
+
   // Controllers for motorcycle-specific fields
   final TextEditingController bodyTypeController = TextEditingController();
   final TextEditingController fuelTypeController = TextEditingController();
-  final TextEditingController transmissionTypeController = TextEditingController();
+  final TextEditingController transmissionTypeController =
+      TextEditingController();
   final TextEditingController engineSizeController = TextEditingController();
   final TextEditingController mileageController = TextEditingController();
-  final TextEditingController horsepowerController = TextEditingController();
 
   // Condition and History
-  final TextEditingController previousOwnersController = TextEditingController();
-  final TextEditingController warrantyController = TextEditingController();
+  final TextEditingController previousOwnersController =
+      TextEditingController();
   final TextEditingController accidentalController = TextEditingController();
-  final TextEditingController serviceHistoryController = TextEditingController();
+  final TextEditingController serviceHistoryController =
+      TextEditingController();
 
   // Legal and Documentation
   final TextEditingController importStatusController = TextEditingController();
-  final TextEditingController registrationExpiryController = TextEditingController();
 
   // Color
   final TextEditingController colorController = TextEditingController();
@@ -49,79 +51,152 @@ class _MotorcyclesAdvancedDetailsState extends State<MotorcyclesAdvancedDetails>
       _listingInputController = Get.put(ListingInputController());
     }
 
-    // Initialize controllers
+    // Initialize controllers with proper data loading
+    _loadExistingData();
+
+    // Add listeners
+    bodyTypeController.addListener(
+      () => _listingInputController.bodyType.value = bodyTypeController.text,
+    );
+    fuelTypeController.addListener(
+      () => _listingInputController.fuelType.value = fuelTypeController.text,
+    );
+    transmissionTypeController.addListener(
+      () => _listingInputController.transmissionType.value =
+          transmissionTypeController.text,
+    );
+    mileageController.addListener(
+      () => _listingInputController.mileage.value = mileageController.text,
+    );
+
+    previousOwnersController.addListener(() {
+      _listingInputController.previousOwners.value =
+          int.tryParse(previousOwnersController.text) ?? 0;
+    });
+    accidentalController.addListener(
+      () =>
+          _listingInputController.accidental.value = accidentalController.text,
+    );
+    serviceHistoryController.addListener(
+      () => _listingInputController.serviceHistory.value =
+          serviceHistoryController.text,
+    );
+    importStatusController.addListener(
+      () => _listingInputController.importStatus.value =
+          importStatusController.text,
+    );
+    engineSizeController.addListener(
+      () =>
+          _listingInputController.engineSize.value = engineSizeController.text,
+    );
+    
+    // Add color controller listener
+    colorController.addListener(() {
+      if (colorController.text.isNotEmpty) {
+        _listingInputController.exteriorColor.value = colorController.text;
+      }
+    });
+  }
+  
+  void _loadExistingData() {
+    print('🔄 MotorcyclesAdvancedDetails: Loading existing data');
+    
+    // Load basic fields
     bodyTypeController.text = _listingInputController.bodyType.value;
     fuelTypeController.text = _listingInputController.fuelType.value;
     transmissionTypeController.text = _listingInputController.transmissionType.value;
-    mileageController.text = _listingInputController.mileage.value.toString();
-    horsepowerController.text = _listingInputController.horsepower.value.toString();
-    previousOwnersController.text = _listingInputController.previousOwners.value.toString();
-    warrantyController.text = _listingInputController.warranty.value;
+    engineSizeController.text = _listingInputController.engineSize.value;
+    
+    // CRITICAL FIX: Load mileage even if it's "0" - only skip if truly empty
+    if (_listingInputController.mileage.value.isNotEmpty) {
+      mileageController.text = _listingInputController.mileage.value;
+      print('✅ Mileage loaded: "${mileageController.text}"');
+    }
+    
+    // CRITICAL FIX: Load previous owners even if it's 0 - only skip if truly unset
+    if (_listingInputController.previousOwners.value >= 0) {
+      previousOwnersController.text = _listingInputController.previousOwners.value.toString();
+      print('✅ Previous owners loaded: "${previousOwnersController.text}"');
+    }
+    
+    // Load other fields
     accidentalController.text = _listingInputController.accidental.value;
     serviceHistoryController.text = _listingInputController.serviceHistory.value;
     importStatusController.text = _listingInputController.importStatus.value;
-    registrationExpiryController.text = _listingInputController.registrationExpiry.value;
-    engineSizeController.text = _listingInputController.engineSize.value;
-
-    // Add listeners
-    bodyTypeController.addListener(() => _listingInputController.bodyType.value = bodyTypeController.text);
-    fuelTypeController.addListener(() => _listingInputController.fuelType.value = fuelTypeController.text);
-    transmissionTypeController.addListener(() => _listingInputController.transmissionType.value = transmissionTypeController.text);
-    mileageController.addListener(() => _listingInputController.mileage.value = mileageController.text);
-    horsepowerController.addListener(() {
-      _listingInputController.horsepower.value = int.tryParse(horsepowerController.text) ?? 0;
-    });
-    previousOwnersController.addListener(() {
-      _listingInputController.previousOwners.value = int.tryParse(previousOwnersController.text) ?? 0;
-    });
-    warrantyController.addListener(() => _listingInputController.warranty.value = warrantyController.text);
-    accidentalController.addListener(() => _listingInputController.accidental.value = accidentalController.text);
-    serviceHistoryController.addListener(() => _listingInputController.serviceHistory.value = serviceHistoryController.text);
-    importStatusController.addListener(() => _listingInputController.importStatus.value = importStatusController.text);
-    registrationExpiryController.addListener(() => _listingInputController.registrationExpiry.value = registrationExpiryController.text);
-    engineSizeController.addListener(() => _listingInputController.engineSize.value = engineSizeController.text);
+    
+    // CRITICAL FIX: Load color properly
+    if (_listingInputController.exteriorColor.value.isNotEmpty && 
+        _listingInputController.exteriorColor.value != '#000000') {
+      colorController.text = _listingInputController.exteriorColor.value;
+      try {
+        String hex = _listingInputController.exteriorColor.value.replaceAll('#', '');
+        if (hex.length == 6) {
+          hex = 'FF' + hex;
+        }
+        selectedColor = Color(int.parse(hex, radix: 16));
+        print('✅ Color loaded: "${colorController.text}"');
+      } catch (e) {
+        print('❌ Error parsing color: $e');
+        selectedColor = Colors.grey;
+      }
+    }
+    
+    print('📊 MotorcyclesAdvancedDetails data loaded:');
+    print('   🏍️ Body Type: "${bodyTypeController.text}"');
+    print('   ⛽ Fuel Type: "${fuelTypeController.text}"');
+    print('   🔄 Transmission: "${transmissionTypeController.text}"');
+    print('   📏 Engine Size: "${engineSizeController.text}"');
+    print('   📊 Mileage: "${mileageController.text}"');
+    print('   👥 Previous Owners: "${previousOwnersController.text}"');
+    print('   🎨 Color: "${colorController.text}"');
   }
 
   @override
   void dispose() {
     bodyTypeController.dispose();
-    fuelTypeController.dispose();
+    mileageController.dispose();
     transmissionTypeController.dispose();
     engineSizeController.dispose();
-    horsepowerController.dispose();
 
     // Dispose condition and history controllers
     previousOwnersController.dispose();
-    warrantyController.dispose();
     accidentalController.dispose();
     serviceHistoryController.dispose();
     importStatusController.dispose();
-    registrationExpiryController.dispose();
     colorController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
     final List<String> bodyTypes = [
-      'sport'.tr, 'cruiser'.tr, 'touring'.tr, 'standard'.tr, 'dirt_bike'.tr, 'scooter'.tr, 'adventure'.tr, 'cafe_racer'.tr
-    ];
-    
-    final List<String> fuelTypes = [
-      'petrol'.tr, 'electric'.tr, 'hybrid'.tr
-    ];
-    
-    final List<String> transmissionTypes = [
-      'manual'.tr, 'automatic'.tr, 'automatic_manual'.tr
+      'sport'.tr,
+      'cruiser'.tr,
+      'touring'.tr,
+      'standard'.tr,
+      'dirt_bike'.tr,
+      'scooter'.tr,
+      'adventure'.tr,
+      'cafe_racer'.tr,
     ];
 
-    final List<String> warrantyOptions = ['yes'.tr, 'no'.tr];
-    final List<String> historyOptions = ['full_service_history'.tr, 'partial_service_history'.tr, 'no_service_history'.tr];
+    final List<String> fuelTypes = ['benzin'.tr, 'electric'.tr, 'hybrid'.tr];
+
+    final List<String> transmissionTypes = [
+      'manual'.tr,
+      'automatic'.tr,
+    ];
+
+    final List<String> accidentalOptions = ['yes'.tr, 'no'.tr];
+    final List<String> historyOptions = [
+      'full_service_history'.tr,
+      'partial_service_history'.tr,
+      'no_service_history'.tr,
+    ];
     final List<String> importStatuses = ['local'.tr, 'imported'.tr];
 
     final double screenWidth = MediaQuery.of(context).size.width;
-    
+
     return SingleChildScrollView(
       padding: EdgeInsets.all(16),
       child: Column(
@@ -137,7 +212,7 @@ class _MotorcyclesAdvancedDetailsState extends State<MotorcyclesAdvancedDetails>
             ),
           ),
           SizedBox(height: 16),
-          
+
           // 1. Engine Size - CRITICAL for Syrian motorcycle market (CC rating)
           BuildInput(
             title: 'engine_size'.tr,
@@ -145,35 +220,35 @@ class _MotorcyclesAdvancedDetailsState extends State<MotorcyclesAdvancedDetails>
             textController: engineSizeController,
             keyboardType: TextInputType.number,
           ),
-          
+
           // 2. Fuel Type - ESSENTIAL for Syrian market (fuel availability)
           BuildInputWithOptions(
             title: 'fuel_type'.tr,
             controller: fuelTypeController,
             options: fuelTypes,
           ),
-          
+
           // 3. Body Type - Important for usage (sport, cruiser, etc.)
           BuildInputWithOptions(
             title: 'body_type'.tr,
             controller: bodyTypeController,
             options: bodyTypes,
           ),
-          
+
           // 4. Transmission - Important for Syrian riders
           BuildInputWithOptions(
             title: 'transmission'.tr,
             controller: transmissionTypeController,
             options: transmissionTypes,
           ),
-          
+
           // 5. Mileage - Critical for used motorcycle evaluation
           BuildInput(
             title: 'mileage_km'.tr,
             label: 'vehicle_mileage'.tr,
             textController: mileageController,
           ),
-          
+
           // 6. Color - Important for resale value
           const SizedBox(height: 16),
           Text(
@@ -185,7 +260,8 @@ class _MotorcyclesAdvancedDetailsState extends State<MotorcyclesAdvancedDetails>
             onColorChanged: (color) {
               setState(() {
                 selectedColor = color;
-                String colorHex = '#${color.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+                String colorHex =
+                    '#${color.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
                 colorController.text = colorHex;
                 // Update the listing input controller
                 _listingInputController.exteriorColor.value = colorHex;
@@ -193,7 +269,7 @@ class _MotorcyclesAdvancedDetailsState extends State<MotorcyclesAdvancedDetails>
             },
             initialColor: selectedColor,
           ),
-          
+
           const SizedBox(height: 24),
 
           // HIGH PRIORITY - Motorcycle History & Condition
@@ -207,14 +283,14 @@ class _MotorcyclesAdvancedDetailsState extends State<MotorcyclesAdvancedDetails>
           ),
           SizedBox(height: 16),
 
-          // 7. Accident History - CRITICAL for Syrian buyers
+          // Accident History - CRITICAL for Syrian buyers
           BuildInputWithOptions(
             title: 'accidental'.tr,
             controller: accidentalController,
-            options: warrantyOptions, // Yes/No
+            options: accidentalOptions,
           ),
 
-          // 8. Previous Owners - Important trust factor
+          // Previous Owners - Important trust factor
           BuildInput(
             title: 'previous_owners'.tr,
             label: 'number_of_owners'.tr,
@@ -222,71 +298,22 @@ class _MotorcyclesAdvancedDetailsState extends State<MotorcyclesAdvancedDetails>
             keyboardType: TextInputType.number,
           ),
 
-          // 9. Import Status - Important for Syrian market
+          // Import Status - Important for Syrian market
           BuildInputWithOptions(
             title: 'import_status'.tr,
             controller: importStatusController,
             options: importStatuses,
           ),
 
-          // 10. Service History - Important for maintenance assessment
+          // Service History - Important for maintenance assessment
           BuildInputWithOptions(
             title: 'service_history'.tr,
             controller: serviceHistoryController,
             options: historyOptions,
           ),
-          
-          const SizedBox(height: 24),
 
-          // MEDIUM PRIORITY - Performance Details
-          Text(
-            'performance'.tr,
-            style: TextStyle(
-              color: blackColor,
-              fontWeight: FontWeight.bold,
-              fontSize: screenWidth * 0.05,
-            ),
-          ),
-          SizedBox(height: 16),
-          
-          // 11. Horsepower - Moderate importance
-          BuildInput(
-            title: 'horsepower'.tr,
-            label: 'horsepower_hp'.tr,
-            textController: horsepowerController,
-            keyboardType: TextInputType.number,
-          ),
-          
-          const SizedBox(height: 24),
-
-          // LOWER PRIORITY - Documentation & Legal
-          Text(
-            'documentation'.tr,
-            style: TextStyle(
-              color: blackColor,
-              fontWeight: FontWeight.bold,
-              fontSize: screenWidth * 0.05,
-            ),
-          ),
-          SizedBox(height: 16),
-
-          // 12. Registration Expiry - Administrative
-          BuildInput(
-            title: 'registration_expiry_date'.tr,
-            label: 'dd_mm_yyyy'.tr,
-            textController: registrationExpiryController,
-            keyboardType: TextInputType.datetime,
-          ),
-
-          // 13. Warranty - Least important for used motorcycles
-          BuildInputWithOptions(
-            title: 'warranty'.tr,
-            controller: warrantyController,
-            options: warrantyOptions,
-          ),
-          
           SizedBox(height: 20),
-          
+
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(16),
@@ -310,10 +337,7 @@ class _MotorcyclesAdvancedDetailsState extends State<MotorcyclesAdvancedDetails>
                 Text(
                   'motorcycle_specifications_info'.tr,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.red[700],
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.red[700], fontSize: 12),
                 ),
               ],
             ),

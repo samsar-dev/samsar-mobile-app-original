@@ -24,15 +24,18 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
   final TextEditingController bodyTypeController = TextEditingController();
   final TextEditingController driveTypeController = TextEditingController();
   final TextEditingController fuelTypeController = TextEditingController();
-  final TextEditingController transmissionTypeController = TextEditingController();
+  final TextEditingController transmissionTypeController =
+      TextEditingController();
 
   final TextEditingController horsePowerController = TextEditingController();
   final TextEditingController mileageController = TextEditingController();
 
-  final TextEditingController serviceHistoryController = TextEditingController();
+  final TextEditingController serviceHistoryController =
+      TextEditingController();
   final TextEditingController isAccidentalController = TextEditingController();
   final TextEditingController warrantyController = TextEditingController();
-  final TextEditingController previousOwnersController = TextEditingController();
+  final TextEditingController previousOwnersController =
+      TextEditingController();
   final TextEditingController conditionController = TextEditingController();
 
   final TextEditingController importStatusController = TextEditingController();
@@ -40,16 +43,18 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
 
   Color exteriorColor = Colors.white;
 
-  final ListingInputController _listingInputController = Get.find<ListingInputController>();
+  final ListingInputController _listingInputController =
+      Get.find<ListingInputController>();
 
   @override
   void initState() {
     super.initState();
-    
+
     // Initialize colors from controller values
     if (_listingInputController.exteriorColor.value.isNotEmpty) {
       try {
-        final exteriorHex = _listingInputController.exteriorColor.value.replaceAll('#', '');
+        final exteriorHex = _listingInputController.exteriorColor.value
+            .replaceAll('#', '');
         exteriorColor = Color(int.parse('FF$exteriorHex', radix: 16));
       } catch (e) {
         print('Error parsing exterior color: $e');
@@ -67,15 +72,17 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
       backgroundColor: whiteColor,
       appBar: AppBar(
         backgroundColor: whiteColor,
-        title: Text('advanced_options'.tr, style: TextStyle(color: blackColor, fontWeight: FontWeight.bold)),
+        title: Text(
+          'advanced_options'.tr,
+          style: TextStyle(color: blackColor, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: Theme.of(context).colorScheme.copyWith(
-                primary: blueColor,
-                surface: whiteColor,
-              ),
+          colorScheme: Theme.of(
+            context,
+          ).colorScheme.copyWith(primary: blueColor, surface: whiteColor),
         ),
         child: Stepper(
           type: StepperType.vertical,
@@ -84,7 +91,6 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
             if (currentStep < 4) {
               setState(() => currentStep++);
             } else {
-
               _listingInputController.setAdvanceDetails(
                 bodyType: bodyTypeController.text,
                 driveType: driveTypeController.text,
@@ -95,7 +101,8 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
                 serviceHistory: serviceHistoryController.text,
                 accidental: isAccidentalController.text,
                 warranty: warrantyController.text,
-                previousOwners: int.tryParse(previousOwnersController.text) ?? 0,
+                previousOwners:
+                    int.tryParse(previousOwnersController.text) ?? 0,
                 condition: conditionController.text,
                 importStatus: importStatusController.text,
                 registrationExpiry: registerationController.text,
@@ -118,7 +125,7 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
                     widthSize: 0.35,
                     heightSize: 0.06,
                     buttonColor: blueColor,
-                    text: "Next",
+                    text: 'nextButton'.tr,
                     textColor: whiteColor,
                     onPressed: details.onStepContinue!,
                   ),
@@ -128,7 +135,7 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
                       widthSize: 0.35,
                       heightSize: 0.06,
                       buttonColor: purpleColor,
-                      text: "Back",
+                      text: 'back'.tr,
                       textColor: whiteColor,
                       onPressed: details.onStepCancel!,
                     ),
@@ -138,31 +145,31 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
           },
           steps: [
             Step(
-              title: const Text("Basic Info"),
+              title: Text('basic_info'.tr),
               isActive: currentStep >= 0,
               state: currentStep > 0 ? StepState.complete : StepState.indexed,
               content: basicInfo(screenHeight, screenWidth),
             ),
             Step(
-              title: const Text("Engine & Performance"),
+              title: Text('engine_and_performance'.tr),
               isActive: currentStep >= 1,
               state: currentStep > 1 ? StepState.complete : StepState.indexed,
               content: engineAndPerformance(screenHeight, screenWidth),
             ),
             Step(
-              title: const Text("Condition & History"),
+              title: Text('condition_and_history'.tr),
               isActive: currentStep >= 2,
               state: currentStep > 2 ? StepState.complete : StepState.indexed,
               content: conditionAndHistory(screenHeight, screenWidth),
             ),
             Step(
-              title: const Text("Legal & Documents"),
+              title: Text('legal_and_documents'.tr),
               isActive: currentStep >= 3,
               state: currentStep > 3 ? StepState.complete : StepState.indexed,
               content: legalAndDocumentation(screenHeight, screenWidth),
             ),
             Step(
-              title: const Text("Color & Appearance"),
+              title: Text('color_and_appearance'.tr),
               isActive: currentStep >= 4,
               state: currentStep == 4 ? StepState.editing : StepState.indexed,
               content: colorAndAppearance(screenHeight, screenWidth),
@@ -182,22 +189,25 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
             alignment: Alignment.centerLeft,
             child: Padding(
               padding: const EdgeInsets.only(left: 20),
-              child: Text("Basic info", style: TextStyle(
-                color: blackColor,
-                fontWeight: FontWeight.bold,
-                fontSize: screenWidth * 0.08
-              ),),
+              child: Text(
+                'basic_info'.tr,
+                style: TextStyle(
+                  color: blackColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: screenWidth * 0.08,
+                ),
+              ),
             ),
           ),
 
-          SizedBox(height: screenHeight * 0.02,),
+          SizedBox(height: screenHeight * 0.02),
 
           AnimatedInputWrapper(
             delayMilliseconds: 0,
             child: BuildInputWithOptions(
-              title: "Body Type", 
-              // label: "Select body type", 
-              controller: bodyTypeController, 
+              title: 'body_type'.tr,
+              // label: "Select body type",
+              controller: bodyTypeController,
               options: [
                 "SEDAN",
                 "SUV",
@@ -209,62 +219,55 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
                 "VAN",
                 "MINIVAN",
                 "CROSSOVER"
-                "SPORTS CAR"
-                "LUXURY"
-              ]),
+                    "SPORTS CAR"
+                    "LUXURY",
+              ],
+            ),
           ),
 
           SizedBox(height: screenHeight * 0.01),
 
-           AnimatedInputWrapper(
-             delayMilliseconds: 100,
-             child: BuildInputWithOptions(
-              title: "Drive Type", 
-              // label: "Select Drive type", 
-              controller: driveTypeController, 
+          AnimatedInputWrapper(
+            delayMilliseconds: 100,
+            child: BuildInputWithOptions(
+              title: 'drive_type'.tr,
+              // label: "Select Drive type",
+              controller: driveTypeController,
+              options: ["FWD", "RWD", "AWD", "Four WD"],
+            ),
+          ),
+
+          SizedBox(height: screenHeight * 0.01),
+
+          AnimatedInputWrapper(
+            delayMilliseconds: 200,
+            child: BuildInputWithOptions(
+              title: 'fuel_type'.tr,
+              // label: "Enter your fuel type",
+              controller: fuelTypeController,
               options: [
-                "FWD",
-                "RWD",
-                "AWD",
-                "Four WD"
-              ]),
-           ),
-
-            SizedBox(height: screenHeight * 0.01),
-
-            AnimatedInputWrapper(
-              delayMilliseconds: 200,
-              child: BuildInputWithOptions(
-                title: "Fuel Type", 
-                // label: "Enter your fuel type", 
-                controller: fuelTypeController, 
-                options: [
-                  "Gasoline",
-                  "Diesel",
-                  "Electric",
-                  "Hybrid",
-                  "Plug in hybrid",
-                  "Lpg",
-                  "Cng",
-                  "Other"
-                ]),
+                "Gasoline",
+                "Diesel",
+                "Electric",
+                "Hybrid",
+                "Plug in hybrid",
+                "Gasoline",
+                "Other",
+              ],
             ),
+          ),
 
-            SizedBox(height: screenHeight * 0.01),
+          SizedBox(height: screenHeight * 0.01),
 
-            AnimatedInputWrapper(
-              delayMilliseconds: 300,
-              child: BuildInputWithOptions(
-                title: "Transmission Type", 
-                // label: "Vehicle transmission", 
-                controller: transmissionTypeController, 
-                options: [
-                  "Automatic",
-                  "Manual",
-                  "Automatic/Manual",
-                  "Other"
-                ]),
+          AnimatedInputWrapper(
+            delayMilliseconds: 300,
+            child: BuildInputWithOptions(
+              title: 'transmissionType'.tr,
+              // label: "Vehicle transmission",
+              controller: transmissionTypeController,
+              options: ["Automatic", "Manual", "Automatic/Manual", "Other"],
             ),
+          ),
         ],
       ),
     );
@@ -280,34 +283,36 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
               alignment: Alignment.centerLeft,
               child: Padding(
                 padding: const EdgeInsets.only(left: 20),
-                child: Text("Engine and Performance", style: TextStyle(
-                  color: blackColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: screenWidth * 0.06
-                ),),
+                child: Text(
+                  'engine_and_performance_title'.tr,
+                  style: TextStyle(
+                    color: blackColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: screenWidth * 0.06,
+                  ),
+                ),
               ),
             ),
-      
-            SizedBox(height: screenHeight * 0.02,),
+
+            SizedBox(height: screenHeight * 0.02),
             AnimatedInputWrapper(
               delayMilliseconds: 0,
               child: BuildInput(
-                title: "Horsepower", 
-                label: "Enter horse power", 
-                textController: horsePowerController
-              )
+                title: 'horsepower'.tr,
+                label: 'enter_horsepower'.tr,
+                textController: horsePowerController,
+              ),
             ),
-      
-            SizedBox(height: screenHeight * 0.02,),
+
+            SizedBox(height: screenHeight * 0.02),
             AnimatedInputWrapper(
               delayMilliseconds: 100,
               child: BuildInput(
-                title: "Mileage", 
-                label: "Mileage of your vehicle", 
-                textController: mileageController
-              )
+                title: 'mileage'.tr,
+                label: 'mileage_of_vehicle'.tr,
+                textController: mileageController,
+              ),
             ),
-      
           ],
         ),
       ),
@@ -324,72 +329,68 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
               alignment: Alignment.centerLeft,
               child: Padding(
                 padding: const EdgeInsets.only(left: 20),
-                child: Text("Condition and History", style: TextStyle(
-                  color: blackColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: screenWidth * 0.06
-                ),),
+                child: Text(
+                  'condition_and_history_title'.tr,
+                  style: TextStyle(
+                    color: blackColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: screenWidth * 0.06,
+                  ),
+                ),
               ),
             ),
-      
-            SizedBox(height: screenHeight * 0.02,),
-      
+
+            SizedBox(height: screenHeight * 0.02),
+
             AnimatedInputWrapper(
               delayMilliseconds: 0,
               child: BuildInputWithOptions(
-                title: "Service history", 
-                // label: "Select service history", 
-                controller: serviceHistoryController, 
-                options: [
-                  "FULL",
-                  "PARTIAL",
-                  "NONE"
-                ])
+                title: 'service_history'.tr,
+                // label: "Select service history",
+                controller: serviceHistoryController,
+                options: ["FULL", "PARTIAL", "NONE"],
+              ),
             ),
-      
-            SizedBox(height: screenHeight * 0.02,),
+
+            SizedBox(height: screenHeight * 0.02),
             AnimatedInputWrapper(
               delayMilliseconds: 100,
               child: BuildInputWithOptions(
-                title: "Accidental", 
-                // label: "Is your vehicle accidental", 
-                controller: isAccidentalController, 
-                options: [
-                  "Accidental",
-                  "Not accident"
-                ]),
+                title: 'accidental'.tr,
+                // label: "Is your vehicle accidental",
+                controller: isAccidentalController,
+                options: ["Accidental", "Not accident"],
+              ),
             ),
-      
-            SizedBox(height: screenHeight * 0.02,),
+
+            SizedBox(height: screenHeight * 0.02),
             AnimatedInputWrapper(
               delayMilliseconds: 200,
               child: BuildInputWithOptions(
-                title: "Warranty", 
-                // label: "How many warranty is left", 
-                controller: warrantyController, 
-                options: [
-                  "YES",
-                  "NO"
-                ]),
+                title: 'warranty'.tr,
+                // label: "How many warranty is left",
+                controller: warrantyController,
+                options: ["YES", "NO"],
+              ),
             ),
-      
-            SizedBox(height: screenHeight * 0.02,),
+
+            SizedBox(height: screenHeight * 0.02),
             AnimatedInputWrapper(
               delayMilliseconds: 300,
               child: BuildInput(
-                title: "Previous owners", 
-                label: "No of Previous owners", 
-                textController: previousOwnersController
-              )
+                title: 'previous_owners'.tr,
+                label: 'no_of_previous_owners'.tr,
+                textController: previousOwnersController,
+              ),
             ),
-      
-            SizedBox(height: screenHeight * 0.02,),
+
+            SizedBox(height: screenHeight * 0.02),
             AnimatedInputWrapper(
               delayMilliseconds: 400,
               child: BuildInputWithOptions(
-                title: "Condition",
-                // label:  "Vehicle Condition", 
-                controller: conditionController, 
+                title: 'condition'.tr,
+                // label:  "Vehicle Condition",
+                controller: conditionController,
                 options: [
                   "New",
                   "Like new",
@@ -397,8 +398,9 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
                   "Good",
                   "Fair",
                   "Poor",
-                  "Salvage"
-                ]),
+                  "Salvage",
+                ],
+              ),
             ),
           ],
         ),
@@ -415,35 +417,37 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
             alignment: Alignment.centerLeft,
             child: Padding(
               padding: const EdgeInsets.only(left: 20),
-              child: Text("Legal and Documentation", style: TextStyle(
-                color: blackColor,
-                fontWeight: FontWeight.bold,
-                fontSize: screenWidth * 0.06
-              ),),
+              child: Text(
+                'legal_and_documentation_title'.tr,
+                style: TextStyle(
+                  color: blackColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: screenWidth * 0.06,
+                ),
+              ),
             ),
           ),
-    
-          SizedBox(height: screenHeight * 0.02,),
+
+          SizedBox(height: screenHeight * 0.02),
 
           AnimatedInputWrapper(
             delayMilliseconds: 0,
             child: BuildInputWithOptions(
-              title: "Import status", 
-              // label: "Select import status", 
-              controller: importStatusController, 
-              options: [
-                "Imported",
-                "Local"
-              ]),
+              title: 'import_status'.tr,
+              // label: "Select import status",
+              controller: importStatusController,
+              options: ["Imported", "Local"],
+            ),
           ),
 
-          SizedBox(height: screenHeight * 0.02,),
+          SizedBox(height: screenHeight * 0.02),
           AnimatedInputWrapper(
             delayMilliseconds: 100,
             child: BuildInput(
-              title: "Registeration Expiry", 
-              label: "Enter registeration number", 
-              textController: registerationController)
+              title: 'registration_expiry'.tr,
+              label: 'enter_registration_number'.tr,
+              textController: registerationController,
+            ),
           ),
         ],
       ),
@@ -455,33 +459,36 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
       color: whiteColor,
       child: Column(
         children: [
-           Align(
+          Align(
             alignment: Alignment.centerLeft,
             child: Padding(
               padding: const EdgeInsets.only(left: 20),
-              child: Text("Color and Appearance", style: TextStyle(
-                color: blackColor,
-                fontWeight: FontWeight.bold,
-                fontSize: screenWidth * 0.06
-              ),),
+              child: Text(
+                'color_and_appearance_title'.tr,
+                style: TextStyle(
+                  color: blackColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: screenWidth * 0.06,
+                ),
+              ),
             ),
           ),
-    
-          SizedBox(height: screenHeight * 0.02,),
+
+          SizedBox(height: screenHeight * 0.02),
 
           AnimatedInputWrapper(
             delayMilliseconds: 0,
-            child: buildColorInput("Exterior color", exteriorColor, (color) {
+            child: buildColorInput('exterior_color'.tr, exteriorColor, (color) {
               setState(() {
                 exteriorColor = color;
                 // Convert Color to hex string for controller
-                _listingInputController.exteriorColor.value = '#${color.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+                _listingInputController.exteriorColor.value =
+                    '#${color.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
               });
-            })
+            }),
           ),
-                
-          SizedBox(height: screenHeight * 0.02),
 
+          SizedBox(height: screenHeight * 0.02),
         ],
       ),
     );
@@ -492,31 +499,36 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
       color: whiteColor,
       child: Column(
         children: [
-           Align(
+          Align(
             alignment: Alignment.centerLeft,
             child: Padding(
               padding: const EdgeInsets.only(left: 20),
-              child: Text("Features and Extras", style: TextStyle(
-                color: blackColor,
-                fontWeight: FontWeight.bold,
-                fontSize: screenWidth * 0.06
-              ),),
+              child: Text(
+                'features_and_extras_title'.tr,
+                style: TextStyle(
+                  color: blackColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: screenWidth * 0.06,
+                ),
+              ),
             ),
           ),
-    
-          SizedBox(height: screenHeight * 0.02,),
+
+          SizedBox(height: screenHeight * 0.02),
         ],
-      )
+      ),
     );
   }
 
-
-
-  Widget buildColorInput(String title, Color selectedColor, Function(Color) onColorChanged) {
+  Widget buildColorInput(
+    String title,
+    Color selectedColor,
+    Function(Color) onColorChanged,
+  ) {
     return Column(
       children: [
         Label(labelText: title),
-        const SizedBox(height: 3,),
+        const SizedBox(height: 3),
 
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -529,4 +541,3 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
     );
   }
 }
-

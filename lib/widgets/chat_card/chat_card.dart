@@ -34,16 +34,13 @@ class ChatCard extends StatelessWidget {
               color: Colors.grey.withOpacity(0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
-            )
+            ),
           ],
         ),
         child: Row(
           children: [
             // Avatar
-            CircleAvatar(
-              radius: 26,
-              backgroundImage: NetworkImage(avatarUrl),
-            ),
+            CircleAvatar(radius: 26, backgroundImage: NetworkImage(avatarUrl)),
             const SizedBox(width: 12),
 
             // Name & message
@@ -62,11 +59,8 @@ class ChatCard extends StatelessWidget {
                   Text(
                     lastMessage,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                  )
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  ),
                 ],
               ),
             ),
@@ -77,29 +71,26 @@ class ChatCard extends StatelessWidget {
               children: [
                 Text(
                   time,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[500],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                 ),
                 const SizedBox(height: 6),
                 if (unreadCount > 0)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.redAccent,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
                       '$unreadCount',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                      ),
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
                     ),
-                  )
+                  ),
               ],
-            )
+            ),
           ],
         ),
       ),

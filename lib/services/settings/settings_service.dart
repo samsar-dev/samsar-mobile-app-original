@@ -4,44 +4,33 @@ import 'package:samsar/models/api_error.dart';
 import 'package:samsar/models/api_response.dart';
 
 class SettingsService {
-
   final Dio _dio = Dio();
 
-  Future<ApiResponse<Map<String, dynamic>>> getUserSettingsService(String accessToken) async {
+  Future<ApiResponse<Map<String, dynamic>>> getUserSettingsService(
+    String accessToken,
+  ) async {
     try {
-
       final response = await _dio.get(
         getSettingsRoute,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          }
-        )
+        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
       );
 
-      if(response.statusCode == 200) {
+      if (response.statusCode == 200) {
         return ApiResponse.success(response.data as Map<String, dynamic>);
       } else {
         return ApiResponse.failure(ApiError.fromJson(response.data));
       }
-      
     } on DioException catch (dioError) {
       if (dioError.response != null && dioError.response?.data != null) {
         return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
       }
 
       return ApiResponse.failure(
-        ApiError(
-          fastifyErrorResponse: null,
-          errorResponse: null,
-        ),
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
-    } catch(e) {
+    } catch (e) {
       return ApiResponse.failure(
-        ApiError(
-          fastifyErrorResponse: null,
-          errorResponse: null,
-        ),
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     }
   }
@@ -67,7 +56,7 @@ class SettingsService {
 
       print("📊 Response status: ${response.statusCode}");
       print("📝 Response data: ${response.data}");
-      
+
       if (response.statusCode == 200) {
         print("✅ Settings update successful!");
         return ApiResponse.success(response.data as Map<String, dynamic>);
@@ -81,18 +70,12 @@ class SettingsService {
       }
 
       return ApiResponse.failure(
-        ApiError(
-          fastifyErrorResponse: null,
-          errorResponse: null,
-        ),
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     } catch (e) {
       print("❌ General exception caught: $e");
       return ApiResponse.failure(
-        ApiError(
-          fastifyErrorResponse: null,
-          errorResponse: null,
-        ),
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     }
   }

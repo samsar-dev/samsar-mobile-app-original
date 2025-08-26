@@ -8,7 +8,6 @@ class InputField extends StatefulWidget {
   final bool isPassword;
   final int maxLines;
   final String? Function(String?)? validator;
-  
 
   const InputField({
     super.key,
@@ -18,7 +17,7 @@ class InputField extends StatefulWidget {
     required this.controller,
     this.isPassword = false,
     this.maxLines = 1,
-    this.validator
+    this.validator,
   });
 
   @override
@@ -49,10 +48,11 @@ class _InputFieldState extends State<InputField> {
             : TextInputType.emailAddress,
         decoration: InputDecoration(
           hintText: widget.labelText,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.0),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
           ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.0),
             borderSide: const BorderSide(color: Colors.blue),
@@ -74,7 +74,7 @@ class _InputFieldState extends State<InputField> {
                 )
               : null,
         ),
-        validator: widget.validator
+        validator: widget.validator,
       ),
     );
   }

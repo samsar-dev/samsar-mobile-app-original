@@ -1,5 +1,3 @@
-
-
 import 'package:samsar/models/chat/chat_user.dart';
 
 class Message {

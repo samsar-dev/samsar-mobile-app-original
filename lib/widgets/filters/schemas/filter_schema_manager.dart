@@ -14,7 +14,7 @@ class FilterSchemaManager {
           return VehicleFilters.getFiltersForSubcategory(subcategory);
         }
         return VehicleFilters.all;
-        
+
       case 'real_estate':
       case 'realestate':
       case 'property':
@@ -22,7 +22,7 @@ class FilterSchemaManager {
           return RealEstateFilters.getFiltersForSubcategory(subcategory);
         }
         return RealEstateFilters.all;
-        
+
       default:
         // Homepage - only basic filters
         return ['location', 'price', 'sort'];
@@ -60,10 +60,6 @@ class FilterSchemaManager {
 
   // Get translated listing action labels
   static Map<String, String> getListingActionLabels() {
-    return {
-      'for_sale': 'للبيع',
-      'for_rent': 'للإيجار', 
-      'searching': 'مطلوب'
-    };
+    return {'for_sale': 'للبيع', 'for_rent': 'للإيجار', 'searching': 'مطلوب'};
   }
 }
