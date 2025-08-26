@@ -1,14 +1,9 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:samsar/constants/color_constants.dart';
-import 'package:samsar/controllers/chat/chat_controller.dart';
 import 'package:samsar/controllers/listing/individual_listing_detail_controller.dart';
-import 'package:samsar/helpers/date_format_convert.dart';
-import 'package:samsar/services/chat/chat_service.dart';
-import 'package:samsar/utils/listing_id_formatter.dart';
-import 'package:samsar/views/chats/chat_view.dart';
+import 'package:samsar/utils/location_display_utils.dart';
 import 'package:samsar/widgets/animated_input_wrapper/animated_input_wrapper.dart';
 import 'package:samsar/widgets/app_button/app_button.dart';
 import 'package:samsar/widgets/custom_snackbar/custom_snackbar.dart';
@@ -23,13 +18,14 @@ class ListingDetail extends StatefulWidget {
 }
 
 class _ListingDetailState extends State<ListingDetail> {
-
-
-  final IndividualListingDetailController _detailController = Get.put(IndividualListingDetailController());
+  final IndividualListingDetailController _detailController = Get.put(
+    IndividualListingDetailController(),
+  );
 
   @override
   void initState() {
     super.initState();
+    print('🔍 [LISTING DETAIL DEBUG] Fetching details for listingId: ${widget.listingId}');
     _detailController.fetchListingDetail(widget.listingId);
   }
 
@@ -38,62 +34,154 @@ class _ListingDetailState extends State<ListingDetail> {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
-
     return Scaffold(
       backgroundColor: whiteColor,
-      body: Obx(
-        () {
+      body: Obx(() {
+        if (_detailController.isLoading.value) {
+          return Center(child: CircularProgressIndicator());
+        }
 
-          if(_detailController.isLoading.value) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+        if (_detailController.listingDetail.value == null) {
+          return Center(child: Text('no_data_for_listing'.tr));
+        }
 
-          if(_detailController.listingDetail.value == null) {
-            return Center(
-              child: Text('no_data_for_listing'.tr),
-            );
-          }
+        final listing = _detailController.listingDetail.value!.data;
 
-          final listing = _detailController.listingDetail.value!.data;
+        // 🔍 COMPREHENSIVE DEBUGGING FOR LISTING DETAIL
+        print('🔍 [LISTING DETAIL DEBUG] Loaded listing data:');
+        print('🔍 [LISTING DETAIL DEBUG] Title: ${listing?.title}');
+        print('🔍 [LISTING DETAIL DEBUG] Price: ${listing?.price}');
+        print('🔍 [LISTING DETAIL DEBUG] Location: ${listing?.location}');
+        print('🔍 [LISTING DETAIL DEBUG] Raw details object: ${listing?.details}');
+        print('🔍 [LISTING DETAIL DEBUG] Vehicle details structure:');
+        print('  - Make: ${listing?.make} (ROOT LEVEL)');
+        print('  - Model: ${listing?.model} (ROOT LEVEL)');
+        print('  - Year: ${listing?.year} (ROOT LEVEL)');
+        print('  - FuelType: ${listing?.fuelType} (ROOT LEVEL)');
+        print('  - Transmission: ${listing?.transmissionType} (ROOT LEVEL)');
+        print('  - Mileage: ${listing?.mileage} (ROOT LEVEL)');
+        print('  - Color: ${listing?.color} (ROOT LEVEL)');
+        print('  - Condition: ${listing?.condition} (ROOT LEVEL)');
+        print('  - Horsepower: ${listing?.details?.vehicles?.horsepower} (NESTED)');
+        print('  - DriveType: ${listing?.details?.vehicles?.driveType} (NESTED)');
+        print('  - BodyType: ${listing?.details?.vehicles?.bodyType} (NESTED)');
+        print('🔍 [LISTING DETAIL DEBUG] ================');
 
-          final String createdDate = formatDateToDMY(listing?.createdAt.toString() ?? "");
+        final String createdDate = listing?.createdAt?.toString().split('T')[0] ?? "";
 
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Hero(
-                  tag: "listing_picture_${listing?.id ?? 'NA'}",
-                  child: ImageSlider(
-                    imageUrls: listing!.images,
-                    listingId: listing.id ?? "NA"
-                  ),
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Hero(
+                tag: "listing_picture_${listing?.id ?? 'NA'}",
+                child: ImageSlider(
+                  imageUrls: listing!.images,
+                  listingId: listing.id ?? "NA",
                 ),
-                SizedBox(height: screenHeight * 0.01),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Listing ID Display
+              ),
+              SizedBox(height: screenHeight * 0.01),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Listing ID Display
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: blueColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: blueColor, width: 1),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.tag, color: blueColor, size: 16),
+                          SizedBox(width: 4),
+                          Text(
+                            'ID: ${listing.displayId ?? listing.id ?? ""}',
+                            style: TextStyle(
+                              color: blueColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: screenHeight * 0.01),
+                    Text(
+                      listing.title ?? "NA",
+                      style: TextStyle(
+                        color: blackColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: screenWidth * 0.055,
+                      ),
+                    ),
+                    SizedBox(height: screenHeight * 0.005),
+                    Text(
+                      "\$${listing.price}",
+                      style: TextStyle(
+                        color: blueColor,
+                        fontSize: screenWidth * 0.05,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: screenHeight * 0.01),
+                    // Seller Type Display
+                    if (listing.sellerType != null &&
+                        listing.sellerType!.isNotEmpty)
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        margin: EdgeInsets.only(bottom: screenHeight * 0.01),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
-                          color: blueColor.withOpacity(0.1),
+                          color: listing.sellerType == 'owner'
+                              ? Colors.green.withOpacity(0.1)
+                              : listing.sellerType == 'broker'
+                              ? Colors.orange.withOpacity(0.1)
+                              : Colors.blue.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: blueColor, width: 1),
+                          border: Border.all(
+                            color: listing.sellerType == 'owner'
+                                ? Colors.green
+                                : listing.sellerType == 'broker'
+                                ? Colors.orange
+                                : Colors.blue,
+                            width: 1,
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.tag, color: blueColor, size: 16),
+                            Icon(
+                              listing.sellerType == 'owner'
+                                  ? Icons.person
+                                  : listing.sellerType == 'broker'
+                                  ? Icons.real_estate_agent
+                                  : Icons.business,
+                              color: listing.sellerType == 'owner'
+                                  ? Colors.green
+                                  : listing.sellerType == 'broker'
+                                  ? Colors.orange
+                                  : Colors.blue,
+                              size: 16,
+                            ),
                             SizedBox(width: 4),
                             Text(
-                              'ID: ${ListingIdFormatter.getDisplayId(listing.displayId, listing.id ?? "")}',
+                              _formatSellerType(listing.sellerType!),
                               style: TextStyle(
-                                color: blueColor,
+                                color: listing.sellerType == 'owner'
+                                    ? Colors.green
+                                    : listing.sellerType == 'broker'
+                                    ? Colors.orange
+                                    : Colors.blue,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -101,318 +189,423 @@ class _ListingDetailState extends State<ListingDetail> {
                           ],
                         ),
                       ),
-                      SizedBox(height: screenHeight * 0.01),
-                      Text(
-                        listing.title ?? "NA",
-                        style: TextStyle(
-                          color: blackColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: screenWidth * 0.055,
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.005),
-                      Text(
-                        "\$${listing.price}",
-                        style: TextStyle(
-                          color: blueColor,
-                          fontSize: screenWidth * 0.05,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      // Seller Type Display
-                      if (listing.sellerType != null && listing.sellerType!.isNotEmpty)
-                        Container(
-                          margin: EdgeInsets.only(bottom: screenHeight * 0.01),
-                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: listing.sellerType == 'owner' 
-                                ? Colors.green.withOpacity(0.1)
-                                : listing.sellerType == 'broker'
-                                    ? Colors.orange.withOpacity(0.1)
-                                    : Colors.blue.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: listing.sellerType == 'owner' 
-                                  ? Colors.green
-                                  : listing.sellerType == 'broker'
-                                      ? Colors.orange
-                                      : Colors.blue,
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                listing.sellerType == 'owner' 
-                                    ? Icons.person
-                                    : listing.sellerType == 'broker'
-                                        ? Icons.real_estate_agent
-                                        : Icons.business,
-                                color: listing.sellerType == 'owner' 
-                                    ? Colors.green
-                                    : listing.sellerType == 'broker'
-                                        ? Colors.orange
-                                        : Colors.blue,
-                                size: 16,
-                              ),
-                              SizedBox(width: 4),
-                              Text(
-                                listing.sellerType == 'owner' 
-                                    ? 'ad_owner'.tr
-                                    : listing.sellerType == 'broker'
-                                        ? 'broker'.tr
-                                        : 'business_firm'.tr,
-                                style: TextStyle(
-                                  color: listing.sellerType == 'owner' 
-                                      ? Colors.green
-                                      : listing.sellerType == 'broker'
-                                          ? Colors.orange
-                                          : Colors.blue,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                    Row(
+                      children: [
+                        Icon(Icons.location_pin, color: greyColor, size: 18),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            LocationDisplayUtils.formatLocationForDisplay(listing.location),
+                            style: TextStyle(color: greyColor, fontSize: 14),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                      Row(
-                        children: [
-                          Icon(Icons.location_pin, color: greyColor, size: 18),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              listing.location ?? "NA",
-                              style: TextStyle(color: greyColor, fontSize: 14),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                      ],
+                    ),
+                    SizedBox(height: screenHeight * 0.03),
+
+                    AnimatedInputWrapper(
+                      delayMilliseconds: 100,
+                      child: DetailSectionCard(
+                        title: "Description",
+                        useTwoColumns: false,
+                        items: [
+                          IconLabelPair(
+                            Icons.description,
+                            listing.description ?? "NA",
                           ),
                         ],
                       ),
-                      SizedBox(height: screenHeight * 0.03),
-          
-                      AnimatedInputWrapper(
-                        delayMilliseconds: 100,
-                        child: DetailSectionCard(
-                          title: "Description",
-                          useTwoColumns: false,
-                          items: [
+                    ),
+
+                    SizedBox(height: 16),
+
+                    // Reusable Cards
+                    AnimatedInputWrapper(
+                      delayMilliseconds: 200,
+                      child: DetailSectionCard(
+                        title: "Essential Details",
+                        items: [
+                          if (listing.make != null && listing.make!.isNotEmpty)
                             IconLabelPair(
-                              Icons.description,
-                              listing.description ?? "NA",
+                              FontAwesomeIcons.car,
+                              "Make: ${listing.make!}",
                             ),
-                          ],
-                        ),
+                          if (listing.model != null && listing.model!.isNotEmpty)
+                            IconLabelPair(
+                              FontAwesomeIcons.carSide,
+                              "Model: ${listing.model!}",
+                            ),
+                          if (listing.year != null)
+                            IconLabelPair(
+                              FontAwesomeIcons.calendar,
+                              "Year: ${listing.year!.toString()}",
+                            ),
+                          if (listing.transmissionType != null && listing.transmissionType!.isNotEmpty)
+                            IconLabelPair(
+                              FontAwesomeIcons.gear,
+                              "Transmission: ${listing.transmissionType!}",
+                            ),
+                          if (listing.mileage != null && listing.mileage! >= 0)
+                            IconLabelPair(
+                              Icons.speed,
+                              "Mileage: ${listing.mileage} KM",
+                            ),
+                          if (listing.fuelType != null && listing.fuelType!.isNotEmpty)
+                            IconLabelPair(
+                              Icons.local_gas_station,
+                              "Fuel Type: ${listing.fuelType!}",
+                            ),
+                          // CRITICAL FIX: Use root-level bodyType field
+                          if (listing.bodyType != null && listing.bodyType!.isNotEmpty)
+                            IconLabelPair(
+                              Icons.sports_motorsports,
+                              "Body Type: ${listing.bodyType!}",
+                            ),
+                          if (listing.engineSize != null && listing.engineSize! > 0)
+                            IconLabelPair(
+                              Icons.settings,
+                              "Engine Size: ${listing.engineSize!.toStringAsFixed(1)}L",
+                            ),
+                          if (listing.details?.vehicles?.driveType != null && listing.details!.vehicles!.driveType!.isNotEmpty)
+                            IconLabelPair(
+                              Icons.all_inclusive,
+                              "Drive Type: ${listing.details!.vehicles!.driveType!}",
+                            ),
+                          // Add accidental field
+                          if (listing.accidental != null && listing.accidental!.isNotEmpty)
+                            IconLabelPair(
+                              Icons.warning,
+                              "Accident History: ${listing.accidental!}",
+                            ),
+                          // Add listingAction field
+                          if (listing.listingAction != null && listing.listingAction!.isNotEmpty)
+                            IconLabelPair(
+                              Icons.sell,
+                              "Listing Type: ${_formatListingAction(listing.listingAction!)}",
+                            ),
+                        ].where((item) => true).toList(),
                       ),
-          
-                      SizedBox(height: 16),
-          
-                      // Reusable Cards
-                      AnimatedInputWrapper(
-                        delayMilliseconds: 200,
-                        child: DetailSectionCard(
-                          title: "Essential Details",
-                          items: [
-                            IconLabelPair(FontAwesomeIcons.car, listing.details?.vehicles?.make ?? "NA"),
-                            IconLabelPair(FontAwesomeIcons.car, listing.details?.vehicles?.model ?? "NA"),
-                            IconLabelPair(FontAwesomeIcons.calendar, listing.details?.vehicles?.year.toString() ?? "NA"),
-                            IconLabelPair(FontAwesomeIcons.gear, listing.details?.vehicles?.transmissionType ?? "NA"),
-                            IconLabelPair(Icons.speed, "${listing.details?.vehicles?.mileage ?? 00} KMPL"),
-                            IconLabelPair(Icons.local_gas_station, listing.details?.vehicles?.fuelType ?? "NA"),
-                            IconLabelPair(Icons.all_inclusive, listing.details?.vehicles?.driveType ?? "NA"),
-                            IconLabelPair(Icons.sports_motorsports, listing.details?.vehicles?.bodyStyle ?? "NA"),
-                          ],
-                        ),
-                      ),
-          
-                      SizedBox(height: 16),
-          
+                    ),
+
+                    SizedBox(height: 16),
+
+                    // CRITICAL FIX: Improved color display with proper fallback
+                    if (listing.color != null && listing.color!.isNotEmpty && listing.color != '#000000')
                       AnimatedInputWrapper(
                         delayMilliseconds: 300,
                         child: DetailSectionCard(
                           title: "Colors",
                           items: [
                             IconLabelPair(
-                              Icons.directions_car_filled, 
-                              "Exterior color",
-                              colorHex: listing.details?.vehicles?.color,
+                              Icons.palette,
+                              "Exterior Color",
+                              colorHex: listing.color ?? listing.details?.vehicles?.color,
                             ),
                           ],
                         ),
                       ),
-          
-                      SizedBox(height: 16),
-          
+
+                    SizedBox(height: 16),
+
+                    if (listing.details?.vehicles?.horsepower != null && listing.details!.vehicles!.horsepower! > 0)
                       AnimatedInputWrapper(
                         delayMilliseconds: 400,
                         child: DetailSectionCard(
                           title: "Performance",
                           items: [
-                            IconLabelPair(Icons.flash_on, "${listing.details?.vehicles?.horsepower} HP"),
+                            IconLabelPair(
+                              Icons.flash_on,
+                              "${listing.details!.vehicles!.horsepower} HP",
+                            ),
                           ],
                         ),
                       ),
-          
-                      SizedBox(height: 16),
-          
-                      AnimatedInputWrapper(
-                        delayMilliseconds: 500,
-                        child: DetailSectionCard(
-                          title: "Condition and Ownership",
-                          items: [
-                            IconLabelPair(Icons.tune, "Condition: ${listing.details?.vehicles?.condition}"),
-                            IconLabelPair(Icons.person, "Previous owners: ${listing.details?.vehicles?.previousOwners}"),
-                            IconLabelPair(Icons.verified_user, "Warranty: ${listing.details?.vehicles?.warranty} Months"),
-                            IconLabelPair(Icons.flight_land, "Imported: ${listing.details?.vehicles?.importStatus}"),
-                            IconLabelPair(Icons.gavel, "Custom: ${listing.details?.vehicles?.customsCleared}"),
-                          ],
-                          useTwoColumns: false,
-                        ),
+
+                    SizedBox(height: 16),
+
+                    AnimatedInputWrapper(
+                      delayMilliseconds: 500,
+                      child: DetailSectionCard(
+                        title: "Condition and Ownership",
+                        items: [
+                          if (listing.condition != null && listing.condition!.isNotEmpty)
+                            IconLabelPair(
+                              Icons.tune,
+                              "Condition: ${listing.condition}",
+                            ),
+                          // CRITICAL FIX: Add accidental field
+                          if (listing.details?.vehicles?.accidentFree != null)
+                            IconLabelPair(
+                              Icons.warning,
+                              "Accident Free: ${listing.details!.vehicles!.accidentFree! ? 'Yes' : 'No'}",
+                            ),
+                          if (listing.details?.vehicles?.previousOwners != null)
+                            IconLabelPair(
+                              Icons.person,
+                              "Previous owners: ${listing.details!.vehicles!.previousOwners}",
+                            ),
+                          if (listing.details?.vehicles?.warranty != null && listing.details!.vehicles!.warranty!.isNotEmpty)
+                            IconLabelPair(
+                              Icons.verified_user,
+                              "Warranty: ${listing.details!.vehicles!.warranty}",
+                            ),
+                          if (listing.details?.vehicles?.importStatus != null && listing.details!.vehicles!.importStatus!.isNotEmpty)
+                            IconLabelPair(
+                              Icons.flight_land,
+                              "Import Status: ${listing.details!.vehicles!.importStatus}",
+                            ),
+                          if (listing.details?.vehicles?.customsCleared != null)
+                            IconLabelPair(
+                              Icons.gavel,
+                              "Customs Cleared: ${listing.details!.vehicles!.customsCleared! ? 'Yes' : 'No'}",
+                            ),
+                        ].where((item) => true).toList(),
+                        useTwoColumns: false,
                       ),
-          
-                      SizedBox(height: 16),
-          
+                    ),
+
+                    SizedBox(height: 16),
+
+                    // Only show Airbags & Breaking section if any airbag data exists
+                    if ((listing.details?.vehicles?.frontAirbags == true) ||
+                        (listing.details?.vehicles?.sideAirbags == true) ||
+                        (listing.details?.vehicles?.curtainAirbags == true) ||
+                        (listing.details?.vehicles?.kneeAirbags == true) ||
+                        (listing.details?.vehicles?.automaticEmergencyBraking == true))
                       AnimatedInputWrapper(
                         delayMilliseconds: 600,
                         child: DetailSectionCard(
                           title: "Airbags & Breaking",
                           items: [
-                            IconLabelPair(Icons.directions_car, "Front airbags: ${
-                              listing.details?.vehicles?.frontAirbags != null && listing.details?.vehicles?.frontAirbags == true
-                              ? "Present" : "Not present"}"),
-                            IconLabelPair(Icons.airline_seat_recline_extra, "Side airbags: ${
-                              listing.details?.vehicles?.sideAirbags != null && listing.details?.vehicles?.sideAirbags == true
-                              ? "Present" : "Not present"
-                            }"),
-                            IconLabelPair(Icons.window, "Curtain airbags: ${
-                              listing.details?.vehicles?.curtainAirbags != null && listing.details?.vehicles?.curtainAirbags == true
-                              ? "Present" : "Not present"
-                            }"),
-                            IconLabelPair(Icons.accessibility_new, "Knee airbags: ${
-                              listing.details?.vehicles?.kneeAirbags != null && listing.details?.vehicles?.kneeAirbags == true
-                              ? "Present" : "Not present"
-                            }"),
-                            IconLabelPair(Icons.gpp_maybe, "Automatic Emergency breaking: ${
-                              listing.details?.vehicles?.automaticEmergencyBraking != null 
-                              && listing.details?.vehicles?.automaticEmergencyBraking == true
-                              ? "Present" : "Not present"
-                            }"),
-                          ],
+                            if (listing.details?.vehicles?.frontAirbags == true)
+                              IconLabelPair(
+                                Icons.directions_car,
+                                "Front airbags: Present",
+                              ),
+                            if (listing.details?.vehicles?.sideAirbags == true)
+                              IconLabelPair(
+                                Icons.airline_seat_recline_extra,
+                                "Side airbags: Present",
+                              ),
+                            if (listing.details?.vehicles?.curtainAirbags == true)
+                              IconLabelPair(
+                                Icons.window,
+                                "Curtain airbags: Present",
+                              ),
+                            if (listing.details?.vehicles?.kneeAirbags == true)
+                              IconLabelPair(
+                                Icons.accessibility_new,
+                                "Knee airbags: Present",
+                              ),
+                            if (listing.details?.vehicles?.automaticEmergencyBraking == true)
+                              IconLabelPair(
+                                Icons.gpp_maybe,
+                                "Automatic Emergency breaking: Present",
+                              ),
+                          ].where((item) => true).toList(),
                         ),
                       ),
-          
-                      SizedBox(height: 16),
-          
+
+                    SizedBox(height: 16),
+
+                    // Only show Assist & Controls section if any control data exists
+                    if ((listing.details?.vehicles?.cruiseControl == true) ||
+                        (listing.details?.vehicles?.adaptiveCruiseControl == true) ||
+                        (listing.details?.vehicles?.laneDepartureWarning == true) ||
+                        (listing.details?.vehicles?.laneKeepAssist == true) ||
+                        (listing.details?.vehicles?.navigationSystem != null && listing.details!.vehicles!.navigationSystem!.isNotEmpty) ||
+                        (listing.details?.vehicles?.roofType != null && listing.details!.vehicles!.roofType!.isNotEmpty))
                       AnimatedInputWrapper(
                         delayMilliseconds: 700,
                         child: DetailSectionCard(
-                          title: "Assit & Controls",
+                          title: "Assist & Controls",
                           items: [
-                            IconLabelPair(Icons.speed, "Cruise control: ${
-                              listing.details?.vehicles?.cruiseControl != null && listing.details?.vehicles?.cruiseControl == true
-                              ? "Present" : "Not present"
-                            }"),
-                            IconLabelPair(Icons.radar, "AdaptiveCruise control: ${
-                              listing.details?.vehicles?.adaptiveCruiseControl != null 
-                              && listing.details?.vehicles?.adaptiveCruiseControl == true
-                              ? "Present" : "Not present"
-                            }"),
-                            IconLabelPair(Icons.swap_calls, "Lane departure warning: ${
-                              listing.details?.vehicles?.laneDepartureWarning != null 
-                              && listing.details?.vehicles?.laneDepartureWarning == true
-                              ? "Present" : "Not present"
-                            }"),
-                            IconLabelPair(Icons.center_focus_strong, "Lane keep assist: ${
-                              listing.details?.vehicles?.laneKeepAssist != null 
-                              && listing.details?.vehicles?.laneKeepAssist == true
-                              ? "Present" : "Not present"
-                            }"),
-                            IconLabelPair(Icons.navigation, "Navigation system: ${listing.details?.vehicles?.navigationSystem}"),
-                            IconLabelPair(Icons.roofing, listing.details?.vehicles?.roofType ?? "NA"),
-                          ],
+                            if (listing.details?.vehicles?.cruiseControl == true)
+                              IconLabelPair(
+                                Icons.speed,
+                                "Cruise control: Present",
+                              ),
+                            if (listing.details?.vehicles?.adaptiveCruiseControl == true)
+                              IconLabelPair(
+                                Icons.radar,
+                                "AdaptiveCruise control: Present",
+                              ),
+                            if (listing.details?.vehicles?.laneDepartureWarning == true)
+                              IconLabelPair(
+                                Icons.swap_calls,
+                                "Lane departure warning: Present",
+                              ),
+                            if (listing.details?.vehicles?.laneKeepAssist == true)
+                              IconLabelPair(
+                                Icons.center_focus_strong,
+                                "Lane keep assist: Present",
+                              ),
+                            if (listing.details?.vehicles?.navigationSystem != null && listing.details!.vehicles!.navigationSystem!.isNotEmpty)
+                              IconLabelPair(
+                                Icons.navigation,
+                                "Navigation system: ${listing.details!.vehicles!.navigationSystem}",
+                              ),
+                            if (listing.details?.vehicles?.roofType != null && listing.details!.vehicles!.roofType!.isNotEmpty)
+                              IconLabelPair(
+                                Icons.roofing,
+                                listing.details!.vehicles!.roofType!,
+                              ),
+                          ].where((item) => true).toList(),
                         ),
                       ),
-          
-                      SizedBox(height: 16),
-          
+
+                    SizedBox(height: 16),
+
+                    // Only show Additional Info section if any additional data exists
+                    if ((listing.details?.vehicles?.serviceHistory != null && listing.details!.vehicles!.serviceHistory.isNotEmpty) ||
+                        (listing.details?.vehicles?.serviceHistoryDetails != null && listing.details!.vehicles!.serviceHistoryDetails!.isNotEmpty) ||
+                        (listing.details?.vehicles?.additionalNotes != null && listing.details!.vehicles!.additionalNotes!.isNotEmpty) ||
+                        (listing.details?.vehicles?.registrationExpiry != null && listing.details!.vehicles!.registrationExpiry!.isNotEmpty))
                       AnimatedInputWrapper(
                         delayMilliseconds: 800,
                         child: DetailSectionCard(
                           title: "Additional Info",
                           items: [
-                            IconLabelPair(Icons.build, "Service history: ${listing.details?.vehicles?.serviceHistory}"),
-                            IconLabelPair(Icons.description, "Service history notes: ${
-                              listing.details?.vehicles?.serviceHistoryDetails}"),
-                            IconLabelPair(Icons.note_alt_outlined, "Additional notes: ${listing.details?.vehicles?.additionalNotes}"),
-                            IconLabelPair(Icons.calendar_month, "Registration expiry: ${listing.details?.vehicles?.registrationExpiry}"),
+                            if (listing.details?.vehicles?.serviceHistory != null && listing.details!.vehicles!.serviceHistory.isNotEmpty)
+                              IconLabelPair(
+                                Icons.build,
+                                "Service history: [Available]",
+                              ),
+                            if (listing.details?.vehicles?.serviceHistoryDetails != null && listing.details!.vehicles!.serviceHistoryDetails!.isNotEmpty)
+                              IconLabelPair(
+                                Icons.description,
+                                "Service history notes: ${listing.details!.vehicles!.serviceHistoryDetails}",
+                              ),
+                            if (listing.details?.vehicles?.additionalNotes != null && listing.details!.vehicles!.additionalNotes!.isNotEmpty)
+                              IconLabelPair(
+                                Icons.note_alt_outlined,
+                                "Additional notes: ${listing.details!.vehicles!.additionalNotes}",
+                              ),
+                            if (listing.details?.vehicles?.registrationExpiry != null && listing.details!.vehicles!.registrationExpiry!.isNotEmpty)
+                              IconLabelPair(
+                                Icons.calendar_month,
+                                "Registration expiry: ${listing.details!.vehicles!.registrationExpiry}",
+                              ),
+                          ].where((item) => true).toList(),
+                        ),
+                      ),
+
+                    SizedBox(height: 16),
+
+                    // Features & Extras section - display all features from the features array
+                    if (listing.details?.vehicles?.features != null && listing.details!.vehicles!.features.isNotEmpty)
+                      AnimatedInputWrapper(
+                        delayMilliseconds: 850,
+                        child: DetailSectionCard(
+                          title: "Features & Extras",
+                          items: [
+                            // Display all features from the features array
+                            ...listing.details!.vehicles!.features.map((feature) => 
+                              IconLabelPair(
+                                Icons.check_circle,
+                                feature,
+                              )
+                            ).toList(),
                           ],
                         ),
                       ),
-          
-                      SizedBox(height: 16),
-          
+
+                    SizedBox(height: 16),
+
+                    // Safety Features section
+                    if ((listing.details?.vehicles?.abs == true) ||
+                        (listing.details?.vehicles?.tractionControl == true) ||
+                        (listing.details?.vehicles?.laneAssist == true) ||
+                        (listing.details?.vehicles?.airbags != null && listing.details!.vehicles!.airbags! > 0))
                       AnimatedInputWrapper(
-                        delayMilliseconds: 900,
-                        child: sellerInfo(
-                          screenHeight,
-                           screenWidth,
-                           listing.seller?.profilePicture ?? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGDSuK3gg8gojbS1BjnbA4NLTjMg_hELJbpQ&s",
-                           listing.seller?.username ?? "",
-                           createdDate
+                        delayMilliseconds: 860,
+                        child: DetailSectionCard(
+                          title: "Safety Features",
+                          items: [
+                            if (listing.details?.vehicles?.abs == true)
+                              IconLabelPair(
+                                Icons.security,
+                                "ABS: Present",
+                              ),
+                            if (listing.details?.vehicles?.tractionControl == true)
+                              IconLabelPair(
+                                Icons.control_camera,
+                                "Traction Control: Present",
+                              ),
+                            if (listing.details?.vehicles?.laneAssist == true)
+                              IconLabelPair(
+                                Icons.assistant_direction,
+                                "Lane Assist: Present",
+                              ),
+                            if (listing.details?.vehicles?.airbags != null && listing.details!.vehicles!.airbags! > 0)
+                              IconLabelPair(
+                                Icons.airline_seat_legroom_extra,
+                                "Airbags: ${listing.details!.vehicles!.airbags}",
+                              ),
+                          ].where((item) => true).toList(),
                         ),
                       ),
-          
-                      SizedBox(height: 18),
-          
-                      Align(
-                        alignment: Alignment.center,
-                        child: AppButton(
-                          widthSize: 0.75,
-                          heightSize: 0.08,
-                          buttonColor: blueColor,
-                          text: "Contact Seller",
-                          textColor: whiteColor,
-                          onPressed: () async {
-                            final sellerId = listing.seller?.id;
-                            if (sellerId == null) {
-                              showCustomSnackbar("Seller not found", true);
-                              return;
-                            }
 
-                            // You can inject ChatController with Get.find or create if not exists
-                            final chatController = Get.put(ChatController(chatService: ChatService(Dio())));
+                    SizedBox(height: 16),
 
-                            try {
-                              final conversation = await chatController.getOrCreateConversationWithUser(sellerId);
-
-                              if (conversation != null) {
-                                chatController.selectConversation(conversation);
-                                Get.to(() => ChatView(conversation: conversation));
-                              } else {
-                                showCustomSnackbar("Failed to start chat with seller", true);
-                              }
-                            } catch (e) {
-                              showCustomSnackbar("Error starting chat: $e", true);
-                            }
-                          },
-                        ),
+                    AnimatedInputWrapper(
+                      delayMilliseconds: 900,
+                      child: sellerInfo(
+                        screenHeight,
+                        screenWidth,
+                        listing.seller?.profilePicture ??
+                            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGDSuK3gg8gojbS1BjnbA4NLTjMg_hELJbpQ&s",
+                        listing.seller?.username ?? "",
+                        createdDate,
                       ),
-          
-                      SizedBox(height: 22),
-                    ],
-                  ),
+                    ),
+
+                    SizedBox(height: 18),
+
+                    Align(
+                      alignment: Alignment.center,
+                      child: AppButton(
+                        widthSize: 0.75,
+                        heightSize: 0.08,
+                        buttonColor: blueColor,
+                        text: "Contact Seller",
+                        textColor: whiteColor,
+                        onPressed: () async {
+                          final sellerId = listing.seller?.id;
+                          if (sellerId == null) {
+                            showCustomSnackbar("Seller not found", true);
+                            return;
+                          }
+
+                          // TODO: Implement chat functionality
+                          showCustomSnackbar(
+                            "Chat feature coming soon",
+                            false,
+                          );
+                        },
+                      ),
+                    ),
+
+                    SizedBox(height: 22),
+                  ],
                 ),
-              ],
-            ),
-          );
-        }
-      ),
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 
-  Widget sellerInfo(double screenHeight, double screenWidth, String sellerImage, String sellerName, String listingDate) {
+  Widget sellerInfo(
+    double screenHeight,
+    double screenWidth,
+    String sellerImage,
+    String sellerName,
+    String listingDate,
+  ) {
     return Card(
       color: whiteColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -435,14 +628,13 @@ class _ListingDetailState extends State<ListingDetail> {
               children: [
                 CircleAvatar(
                   radius: 28,
-                  backgroundImage: NetworkImage(
-                    sellerImage,
-                  ),
+                  backgroundImage: NetworkImage(sellerImage),
                 ),
                 SizedBox(width: screenWidth * 0.02),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                     Text(
                       sellerName,
                       style: TextStyle(
@@ -454,12 +646,10 @@ class _ListingDetailState extends State<ListingDetail> {
                     SizedBox(height: screenHeight * 0.003),
                     Text(
                       "Listing posted on $listingDate",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: greyColor,
-                      ),
+                      style: TextStyle(fontSize: 14, color: greyColor),
                     ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -467,6 +657,36 @@ class _ListingDetailState extends State<ListingDetail> {
         ),
       ),
     );
+  }
+
+  String _formatListingAction(String action) {
+    switch (action.toUpperCase()) {
+      case 'SALE':
+        return 'For Sale';
+      case 'RENT':
+        return 'For Rent';
+      case 'SEARCHING':
+        return 'Searching';
+      default:
+        return action;
+    }
+  }
+
+  String _formatSellerType(String sellerType) {
+    switch (sellerType.toLowerCase()) {
+      case 'owner':
+        return 'ad_owner'.tr;
+      case 'broker':
+        return 'broker'.tr;
+      case 'business':
+      case 'business_firm':
+        return 'business_firm'.tr;
+      default:
+        // For any other value, display it as-is with proper formatting
+        return sellerType.split('_').map((word) => 
+          word[0].toUpperCase() + word.substring(1).toLowerCase()
+        ).join(' ');
+    }
   }
 }
 
@@ -513,24 +733,32 @@ class DetailSectionCard extends StatelessWidget {
     if (useTwoColumns) {
       return List.generate((items.length / 2).ceil(), (index) {
         final first = items[index * 2];
-        final second = (index * 2 + 1 < items.length) ? items[index * 2 + 1] : null;
+        final second = (index * 2 + 1 < items.length)
+            ? items[index * 2 + 1]
+            : null;
         return Padding(
           padding: const EdgeInsets.only(bottom: 16.0),
           child: Row(
             children: [
               Expanded(child: _buildIconLabel(first)),
               const SizedBox(width: 16),
-              Expanded(child: second != null ? _buildIconLabel(second) : const SizedBox()),
+              Expanded(
+                child: second != null
+                    ? _buildIconLabel(second)
+                    : const SizedBox(),
+              ),
             ],
           ),
         );
       });
     } else {
       return items
-          .map((item) => Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
-                child: _buildIconLabel(item),
-              ))
+          .map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: _buildIconLabel(item),
+            ),
+          )
           .toList();
     }
   }
@@ -545,17 +773,17 @@ class DetailSectionCard extends StatelessWidget {
     if (isColorField) {
       // Extract color hex from the label text if not provided directly
       final hexCode = pair.colorHex ?? pair.label.split(':').last.trim();
-      
+
       try {
         // Handle hex codes with or without #
         String hex = hexCode.startsWith('#') ? hexCode : '#$hexCode';
         hex = hex.replaceAll('#', '').trim();
-        
+
         // Handle 3-digit hex codes (expand to 6 digits)
         if (hex.length == 3) {
           hex = '${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}';
         }
-        
+
         // Handle 6 or 8 digit hex codes
         if (hex.length == 6 || hex.length == 8) {
           color = Color(int.parse('FF$hex', radix: 16));
@@ -574,7 +802,7 @@ class DetailSectionCard extends StatelessWidget {
       children: [
         FaIcon(pair.icon, color: blueColor, size: 18),
         const SizedBox(width: 6),
-        if (color != null) ...[  
+        if (color != null) ...[
           Container(
             width: 18,
             height: 18,
@@ -595,6 +823,7 @@ class DetailSectionCard extends StatelessWidget {
       ],
     );
   }
+
 }
 
 class IconLabelPair {

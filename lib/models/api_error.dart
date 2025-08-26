@@ -5,10 +5,7 @@ class ApiError {
   final ErrorResponse? errorResponse;
   final FastifyErrorResponse? fastifyErrorResponse;
 
-  ApiError({
-    this.errorResponse,
-    this.fastifyErrorResponse,
-  });
+  ApiError({this.errorResponse, this.fastifyErrorResponse});
 
   /// Create an ApiError from a JSON response
   /// Create an ApiError from a simple message string
@@ -27,16 +24,13 @@ class ApiError {
         fastifyErrorResponse: FastifyErrorResponse.fromJson(json),
       );
     } else {
-      return ApiError(
-        errorResponse: ErrorResponse.fromJson(json),
-      );
+      return ApiError(errorResponse: ErrorResponse.fromJson(json));
     }
   }
 
   /// Get readable error message
- String get message =>
-    fastifyErrorResponse?.message ??
-    errorResponse?.error?.message ??
-    'Unknown error';
-
+  String get message =>
+      fastifyErrorResponse?.message ??
+      errorResponse?.error?.message ??
+      'Unknown error';
 }

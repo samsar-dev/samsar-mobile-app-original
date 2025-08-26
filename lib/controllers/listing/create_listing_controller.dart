@@ -4,7 +4,8 @@ import 'package:samsar/controllers/listing/listing_input_controller.dart';
 import 'package:samsar/models/listing/create_listing/create_vehicle_listing.dart';
 import 'package:samsar/models/listing/create_listing/create_real_estate_listing.dart';
 import 'package:samsar/models/listing/vehicle_model.dart' as car_listing;
-import 'package:samsar/models/listing/real_estate_model.dart' as real_estate_listing;
+import 'package:samsar/models/listing/real_estate_model.dart'
+    as real_estate_listing;
 import 'package:samsar/services/listing/create_listing_service.dart';
 import 'package:samsar/widgets/custom_snackbar/custom_snackbar.dart';
 import 'package:samsar/widgets/loading_dialog/loading_dialog.dart';
@@ -15,7 +16,9 @@ class CreateListingController extends GetxController {
 
   RxBool isCreating = false.obs;
 
-  Future<void> createCarListingController(car_listing.VehicleModel carModelDetails) async {
+  Future<void> createCarListingController(
+    car_listing.VehicleModel carModelDetails,
+  ) async {
     try {
       isCreating.value = true;
       loadingDialog('Creating listing...');
@@ -37,15 +40,18 @@ class CreateListingController extends GetxController {
       print("  Seller Type: '${carModelDetails.sellerType}'");
       print("  Images count: ${carModelDetails.listingImage.length}");
       print("  Images paths: ${carModelDetails.listingImage}");
-      
+
       print("\n🔍 ANALYZING DETAILS OBJECT:");
       print("  Details type: ${carModelDetails.details.runtimeType}");
       print("  Details.json type: ${carModelDetails.details.json.runtimeType}");
-      print("  Details.json keys: ${carModelDetails.details.json.keys.toList()}");
+      print(
+        "  Details.json keys: ${carModelDetails.details.json.keys.toList()}",
+      );
       print("  Details.json content: ${carModelDetails.details.json}");
-      
+
       if (carModelDetails.details.json.containsKey('vehicles')) {
-        final vehiclesData = carModelDetails.details.json['vehicles'] as Map<String, dynamic>?;
+        final vehiclesData =
+            carModelDetails.details.json['vehicles'] as Map<String, dynamic>?;
         if (vehiclesData != null) {
           print("\n🚗 VEHICLE SPECIFIC DATA FOUND:");
           print("  vehicleType: '${vehiclesData['vehicleType']}'");
@@ -71,24 +77,28 @@ class CreateListingController extends GetxController {
       final token = await _authController.getAccessToken();
       print("🔑 Auth token: ${token != null ? 'Present' : 'Missing'}");
 
-      final ApiResponse<CreateCarListing> result = await CreateListingService().createCarListingService(token!, carModelDetails);
+      final ApiResponse<CreateCarListing> result = await CreateListingService()
+          .createCarListingService(token!, carModelDetails);
 
       Get.back(); // close loading dialog
 
       if (result.isSuccess) {
         CreateCarListing response = result.successResponse!;
         showCustomSnackbar("Listing created successfully!", false);
-        
+
         // Clear the form data after successful creation
         final listingController = Get.find<ListingInputController>();
         print("🔄 Clearing form data...");
         listingController.clearDataAfterSubmission();
         print("✅ Form data cleared.");
-        
+
         // Navigate back to home or listings page
         Get.offAllNamed('/'); // Navigate to home and clear navigation stack
       } else {
-        showCustomSnackbar("Failed to create listing: ${result.apiError?.errorResponse?.error?.message ?? result.apiError?.fastifyErrorResponse?.message ?? "Failed to create listing"}", true);
+        showCustomSnackbar(
+          "Failed to create listing: ${result.apiError?.errorResponse?.error?.message ?? result.apiError?.fastifyErrorResponse?.message ?? "Failed to create listing"}",
+          true,
+        );
       }
     } catch (e) {
       Get.back(); // close loading dialog
@@ -99,24 +109,30 @@ class CreateListingController extends GetxController {
     }
   }
 
-  Future<void> createRealEstateListingController(real_estate_listing.RealEstateModel realEstateDetails) async {
+  Future<void> createRealEstateListingController(
+    real_estate_listing.RealEstateModel realEstateDetails,
+  ) async {
     try {
       isCreating.value = true;
       loadingDialog('Creating real estate listing...');
 
       final token = await _authController.getAccessToken();
 
-      final ApiResponse<CreateRealEstateListing> result = await CreateListingService().createRealEstateListingService(token!, realEstateDetails);
+      final ApiResponse<CreateRealEstateListing> result =
+          await CreateListingService().createRealEstateListingService(
+            token!,
+            realEstateDetails,
+          );
 
       Get.back(); // close loading dialog
 
       if (result.isSuccess) {
         showCustomSnackbar("Real estate listing created successfully!", false);
-        
+
         final listingController = Get.find<ListingInputController>();
         listingController.clearDataAfterSubmission();
-        
-        Get.offAllNamed('/'); 
+
+        Get.offAllNamed('/');
       } else {
         showCustomSnackbar(
           result.apiError?.errorResponse?.error?.message ??
@@ -134,7 +150,9 @@ class CreateListingController extends GetxController {
   }
 
   // Commercial Vehicle Controller for VANS, BUSES, TRACTORS
-  Future<void> createCommercialVehicleController(CommercialVehicleModel commercialDetails) async {
+  Future<void> createCommercialVehicleController(
+    CommercialVehicleModel commercialDetails,
+  ) async {
     try {
       isCreating.value = true;
       loadingDialog('Creating commercial vehicle listing...');
@@ -158,18 +176,22 @@ class CreateListingController extends GetxController {
       final token = await _authController.getAccessToken();
       print("Auth token: ${token != null ? 'Present' : 'Missing'}");
 
-      final result = await CreateListingService().createCommercialVehicleService(token!, commercialDetails);
+      final result = await CreateListingService()
+          .createCommercialVehicleService(token!, commercialDetails);
 
       Get.back(); // close loading dialog
 
       if (result.isSuccess) {
         CreateCarListing response = result.successResponse!;
-        showCustomSnackbar("Commercial vehicle listing created successfully!", false);
-        
+        showCustomSnackbar(
+          "Commercial vehicle listing created successfully!",
+          false,
+        );
+
         // Clear the form data after successful creation
         final listingController = Get.find<ListingInputController>();
         listingController.clearDataAfterSubmission();
-        
+
         // Navigate back to home or listings page
         Get.offAllNamed('/'); // Navigate to home and clear navigation stack
       } else {

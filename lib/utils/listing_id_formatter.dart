@@ -6,12 +6,12 @@ class ListingIdFormatter {
   static String formatListingIdForDisplay(String cuid) {
     // Extract numeric characters from cuid and pad to ensure 8 digits
     final numericChars = cuid.replaceAll(RegExp(r'[^0-9]'), '');
-    
+
     // If we have enough digits, take first 8
     if (numericChars.length >= 8) {
       return '#${numericChars.substring(0, 8)}';
     }
-    
+
     // If not enough digits, use hash of the cuid to generate consistent 8-digit number
     int hash = 0;
     for (int i = 0; i < cuid.length; i++) {
@@ -19,7 +19,7 @@ class ListingIdFormatter {
       hash = ((hash << 5) - hash) + char;
       hash = hash & 0xFFFFFFFF; // Convert to 32-bit integer
     }
-    
+
     // Ensure positive number and format to 8 digits
     final displayId = hash.abs().toString().padLeft(8, '0').substring(0, 8);
     return '#$displayId';

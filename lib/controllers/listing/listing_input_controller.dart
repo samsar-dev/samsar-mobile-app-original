@@ -1,10 +1,9 @@
 import 'package:get/get.dart';
 
-import 'package:samsar/models/listing/real_estate_model.dart';
+import 'package:samsar/models/listing/real_estate_model.dart' as real_estate_model;
 import 'package:samsar/models/listing/vehicle_model.dart' as vehicle_listing;
 
 class ListingInputController extends GetxController {
-
   //Basic Listing fields
   RxString title = "".obs;
   RxString description = "".obs;
@@ -39,7 +38,6 @@ class ListingInputController extends GetxController {
   RxString registrationExpiry = "".obs;
   RxString engineSize = "".obs;
   RxString exteriorColor = "".obs;
-  RxString interiorColor = "".obs;
 
   // Truck-specific fields
   RxString payloadCapacity = "".obs;
@@ -79,7 +77,6 @@ class ListingInputController extends GetxController {
   RxString pool = "".obs;
   RxString officeType = "".obs;
   RxInt totalArea = 0.obs;
-  RxInt meetingRooms = 0.obs;
   RxString zoning = "".obs;
   RxString roadAccess = "".obs;
 
@@ -150,16 +147,11 @@ class ListingInputController extends GetxController {
   RxBool isWifiHotspot = false.obs;
   RxBool isIntegratedStreaming = false.obs;
   RxBool isRearSeatEntertainment = false.obs;
-
-  RxBool isCentralLocking = false.obs;
-  RxBool isImmobilizer = false.obs;
-  RxBool isAlarmSystem = false.obs;
-  RxBool isPowerSteering = false.obs;
   RxBool isSummerTires = false.obs;
-  
+
   // General features list for all subcategories
   RxList<String> selectedFeatures = <String>[].obs;
-  
+
   // Additional feature fields for different subcategories
   // Real Estate Features
   RxBool hasElevator = false.obs;
@@ -173,7 +165,7 @@ class ListingInputController extends GetxController {
   RxBool hasGenerator = false.obs;
   RxBool hasWaterHeater = false.obs;
   RxBool hasStorageRoom = false.obs;
-  
+
   // House/Villa specific
   RxBool hasGarden = false.obs;
   RxBool hasGarage = false.obs;
@@ -183,13 +175,12 @@ class ListingInputController extends GetxController {
   RxBool hasSwimmingPool = false.obs;
   RxBool hasSolarPanels = false.obs;
   RxBool hasWaterWell = false.obs;
-  
+
   // Office specific
   RxBool hasReceptionArea = false.obs;
-  RxBool hasMeetingRooms = false.obs;
   RxBool hasKitchenArea = false.obs;
   RxBool hasDisabledAccess = false.obs;
-  
+
   // Land specific
   RxBool hasWaterAccess = false.obs;
   RxBool hasElectricityAccess = false.obs;
@@ -202,7 +193,7 @@ class ListingInputController extends GetxController {
   RxBool hasFruitTrees = false.obs;
   RxBool hasBuildingPermit = false.obs;
   RxBool hasCornerLot = false.obs;
-  
+
   // Store specific
   RxBool hasStreetFront = false.obs;
   RxBool hasDisplayWindows = false.obs;
@@ -210,7 +201,7 @@ class ListingInputController extends GetxController {
   RxBool hasLoadingDock = false.obs;
   RxBool hasOfficeSpace = false.obs;
   RxBool hasRestroom = false.obs;
-  
+
   // Commercial Vehicle Features
   RxBool hasHydraulicLift = false.obs;
   RxBool hasCargoCover = false.obs;
@@ -220,7 +211,7 @@ class ListingInputController extends GetxController {
   RxBool hasGpsTracking = false.obs;
   RxBool hasCommercialLicense = false.obs;
   RxBool hasCargoBarrier = false.obs;
-  
+
   // Construction Vehicle Features
   RxBool hasHydraulicSystem = false.obs;
   RxBool hasWorkLights = false.obs;
@@ -231,7 +222,7 @@ class ListingInputController extends GetxController {
   RxBool hasRolloverProtection = false.obs;
   RxBool hasServiceRecords = false.obs;
   RxBool hasOperatorManual = false.obs;
-  
+
   // Passenger Vehicle Features
   RxBool hasElectricWindows = false.obs;
   RxBool hasGpsNavigation = false.obs;
@@ -239,6 +230,88 @@ class ListingInputController extends GetxController {
   RxBool hasBackupCamera = false.obs;
   RxBool hasSunroof = false.obs;
   RxBool hasLeatherSeats = false.obs;
+
+  // Method to clear subcategory-specific features when switching subcategories
+  void clearSubcategorySpecificFeatures(String newSubCategory) {
+    final newSubCategoryUpper = newSubCategory.toUpperCase();
+    
+    print('🧹 Clearing subcategory-specific features for switch to: $newSubCategoryUpper');
+    
+    // Always clear all subcategory-specific features first
+    _clearAllSubcategoryFeatures();
+    
+    // Clear general features list but keep common safety features
+    selectedFeatures.clear();
+    
+    print('✅ Subcategory-specific features cleared');
+  }
+  
+  // Helper method to clear all subcategory-specific features
+  void _clearAllSubcategoryFeatures() {
+    // Commercial Vehicle Features
+    hasHydraulicLift.value = false;
+    hasCargoCover.value = false;
+    hasTieDownPoints.value = false;
+    hasLoadingRamp.value = false;
+    hasRefrigeration.value = false;
+    hasGpsTracking.value = false;
+    hasCommercialLicense.value = false;
+    hasCargoBarrier.value = false;
+    
+    // Construction Vehicle Features
+    hasHydraulicSystem.value = false;
+    hasWorkLights.value = false;
+    hasQuickAttach.value = false;
+    hasRubberTracks.value = false;
+    hasEnclosedCab.value = false;
+    hasEmergencyStop.value = false;
+    hasRolloverProtection.value = false;
+    hasServiceRecords.value = false;
+    hasOperatorManual.value = false;
+    
+    // Passenger Vehicle Features
+    hasElectricWindows.value = false;
+    hasGpsNavigation.value = false;
+    hasUsbCharging.value = false;
+    hasBackupCamera.value = false;
+    hasSunroof.value = false;
+    hasLeatherSeats.value = false;
+    
+    // Car/Motorcycle specific features (advanced)
+    isBlindSpotMonitor.value = false;
+    isEmergencyBraking.value = false;
+    isAdaptiveCruiseControl.value = false;
+    isLaneDepartureWarning.value = false;
+    isFatigueWarningSystem.value = false;
+    isIsofix.value = false;
+    isEmergencyCallSystem.value = false;
+    isSpeedLimited.value = false;
+    isTirePressureMonitoring.value = false;
+    isRearCamera.value = false;
+    isThreeSixtyCamera.value = false;
+    isTrafficSignRecognition.value = false;
+    automaticHighBeam.value = false;
+    lightSensor.value = false;
+    hillStartAssist.value = false;
+    parkingAssistOrSelfParking.value = false;
+    isLedHeadlights.value = false;
+    isAdaptiveHeadlights.value = false;
+    isFogLights.value = false;
+    isDaytimeRunningLights.value = false;
+    isAmbientLighting.value = false;
+    isBluetooth.value = false;
+    isAppleCarPlay.value = false;
+    isAndroidAuto.value = false;
+    isPremiumSoundSystem.value = false;
+    isWirelessCharging.value = false;
+    isUsbPorts.value = false;
+    isOnboardComputer.value = false;
+    isDabOrFmRadio.value = false;
+    isWifiHotspot.value = false;
+    isIntegratedStreaming.value = false;
+    isRearSeatEntertainment.value = false;
+    isSummerTires.value = false;
+  }
 
   //to set the basic details
   void setBasicDetails({
@@ -266,9 +339,8 @@ class ListingInputController extends GetxController {
     this.longitude.value = longitude;
     this.make.value = make;
     this.model.value = model;
-    this.year.value = year; 
+    this.year.value = year;
   }
-
 
   //set images for listing
   void setImages(List<String> listingImage) {
@@ -292,7 +364,6 @@ class ListingInputController extends GetxController {
     String registrationExpiry = '',
     String engineSize = '',
     String exteriorColor = '',
-    String interiorColor = '',
   }) {
     this.bodyType.value = bodyType;
     this.driveType.value = driveType;
@@ -309,9 +380,7 @@ class ListingInputController extends GetxController {
     this.registrationExpiry.value = registrationExpiry;
     this.engineSize.value = engineSize;
     this.exteriorColor.value = exteriorColor;
-    this.interiorColor.value = interiorColor;
   }
-
 
   //set features and extras
   void featuresAndExtras({
@@ -353,10 +422,6 @@ class ListingInputController extends GetxController {
     bool isWifiHotspot = false,
     bool isIntegratedStreaming = false,
     bool isRearSeatEntertainment = false,
-    bool isCentralLocking = false,
-    bool isImmobilizer = false,
-    bool isAlarmSystem = false,
-    bool isPowerSteering = false,
     bool isSummerTires = false,
   }) {
     this.noOfAirbags.value = noOfAirbags;
@@ -397,10 +462,7 @@ class ListingInputController extends GetxController {
     this.isWifiHotspot.value = isWifiHotspot;
     this.isIntegratedStreaming.value = isIntegratedStreaming;
     this.isRearSeatEntertainment.value = isRearSeatEntertainment;
-    this.isCentralLocking.value = isCentralLocking;
-    this.isImmobilizer.value = isImmobilizer;
-    this.isAlarmSystem.value = isAlarmSystem;
-    this.isPowerSteering.value = isPowerSteering;
+
     this.isSummerTires.value = isSummerTires;
   }
 
@@ -426,35 +488,46 @@ class ListingInputController extends GetxController {
     print("  location: '${location.value}'");
     print("  mainCategory: '${mainCategory.value}'");
     print("  subCategory: '${subCategory.value}'");
-    
-    // Create features list from all the boolean features
+
+    // Create features list from all the boolean features AND selectedFeatures from UI
     List<String> featuresList = [];
-    if (selectedFeatures.contains('airbags')) featuresList.add("Airbags");
+    
+    // Add features from selectedFeatures (from UI components like CarFeatures)
+    featuresList.addAll(selectedFeatures.toList());
+    
+    // Add boolean features that are enabled
     if (abs.value) featuresList.add("ABS");
     if (tractionControl.value) featuresList.add("Traction Control");
     if (laneAssist.value) featuresList.add("Lane Assist");
     if (isBlindSpotMonitor.value) featuresList.add("Blind Spot Monitor");
     if (isEmergencyBraking.value) featuresList.add("Emergency Braking");
-    if (isAdaptiveCruiseControl.value) featuresList.add("Adaptive Cruise Control");
-    if (isLaneDepartureWarning.value) featuresList.add("Lane Departure Warning");
-    if (isFatigueWarningSystem.value) featuresList.add("Fatigue Warning System");
+    if (isAdaptiveCruiseControl.value)
+      featuresList.add("Adaptive Cruise Control");
+    if (isLaneDepartureWarning.value)
+      featuresList.add("Lane Departure Warning");
+    if (isFatigueWarningSystem.value)
+      featuresList.add("Fatigue Warning System");
     if (isIsofix.value) featuresList.add("ISOFIX");
     if (isEmergencyCallSystem.value) featuresList.add("Emergency Call System");
     if (isSpeedLimited.value) featuresList.add("Speed Limiter");
-    if (isTirePressureMonitoring.value) featuresList.add("Tire Pressure Monitoring");
+    if (isTirePressureMonitoring.value)
+      featuresList.add("Tire Pressure Monitoring");
     if (parkingSensor.value) featuresList.add("Parking Sensor");
     if (isRearCamera.value) featuresList.add("Rear Camera");
     if (isThreeSixtyCamera.value) featuresList.add("360 Camera");
-    if (isTrafficSignRecognition.value) featuresList.add("Traffic Sign Recognition");
+    if (isTrafficSignRecognition.value)
+      featuresList.add("Traffic Sign Recognition");
     if (cruiseControl.value) featuresList.add("Cruise Control");
     if (automaticHighBeam.value) featuresList.add("Automatic High Beam");
     if (lightSensor.value) featuresList.add("Light Sensor");
     if (hillStartAssist.value) featuresList.add("Hill Start Assist");
-    if (parkingAssistOrSelfParking.value) featuresList.add("Parking Assist/Self-Parking");
+    if (parkingAssistOrSelfParking.value)
+      featuresList.add("Parking Assist/Self-Parking");
     if (isLedHeadlights.value) featuresList.add("LED Headlights");
     if (isAdaptiveHeadlights.value) featuresList.add("Adaptive Headlights");
     if (isFogLights.value) featuresList.add("Fog Lights");
-    if (isDaytimeRunningLights.value) featuresList.add("Daytime Running Lights");
+    if (isDaytimeRunningLights.value)
+      featuresList.add("Daytime Running Lights");
     if (isAmbientLighting.value) featuresList.add("Ambient Lighting");
     if (isBluetooth.value) featuresList.add("Bluetooth");
     if (isAppleCarPlay.value) featuresList.add("Apple CarPlay");
@@ -466,17 +539,43 @@ class ListingInputController extends GetxController {
     if (isDabOrFmRadio.value) featuresList.add("DAB/FM Radio");
     if (isWifiHotspot.value) featuresList.add("WiFi Hotspot");
     if (isIntegratedStreaming.value) featuresList.add("Integrated Streaming");
-    if (isRearSeatEntertainment.value) featuresList.add("Rear Seat Entertainment");
-    if (isCentralLocking.value) featuresList.add("Central Locking");
-    if (isImmobilizer.value) featuresList.add("Immobilizer");
-    if (isAlarmSystem.value) featuresList.add("Alarm System");
-    if (isPowerSteering.value) featuresList.add("Power Steering");
+    if (isRearSeatEntertainment.value)
+      featuresList.add("Rear Seat Entertainment");
     if (isSummerTires.value) featuresList.add("Summer Tires");
+
+    // Commercial Vehicle Features
+    if (hasHydraulicLift.value) featuresList.add("Hydraulic Lift");
+    if (hasCargoCover.value) featuresList.add("Cargo Cover");
+    if (hasTieDownPoints.value) featuresList.add("Tie Down Points");
+    if (hasLoadingRamp.value) featuresList.add("Loading Ramp");
+    if (hasRefrigeration.value) featuresList.add("Refrigeration");
+    if (hasGpsTracking.value) featuresList.add("GPS Tracking");
+    if (hasCommercialLicense.value) featuresList.add("Commercial License");
+    if (hasCargoBarrier.value) featuresList.add("Cargo Barrier");
+
+    // Construction Vehicle Features
+    if (hasHydraulicSystem.value) featuresList.add("Hydraulic System");
+    if (hasWorkLights.value) featuresList.add("Work Lights");
+    if (hasQuickAttach.value) featuresList.add("Quick Attach");
+    if (hasRubberTracks.value) featuresList.add("Rubber Tracks");
+    if (hasEnclosedCab.value) featuresList.add("Enclosed Cab");
+    if (hasEmergencyStop.value) featuresList.add("Emergency Stop");
+    if (hasRolloverProtection.value) featuresList.add("Rollover Protection");
+    if (hasServiceRecords.value) featuresList.add("Service Records");
+    if (hasOperatorManual.value) featuresList.add("Operator Manual");
+
+    // Passenger Vehicle Features
+    if (hasElectricWindows.value) featuresList.add("Electric Windows");
+    if (hasGpsNavigation.value) featuresList.add("GPS Navigation");
+    if (hasUsbCharging.value) featuresList.add("USB Charging");
+    if (hasBackupCamera.value) featuresList.add("Backup Camera");
+    if (hasSunroof.value) featuresList.add("Sunroof");
+    if (hasLeatherSeats.value) featuresList.add("Leather Seats");
 
     print("\n🔧 BUILDING FEATURES LIST:");
     print("  Features count: ${featuresList.length}");
     print("  Features: $featuresList");
-    
+
     // Create Details JSON object with proper nesting for backend
     print("\n🏗️ BUILDING DETAILS JSON:");
     final detailsJson = {
@@ -491,14 +590,16 @@ class ListingInputController extends GetxController {
         "transmission": transmissionType.value, // Fixed field name
         "fuelType": fuelType.value,
         "exteriorColor": exteriorColor.value, // Fixed field name
-        "interiorColor": interiorColor.value, // Added missing field
         "engineSize": engineSize.value, // Added missing field
-        "registrationStatus": importStatus.value,
+        "importStatus": importStatus.value,
         "registrationExpiry": registrationExpiry.value,
-        "serviceHistory": serviceHistory.value.isNotEmpty ? [serviceHistory.value] : [],
+        "serviceHistory": serviceHistory.value.isNotEmpty
+            ? [serviceHistory.value]
+            : [],
         "warranty": warranty.value,
         "accidentFree": accidental.value == "No" || accidental.value == "false",
-        "customsCleared": importStatus.value == "Cleared" || importStatus.value == "Local",
+        "customsCleared":
+            importStatus.value == "Cleared" || importStatus.value == "Local",
         "airbags": noOfAirbags.value,
         "abs": abs.value,
         "tractionControl": tractionControl.value,
@@ -512,7 +613,6 @@ class ListingInputController extends GetxController {
         "emissionClass": "", // Add if needed
         "parkingSensor": parkingSensor.value ? "Yes" : "No",
         "parkingBreak": "", // Add if needed
-
         // Truck-specific fields
         "payloadCapacity": payloadCapacity.value,
         "towingCapacity": towingCapacity.value,
@@ -533,13 +633,13 @@ class ListingInputController extends GetxController {
         "bucketCapacity": bucketCapacity.value,
         "liftingCapacity": liftingCapacity.value,
         "reach": reach.value,
-        "workingHours": workingHours.value
-      }
+        "workingHours": workingHours.value,
+      },
     };
 
     print("\n📦 FINAL DETAILS JSON STRUCTURE:");
     print("$detailsJson");
-    
+
     final details = vehicle_listing.Details(json: detailsJson);
 
     print("\n🚗 CREATING VEHICLE MODEL WITH:");
@@ -552,12 +652,12 @@ class ListingInputController extends GetxController {
     print("  listingAction: '${listingAction.value}'");
     print("  sellerType: '${sellerType.value}'");
     print("  images count: ${listingImage.length}");
-    
+
     // Create and return CarModel
     final vehicleModel = vehicle_listing.VehicleModel(
       title: title.value,
       description: description.value,
-       price: price.value.toInt(),
+      price: price.value.toInt(),
       mainCategory: mainCategory.value.toUpperCase(),
       subCategory: subCategory.value,
       location: location.value,
@@ -569,17 +669,22 @@ class ListingInputController extends GetxController {
       details: details,
       listingImage: listingImage.toList(),
     );
-    
+
     print("\n✅ VEHICLE MODEL CREATED SUCCESSFULLY");
     print("🔍 VERIFYING CREATED MODEL:");
     print("  Model title: '${vehicleModel.title}'");
     print("  Model price: ${vehicleModel.price}");
     print("  Model details type: ${vehicleModel.details.runtimeType}");
-    print("  Model details.json type: ${vehicleModel.details.json.runtimeType}");
-    print("  Model details.json keys: ${vehicleModel.details.json.keys.toList()}");
-    
+    print(
+      "  Model details.json type: ${vehicleModel.details.json.runtimeType}",
+    );
+    print(
+      "  Model details.json keys: ${vehicleModel.details.json.keys.toList()}",
+    );
+
     if (vehicleModel.details.json.containsKey('vehicles')) {
-      final vehiclesData = vehicleModel.details.json['vehicles'] as Map<String, dynamic>?;
+      final vehiclesData =
+          vehicleModel.details.json['vehicles'] as Map<String, dynamic>?;
       if (vehiclesData != null) {
         print("  vehicles.make: '${vehiclesData['make']}'");
         print("  vehicles.model: '${vehiclesData['model']}'");
@@ -595,26 +700,28 @@ class ListingInputController extends GetxController {
       print("  ❌ No 'vehicles' key found in details.json!");
     }
     print("🏗️ === VEHICLE MODEL CREATION COMPLETE ===\n");
-    
+
     return vehicleModel;
   }
 
   // Method to validate that essential data exists before clearing
   bool hasEssentialData() {
-    return title.value.isNotEmpty || 
-           description.value.isNotEmpty || 
-           price.value > 0 || 
-           listingImage.isNotEmpty ||
-           make.value.isNotEmpty ||
-           model.value.isNotEmpty ||
-           year.value > 0;
+    return title.value.isNotEmpty ||
+        description.value.isNotEmpty ||
+        price.value > 0 ||
+        listingImage.isNotEmpty ||
+        make.value.isNotEmpty ||
+        model.value.isNotEmpty ||
+        year.value > 0;
   }
 
   // Method to get current data summary for debugging
   Map<String, dynamic> getDataSummary() {
     return {
       'title': title.value,
-      'description': description.value.isNotEmpty ? '${description.value.substring(0, description.value.length > 50 ? 50 : description.value.length)}...' : '',
+      'description': description.value.isNotEmpty
+          ? '${description.value.substring(0, description.value.length > 50 ? 50 : description.value.length)}...'
+          : '',
       'price': price.value,
       'make': make.value,
       'model': model.value,
@@ -633,7 +740,7 @@ class ListingInputController extends GetxController {
   // Method to clear all data (useful for resetting form)
   void clearAllData() {
     print("🚨 CLEARING ALL DATA - Current state: ${getDataSummary()}");
-    
+
     if (hasEssentialData()) {
       print("⚠️ WARNING: Clearing data that contains user input!");
     }
@@ -731,21 +838,13 @@ class ListingInputController extends GetxController {
     isWifiHotspot.value = false;
     isIntegratedStreaming.value = false;
     isRearSeatEntertainment.value = false;
-    isCentralLocking.value = false;
-    isImmobilizer.value = false;
-    isAlarmSystem.value = false;
-    isPowerSteering.value = false;
     isSummerTires.value = false;
-    
+
     print("✅ Data cleared successfully");
   }
 
-
-
-
-
-  RealEstateModel createRealEstateModel() {
-    final details = RealEstateDetails(
+  real_estate_model.RealEstateModel createRealEstateModel() {
+    final details = real_estate_model.RealEstateDetails(
       propertyType: propertyType.value,
       bedrooms: bedrooms.value,
       bathrooms: bathrooms.value,
@@ -761,13 +860,14 @@ class ListingInputController extends GetxController {
       pool: pool.value,
       officeType: officeType.value,
       totalArea: totalArea.value,
-      meetingRooms: meetingRooms.value,
       zoning: zoning.value,
       roadAccess: roadAccess.value,
-
+      buildingAge: buildingAge.value,
+      orientation: orientation.value,
+      view: view.value,
     );
 
-    return RealEstateModel(
+    return real_estate_model.RealEstateModel(
       title: title.value,
       description: description.value,
       price: price.value,
@@ -792,7 +892,7 @@ class ListingInputController extends GetxController {
 
   // Method to backup current data state
   Map<String, dynamic> _dataBackup = {};
-  
+
   void backupCurrentData() {
     _dataBackup = {
       // Basic fields
@@ -809,7 +909,7 @@ class ListingInputController extends GetxController {
       'model': model.value,
       'year': year.value,
       'listingImage': List<String>.from(listingImage),
-      
+
       // Advanced fields
       'bodyType': bodyType.value,
       'driveType': driveType.value,
@@ -828,26 +928,25 @@ class ListingInputController extends GetxController {
       'payloadCapacity': payloadCapacity.value,
       'towingCapacity': towingCapacity.value,
       'exteriorColor': exteriorColor.value,
-      'interiorColor': interiorColor.value,
-      
+
       // Passenger vehicle fields
       'seatingCapacity': seatingCapacity.value,
       'doors': doors.value,
       'airConditioning': airConditioning.value,
       'entertainmentSystem': entertainmentSystem.value,
-      
+
       // Commercial vehicle fields
       'cargoVolume': cargoVolume.value,
       'axles': axles.value,
       'gvwr': gvwr.value,
-      
+
       // Construction vehicle fields
       'operatingWeight': operatingWeight.value,
       'bucketCapacity': bucketCapacity.value,
       'liftingCapacity': liftingCapacity.value,
       'reach': reach.value,
       'workingHours': workingHours.value,
-      
+
       // Features
       'noOfAirbags': noOfAirbags.value,
       'abs': abs.value,
@@ -887,12 +986,8 @@ class ListingInputController extends GetxController {
       'isWifiHotspot': isWifiHotspot.value,
       'isIntegratedStreaming': isIntegratedStreaming.value,
       'isRearSeatEntertainment': isRearSeatEntertainment.value,
-      'isCentralLocking': isCentralLocking.value,
-      'isImmobilizer': isImmobilizer.value,
-      'isAlarmSystem': isAlarmSystem.value,
-      'isPowerSteering': isPowerSteering.value,
       'isSummerTires': isSummerTires.value,
-      
+
       // Real estate fields
       'propertyType': propertyType.value,
       'bedrooms': bedrooms.value,
@@ -909,7 +1004,6 @@ class ListingInputController extends GetxController {
       'pool': pool.value,
       'officeType': officeType.value,
       'totalArea': totalArea.value,
-      'meetingRooms': meetingRooms.value,
       'zoning': zoning.value,
       'roadAccess': roadAccess.value,
     };
@@ -924,7 +1018,7 @@ class ListingInputController extends GetxController {
     }
 
     print("🔄 Restoring data from backup...");
-    
+
     // Basic fields
     title.value = _dataBackup['title'] ?? '';
     description.value = _dataBackup['description'] ?? '';
@@ -939,7 +1033,7 @@ class ListingInputController extends GetxController {
     model.value = _dataBackup['model'] ?? '';
     year.value = _dataBackup['year'] ?? 0;
     listingImage.value = List<String>.from(_dataBackup['listingImage'] ?? []);
-    
+
     // Advanced fields
     bodyType.value = _dataBackup['bodyType'] ?? '';
     driveType.value = _dataBackup['driveType'] ?? '';
@@ -977,7 +1071,7 @@ class ListingInputController extends GetxController {
     workingHours.value = _dataBackup['workingHours'] ?? '';
 
     exteriorColor.value = _dataBackup['exteriorColor'] ?? '';
-    
+
     // Features
     noOfAirbags.value = _dataBackup['noOfAirbags'] ?? 0;
     abs.value = _dataBackup['abs'] ?? false;
@@ -985,26 +1079,33 @@ class ListingInputController extends GetxController {
     laneAssist.value = _dataBackup['laneAssist'] ?? false;
     isBlindSpotMonitor.value = _dataBackup['isBlindSpotMonitor'] ?? false;
     isEmergencyBraking.value = _dataBackup['isEmergencyBraking'] ?? false;
-    isAdaptiveCruiseControl.value = _dataBackup['isAdaptiveCruiseControl'] ?? false;
-    isLaneDepartureWarning.value = _dataBackup['isLaneDepartureWarning'] ?? false;
-    isFatigueWarningSystem.value = _dataBackup['isFatigueWarningSystem'] ?? false;
+    isAdaptiveCruiseControl.value =
+        _dataBackup['isAdaptiveCruiseControl'] ?? false;
+    isLaneDepartureWarning.value =
+        _dataBackup['isLaneDepartureWarning'] ?? false;
+    isFatigueWarningSystem.value =
+        _dataBackup['isFatigueWarningSystem'] ?? false;
     isIsofix.value = _dataBackup['isIsofix'] ?? false;
     isEmergencyCallSystem.value = _dataBackup['isEmergencyCallSystem'] ?? false;
     isSpeedLimited.value = _dataBackup['isSpeedLimited'] ?? false;
-    isTirePressureMonitoring.value = _dataBackup['isTirePressureMonitoring'] ?? false;
+    isTirePressureMonitoring.value =
+        _dataBackup['isTirePressureMonitoring'] ?? false;
     parkingSensor.value = _dataBackup['parkingSensor'] ?? false;
     isRearCamera.value = _dataBackup['isRearCamera'] ?? false;
     isThreeSixtyCamera.value = _dataBackup['isThreeSixtyCamera'] ?? false;
-    isTrafficSignRecognition.value = _dataBackup['isTrafficSignRecognition'] ?? false;
+    isTrafficSignRecognition.value =
+        _dataBackup['isTrafficSignRecognition'] ?? false;
     cruiseControl.value = _dataBackup['cruiseControl'] ?? false;
     automaticHighBeam.value = _dataBackup['automaticHighBeam'] ?? false;
     lightSensor.value = _dataBackup['lightSensor'] ?? false;
     hillStartAssist.value = _dataBackup['hillStartAssist'] ?? false;
-    parkingAssistOrSelfParking.value = _dataBackup['parkingAssistOrSelfParking'] ?? false;
+    parkingAssistOrSelfParking.value =
+        _dataBackup['parkingAssistOrSelfParking'] ?? false;
     isLedHeadlights.value = _dataBackup['isLedHeadlights'] ?? false;
     isAdaptiveHeadlights.value = _dataBackup['isAdaptiveHeadlights'] ?? false;
     isFogLights.value = _dataBackup['isFogLights'] ?? false;
-    isDaytimeRunningLights.value = _dataBackup['isDaytimeRunningLights'] ?? false;
+    isDaytimeRunningLights.value =
+        _dataBackup['isDaytimeRunningLights'] ?? false;
     isAmbientLighting.value = _dataBackup['isAmbientLighting'] ?? false;
     isBluetooth.value = _dataBackup['isBluetooth'] ?? false;
     isAppleCarPlay.value = _dataBackup['isAppleCarPlay'] ?? false;
@@ -1016,13 +1117,10 @@ class ListingInputController extends GetxController {
     isDabOrFmRadio.value = _dataBackup['isDabOrFmRadio'] ?? false;
     isWifiHotspot.value = _dataBackup['isWifiHotspot'] ?? false;
     isIntegratedStreaming.value = _dataBackup['isIntegratedStreaming'] ?? false;
-    isRearSeatEntertainment.value = _dataBackup['isRearSeatEntertainment'] ?? false;
-    isCentralLocking.value = _dataBackup['isCentralLocking'] ?? false;
-    isImmobilizer.value = _dataBackup['isImmobilizer'] ?? false;
-    isAlarmSystem.value = _dataBackup['isAlarmSystem'] ?? false;
-    isPowerSteering.value = _dataBackup['isPowerSteering'] ?? false;
+    isRearSeatEntertainment.value =
+        _dataBackup['isRearSeatEntertainment'] ?? false;
     isSummerTires.value = _dataBackup['isSummerTires'] ?? false;
-    
+
     print("✅ Data restored successfully from backup");
   }
 
@@ -1039,5 +1137,4 @@ class ListingInputController extends GetxController {
         return 'SALE'; // Default fallback
     }
   }
-
 }

@@ -8,7 +8,7 @@ import 'package:samsar/widgets/otp_field/otp_field.dart';
 
 class CodeVerificationView extends StatelessWidget {
   final String? email;
-  
+
   CodeVerificationView({super.key, this.email});
 
   final TextEditingController _otpController = TextEditingController();
@@ -21,10 +21,7 @@ class CodeVerificationView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: whiteColor,
-      appBar: AppBar(
-        backgroundColor: whiteColor,
-        foregroundColor: blueColor,
-      ),
+      appBar: AppBar(backgroundColor: whiteColor, foregroundColor: blueColor),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -49,8 +46,10 @@ class CodeVerificationView extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Text(
-                    email != null 
-                        ? "verification_code_sent_to".trParams({'email': email!})
+                    email != null
+                        ? "verification_code_sent_to".trParams({
+                            'email': email!,
+                          })
                         : "verification_code_sent".tr,
                     style: TextStyle(
                       color: blackColor,
@@ -86,7 +85,7 @@ class CodeVerificationView extends StatelessWidget {
                     }
                   },
                   otpController: _otpController,
-                )
+                ),
               ],
             ),
           ),
@@ -105,7 +104,7 @@ class OtpBottomSheet extends StatefulWidget {
     super.key,
     required this.onVerify,
     required this.onResend,
-    required this.otpController
+    required this.otpController,
   });
 
   @override
@@ -133,8 +132,6 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    
-
     return Padding(
       padding: MediaQuery.of(context).viewInsets.add(const EdgeInsets.all(20)),
       child: Column(
@@ -142,16 +139,16 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
         children: [
           Text(
             "Enter 6-digit OTP".tr,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: whiteColor),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: whiteColor,
+            ),
           ),
           const SizedBox(height: 16),
-          OtpField(
-            widthMultiplier: 0.9,
-            controllers: otpDigits
-          ),
+          OtpField(widthMultiplier: 0.9, controllers: otpDigits),
           const SizedBox(height: 20),
 
-         
           AppButton(
             widthSize: 0.5,
             heightSize: 0.06,
@@ -160,9 +157,9 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
             buttonColor: blueColor,
             onPressed: () {
               final otp = getFullOtp(otpDigits);
-             
+
               if (otp.length == 6) {
-                widget.onVerify(otp);          // Pass the OTP to parent first
+                widget.onVerify(otp); // Pass the OTP to parent first
                 Navigator.pop(context); // Then close the bottom sheet
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -172,9 +169,9 @@ class _OtpBottomSheetState extends State<OtpBottomSheet> {
             },
           ),
 
-          SizedBox(height: MediaQuery.of(context).size.height * 0.03,),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.03),
 
-          ResendCodeSection(onResend: widget.onResend)
+          ResendCodeSection(onResend: widget.onResend),
         ],
       ),
     );
@@ -187,7 +184,7 @@ String getFullOtp(List<TextEditingController> controllers) {
 
 class ResendCodeSection extends StatefulWidget {
   final VoidCallback onResend;
-  
+
   const ResendCodeSection({super.key, required this.onResend});
 
   @override
@@ -195,7 +192,6 @@ class ResendCodeSection extends StatefulWidget {
 }
 
 class _ResendCodeSectionState extends State<ResendCodeSection> {
-
   static const int _initialSeconds = 120;
   int _remainingSeconds = _initialSeconds;
   late Timer _timer;
@@ -208,12 +204,11 @@ class _ResendCodeSectionState extends State<ResendCodeSection> {
   }
 
   void _startTimer() {
-
     _resendEnabled = false;
     _remainingSeconds = _initialSeconds;
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if(_remainingSeconds > 0) {
+      if (_remainingSeconds > 0) {
         setState(() {
           _remainingSeconds--;
         });
@@ -224,7 +219,6 @@ class _ResendCodeSectionState extends State<ResendCodeSection> {
         _timer.cancel();
       }
     });
-
   }
 
   String _formatTime(int seconds) {
@@ -240,38 +234,37 @@ class _ResendCodeSectionState extends State<ResendCodeSection> {
   }
 
   @override
-Widget build(BuildContext context) {
-  final double screenWidth = MediaQuery.of(context).size.width;
+  Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
 
-  return SizedBox(
-    width: double.infinity,
-    height: MediaQuery.of(context).size.height * 0.05,
-    child: Center(
-      child: _resendEnabled
-          ? TextButton(
-              onPressed: () {
-                widget.onResend();
-                _startTimer();
-              },
-              child: Text(
-                "Resend code".tr,
+    return SizedBox(
+      width: double.infinity,
+      height: MediaQuery.of(context).size.height * 0.05,
+      child: Center(
+        child: _resendEnabled
+            ? TextButton(
+                onPressed: () {
+                  widget.onResend();
+                  _startTimer();
+                },
+                child: Text(
+                  "Resend code".tr,
+                  style: TextStyle(
+                    color: blueColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: screenWidth * 0.05,
+                  ),
+                ),
+              )
+            : Text(
+                _formatTime(_remainingSeconds),
                 style: TextStyle(
                   color: blueColor,
                   fontWeight: FontWeight.bold,
                   fontSize: screenWidth * 0.05,
                 ),
               ),
-            )
-          : Text(
-              _formatTime(_remainingSeconds),
-              style: TextStyle(
-                color: blueColor,
-                fontWeight: FontWeight.bold,
-                fontSize: screenWidth * 0.05,
-              ),
-            ),
-    ),
-  );
-}
-
+      ),
+    );
+  }
 }

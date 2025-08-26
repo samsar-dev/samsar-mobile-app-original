@@ -13,7 +13,7 @@ void loadingDialog(String message) {
           height: Get.size.height * 0.2,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: whiteColor, 
+            color: whiteColor,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -21,10 +21,7 @@ void loadingDialog(String message) {
             children: [
               CircularProgressIndicator(color: blueColor),
               const SizedBox(height: 16),
-              Text(
-                message,
-                style: TextStyle(fontSize: 16),
-              ),
+              Text(message, style: TextStyle(fontSize: 16)),
             ],
           ),
         ),

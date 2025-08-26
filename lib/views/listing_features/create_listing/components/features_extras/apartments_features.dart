@@ -19,14 +19,9 @@ class _ApartmentsFeaturesState extends State<ApartmentsFeatures> {
     'parking': false,
     'central_heating': false,
     'air_conditioning': false,
-    'furnished': false,
-    'landline_available': false,
-    'security_system': false,
-    'concierge': false,
     'generator': false,
     'water_heater': false,
     'storage_room': false,
-    'laundry_room': false,
     'water_well': false,
     'solar_panels': false,
   };
@@ -57,7 +52,7 @@ class _ApartmentsFeaturesState extends State<ApartmentsFeatures> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -82,7 +77,7 @@ class _ApartmentsFeaturesState extends State<ApartmentsFeatures> {
               ),
             ),
             SizedBox(height: 24),
-            
+
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -95,7 +90,7 @@ class _ApartmentsFeaturesState extends State<ApartmentsFeatures> {
                 itemBuilder: (context, index) {
                   final feature = _features.keys.elementAt(index);
                   final isSelected = _features[feature]!;
-                  
+
                   return GestureDetector(
                     onTap: () {
                       setState(() {
@@ -104,15 +99,21 @@ class _ApartmentsFeaturesState extends State<ApartmentsFeatures> {
                         if (isSelected) {
                           _listingInputController.selectedFeatures.add(feature);
                         } else {
-                          _listingInputController.selectedFeatures.remove(feature);
+                          _listingInputController.selectedFeatures.remove(
+                            feature,
+                          );
                         }
                       });
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: isSelected ? Theme.of(context).primaryColor : Colors.white,
+                        color: isSelected
+                            ? Theme.of(context).primaryColor
+                            : Colors.white,
                         border: Border.all(
-                          color: isSelected ? Theme.of(context).primaryColor : Colors.grey[300]!,
+                          color: isSelected
+                              ? Theme.of(context).primaryColor
+                              : Colors.grey[300]!,
                           width: 1.5,
                         ),
                         borderRadius: BorderRadius.circular(8),

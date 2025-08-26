@@ -11,11 +11,14 @@ class Label extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.only(left: 24.0),
-        child: Text(labelText, style: TextStyle(
-        color: blackColor,
-        fontWeight: FontWeight.bold,
-        fontSize: 16
-        ),),
+        child: Text(
+          labelText,
+          style: TextStyle(
+            color: blackColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
       ),
     );
   }

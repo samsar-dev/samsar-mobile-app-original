@@ -55,7 +55,7 @@ class _LandFeaturesState extends State<LandFeatures> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -80,7 +80,7 @@ class _LandFeaturesState extends State<LandFeatures> {
               ),
             ),
             SizedBox(height: 24),
-            
+
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -93,7 +93,7 @@ class _LandFeaturesState extends State<LandFeatures> {
                 itemBuilder: (context, index) {
                   final feature = _features.keys.elementAt(index);
                   final isSelected = _features[feature]!;
-                  
+
                   return GestureDetector(
                     onTap: () {
                       setState(() {
@@ -102,15 +102,21 @@ class _LandFeaturesState extends State<LandFeatures> {
                         if (isSelected) {
                           _listingInputController.selectedFeatures.add(feature);
                         } else {
-                          _listingInputController.selectedFeatures.remove(feature);
+                          _listingInputController.selectedFeatures.remove(
+                            feature,
+                          );
                         }
                       });
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: isSelected ? Theme.of(context).primaryColor : Colors.white,
+                        color: isSelected
+                            ? Theme.of(context).primaryColor
+                            : Colors.white,
                         border: Border.all(
-                          color: isSelected ? Theme.of(context).primaryColor : Colors.grey[300]!,
+                          color: isSelected
+                              ? Theme.of(context).primaryColor
+                              : Colors.grey[300]!,
                           width: 1.5,
                         ),
                         borderRadius: BorderRadius.circular(8),

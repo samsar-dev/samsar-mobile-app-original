@@ -9,24 +9,21 @@ import 'package:samsar/views/home/home_view.dart';
 class AppRoutes {
   static appRoutes() => [
     // Root route
-    GetPage(
-      name: '/',
-      page: () => HomeView(),
-    ),
-    
+    GetPage(name: '/', page: () => HomeView()),
+
     // Public routes (no authentication required)
     GetPage(
       name: RouteNames.loginView,
       page: () => LoginView(),
       transition: Transition.leftToRight,
-      transitionDuration: const Duration(milliseconds: 500)
+      transitionDuration: const Duration(milliseconds: 500),
     ),
 
     GetPage(
       name: RouteNames.registerView,
       page: () => RegisterView(),
       transition: Transition.downToUp,
-      transitionDuration: Duration(milliseconds: 800)
+      transitionDuration: Duration(milliseconds: 800),
     ),
 
     GetPage(
@@ -34,14 +31,11 @@ class AppRoutes {
       page: () => CodeVerificationView(),
       transition: Transition.leftToRight,
       transitionDuration: Duration(milliseconds: 500),
-      curve: Curves.easeIn
+      curve: Curves.easeIn,
     ),
 
     // Home route (public - no authentication required)
     // Authentication for specific features is handled within HomeView
-    GetPage(
-      name: RouteNames.homeFeed,
-      page: () => HomeView(),
-    ),
+    GetPage(name: RouteNames.homeFeed, page: () => HomeView()),
   ];
 }

@@ -19,29 +19,35 @@ class MainNavBar extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       onTap: onTap,
       currentIndex: currentIndex,
-      backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
-      selectedItemColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor ?? blueColor,
-      unselectedItemColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor ?? Theme.of(context).unselectedWidgetColor,
+      backgroundColor:
+          Theme.of(context).bottomNavigationBarTheme.backgroundColor ??
+          Theme.of(context).scaffoldBackgroundColor,
+      selectedItemColor:
+          Theme.of(context).bottomNavigationBarTheme.selectedItemColor ??
+          blueColor,
+      unselectedItemColor:
+          Theme.of(context).bottomNavigationBarTheme.unselectedItemColor ??
+          Theme.of(context).unselectedWidgetColor,
       items: [
         BottomNavigationBarItem(
-          icon: const FaIcon(FontAwesomeIcons.house), 
+          icon: const FaIcon(FontAwesomeIcons.house),
           label: "home".tr,
         ),
         BottomNavigationBarItem(
-          icon: const FaIcon(FontAwesomeIcons.heart), 
+          icon: const FaIcon(FontAwesomeIcons.heart),
           label: "favourites".tr,
         ),
         BottomNavigationBarItem(
-          icon: const FaIcon(FontAwesomeIcons.plus), 
+          icon: const FaIcon(FontAwesomeIcons.plus),
           label: "listing".tr,
         ),
         BottomNavigationBarItem(
-          icon: const FaIcon(FontAwesomeIcons.comments), 
+          icon: const FaIcon(FontAwesomeIcons.comments),
           label: "chats".tr,
         ),
         BottomNavigationBarItem(
-          icon: const FaIcon(FontAwesomeIcons.user), 
-          label: "person".tr,
+          icon: const FaIcon(FontAwesomeIcons.user),
+          label: "profile".tr,
         ),
       ],
     );

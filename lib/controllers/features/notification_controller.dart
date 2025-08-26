@@ -16,16 +16,20 @@ class NotificationController extends GetxController {
     try {
       isLoading(true);
 
-      final String? accessToken =  await _authController.getAccessToken();
+      final String? accessToken = await _authController.getAccessToken();
       if (accessToken == null) {
         showCustomSnackbar("Access token not found", true);
         return;
       }
 
-      final result = await NotificationServices().getNotificationServices(accessToken);
+      final result = await NotificationServices().getNotificationServices(
+        accessToken,
+      );
 
       if (result.isSuccess && result.successResponse != null) {
-        final data = GetNotificationSuccessResponse.fromJson(result.successResponse!);
+        final data = GetNotificationSuccessResponse.fromJson(
+          result.successResponse!,
+        );
         allNotifications.value = data.data?.items ?? [];
         notificationsCount.value = allNotifications.length;
       } else {

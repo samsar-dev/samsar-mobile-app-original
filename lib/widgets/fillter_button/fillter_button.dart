@@ -8,7 +8,7 @@ class FillterButton extends StatefulWidget {
   final String? currentCategory;
   final String? currentQuery;
   final Function(String?)? onFiltersApplied;
-  
+
   const FillterButton({
     super.key,
     this.currentCategory,
@@ -23,7 +23,7 @@ class FillterButton extends StatefulWidget {
 class _FillterButtonState extends State<FillterButton> {
   late final FilterController _filterController;
   late final ListingController _listingController;
-  
+
   @override
   void initState() {
     super.initState();
@@ -31,22 +31,24 @@ class _FillterButtonState extends State<FillterButton> {
     _filterController = Get.find<FilterController>();
     _listingController = Get.find<ListingController>();
   }
-  
+
   void _applyFilters() {
     print('🏠 APPLY FILTERS TO HOME LISTINGS ONLY');
-    print('  Filters will only affect the home page listings, not search results');
-    
+    print(
+      '  Filters will only affect the home page listings, not search results',
+    );
+
     // Apply filters only to home page listings
     print('📋 Updating home page listings with filters...');
     _listingController.applyFilters();
-    
+
     // Notify parent if callback provided
     if (widget.onFiltersApplied != null) {
       final summary = _filterController.getFilterSummary();
       print('📢 Notifying parent with filter summary: "$summary"');
       widget.onFiltersApplied!(summary);
     }
-    
+
     print('✅ _applyFilters completed - only home page listings updated');
   }
 
@@ -74,24 +76,49 @@ class _FillterButtonState extends State<FillterButton> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("sort_by".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                Obx(() => DropdownButton<String>(
-                                  value: _filterController.selectedSort.value.isEmpty ? null : _filterController.selectedSort.value,
-                                  hint: Text("select_sort_option".tr),
-                                  items: _filterController.sortOptions
-                                      .map((option) => DropdownMenuItem(
+                                Text(
+                                  "sort_by".tr,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Obx(
+                                  () => DropdownButton<String>(
+                                    value:
+                                        _filterController
+                                            .selectedSort
+                                            .value
+                                            .isEmpty
+                                        ? null
+                                        : _filterController.selectedSort.value,
+                                    hint: Text("select_sort_option".tr),
+                                    items: _filterController.sortOptions
+                                        .map(
+                                          (option) => DropdownMenuItem(
                                             value: option,
-                                            child: Text(_filterController.getTranslatedSortOption(option)),
-                                          ))
-                                      .toList(),
-                                  onChanged: (val) {
-                                    print('🔽 SORT DROPDOWN CHANGED:');
-                                    print('  Old value: "${_filterController.selectedSort.value}"');
-                                    print('  New value: "$val"');
-                                    _filterController.selectedSort.value = val ?? '';
-                                    print('  Updated value: "${_filterController.selectedSort.value}"');
-                                  },
-                                )),
+                                            child: Text(
+                                              _filterController
+                                                  .getTranslatedSortOption(
+                                                    option,
+                                                  ),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (val) {
+                                      print('🔽 SORT DROPDOWN CHANGED:');
+                                      print(
+                                        '  Old value: "${_filterController.selectedSort.value}"',
+                                      );
+                                      print('  New value: "$val"');
+                                      _filterController.selectedSort.value =
+                                          val ?? '';
+                                      print(
+                                        '  Updated value: "${_filterController.selectedSort.value}"',
+                                      );
+                                    },
+                                  ),
+                                ),
                               ],
                             ),
 
@@ -99,24 +126,53 @@ class _FillterButtonState extends State<FillterButton> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("subcategory".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                Obx(() => DropdownButton<String>(
-                                  value: _filterController.selectedSubcategory.value.isEmpty ? null : _filterController.selectedSubcategory.value,
-                                  hint: Text("select_subcategory".tr),
-                                  items: _filterController.subcategories
-                                      .map((sub) => DropdownMenuItem(
+                                Text(
+                                  "subcategory".tr,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Obx(
+                                  () => DropdownButton<String>(
+                                    value:
+                                        _filterController
+                                            .selectedSubcategory
+                                            .value
+                                            .isEmpty
+                                        ? null
+                                        : _filterController
+                                              .selectedSubcategory
+                                              .value,
+                                    hint: Text("select_subcategory".tr),
+                                    items: _filterController.subcategories
+                                        .map(
+                                          (sub) => DropdownMenuItem(
                                             value: sub,
-                                            child: Text(_filterController.getTranslatedSubcategory(sub)),
-                                          ))
-                                      .toList(),
-                                  onChanged: (val) {
-                                    print('🚗 SUBCATEGORY DROPDOWN CHANGED:');
-                                    print('  Old value: "${_filterController.selectedSubcategory.value}"');
-                                    print('  New value: "$val"');
-                                    _filterController.selectedSubcategory.value = val ?? '';
-                                    print('  Updated value: "${_filterController.selectedSubcategory.value}"');
-                                  },
-                                )),
+                                            child: Text(
+                                              _filterController
+                                                  .getTranslatedSubcategory(
+                                                    sub,
+                                                  ),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (val) {
+                                      print('🚗 SUBCATEGORY DROPDOWN CHANGED:');
+                                      print(
+                                        '  Old value: "${_filterController.selectedSubcategory.value}"',
+                                      );
+                                      print('  New value: "$val"');
+                                      _filterController
+                                              .selectedSubcategory
+                                              .value =
+                                          val ?? '';
+                                      print(
+                                        '  Updated value: "${_filterController.selectedSubcategory.value}"',
+                                      );
+                                    },
+                                  ),
+                                ),
                               ],
                             ),
 
@@ -124,35 +180,66 @@ class _FillterButtonState extends State<FillterButton> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("listing_type".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                Obx(() => Row(
-                                  children: _filterController.listingTypes.map((type) {
-                                    final isSelected = _filterController.selectedListingType.value == type;
-                                    return Padding(
-                                      padding: const EdgeInsets.only(right: 8.0),
-                                      child: ChoiceChip(
-                                        label: Text(
-                                          _filterController.getTranslatedListingType(type),
-                                          style: TextStyle(
-                                            color: isSelected ? whiteColor : blackColor,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                Text(
+                                  "listing_type".tr,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Obx(
+                                  () => Row(
+                                    children: _filterController.listingTypes.map((
+                                      type,
+                                    ) {
+                                      final isSelected =
+                                          _filterController
+                                              .selectedListingType
+                                              .value ==
+                                          type;
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 8.0,
                                         ),
-                                        selected: isSelected,
-                                        selectedColor: blueColor,
-                                        backgroundColor: whiteColor,
-                                        side: BorderSide(color: isSelected ? blueColor : Colors.grey.shade300),
-                                        onSelected: (_) {
-                                          print('🏷️ LISTING TYPE CHIP SELECTED:');
-                                          print('  Old value: "${_filterController.selectedListingType.value}"');
-                                          print('  New value: "$type"');
-                                          _filterController.selectedListingType.value = type;
-                                          print('  Updated value: "${_filterController.selectedListingType.value}"');
-                                        },
-                                      ),
-                                    );
-                                  }).toList(),
-                                )),
+                                        child: ChoiceChip(
+                                          label: Text(
+                                            _filterController
+                                                .getTranslatedListingType(type),
+                                            style: TextStyle(
+                                              color: isSelected
+                                                  ? whiteColor
+                                                  : blackColor,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          selected: isSelected,
+                                          selectedColor: blueColor,
+                                          backgroundColor: whiteColor,
+                                          side: BorderSide(
+                                            color: isSelected
+                                                ? blueColor
+                                                : Colors.grey.shade300,
+                                          ),
+                                          onSelected: (_) {
+                                            print(
+                                              '🏷️ LISTING TYPE CHIP SELECTED:',
+                                            );
+                                            print(
+                                              '  Old value: "${_filterController.selectedListingType.value}"',
+                                            );
+                                            print('  New value: "$type"');
+                                            _filterController
+                                                    .selectedListingType
+                                                    .value =
+                                                type;
+                                            print(
+                                              '  Updated value: "${_filterController.selectedListingType.value}"',
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
                               ],
                             ),
 
@@ -160,20 +247,39 @@ class _FillterButtonState extends State<FillterButton> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("city".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                Obx(() => DropdownButton<String>(
-                                  value: _filterController.selectedCity.value.isEmpty ? null : _filterController.selectedCity.value,
-                                  hint: Text("select_city".tr),
-                                  items: _filterController.cities
-                                      .map((city) => DropdownMenuItem(
+                                Text(
+                                  "city".tr,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Obx(
+                                  () => DropdownButton<String>(
+                                    value:
+                                        _filterController
+                                            .selectedCity
+                                            .value
+                                            .isEmpty
+                                        ? null
+                                        : _filterController.selectedCity.value,
+                                    hint: Text("select_city".tr),
+                                    items: _filterController.cities
+                                        .map(
+                                          (city) => DropdownMenuItem(
                                             value: city,
-                                            child: Text(_filterController.getTranslatedCity(city)),
-                                          ))
-                                      .toList(),
-                                  onChanged: (val) {
-                                    _filterController.selectedCity.value = val ?? '';
-                                  },
-                                )),
+                                            child: Text(
+                                              _filterController
+                                                  .getTranslatedCity(city),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (val) {
+                                      _filterController.selectedCity.value =
+                                          val ?? '';
+                                    },
+                                  ),
+                                ),
                               ],
                             ),
 
@@ -181,20 +287,30 @@ class _FillterButtonState extends State<FillterButton> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("year".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                Obx(() => DropdownButton<int>(
-                                  value: _filterController.selectedYear.value,
-                                  hint: Text("select_year".tr),
-                                  items: _filterController.years
-                                      .map((year) => DropdownMenuItem(
+                                Text(
+                                  "year".tr,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Obx(
+                                  () => DropdownButton<int>(
+                                    value: _filterController.selectedYear.value,
+                                    hint: Text("select_year".tr),
+                                    items: _filterController.years
+                                        .map(
+                                          (year) => DropdownMenuItem(
                                             value: year,
                                             child: Text(year.toString()),
-                                          ))
-                                      .toList(),
-                                  onChanged: (val) {
-                                    _filterController.selectedYear.value = val;
-                                  },
-                                )),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (val) {
+                                      _filterController.selectedYear.value =
+                                          val;
+                                    },
+                                  ),
+                                ),
                               ],
                             ),
                           ],

@@ -11,13 +11,25 @@ class FilterController extends GetxController {
   RxnInt selectedYear = RxnInt();
   RxnDouble minPrice = RxnDouble();
   RxnDouble maxPrice = RxnDouble();
-  
+
+  // Vehicle-specific filters
+  RxString selectedFuelType = ''.obs;
+  RxString selectedTransmission = ''.obs;
+  RxString selectedBodyType = ''.obs;
+  RxString selectedCondition = ''.obs;
+
+  // Real estate-specific filters
+  RxnInt selectedBedrooms = RxnInt();
+  RxnInt selectedBathrooms = RxnInt();
+  RxString selectedFurnishing = ''.obs;
+  RxString selectedParking = ''.obs;
+
   // Location-based filtering
   Rx<CityInfo?> selectedLocation = Rx<CityInfo?>(null);
   RxDouble radiusKm = 50.0.obs; // Default 50km radius
   RxBool enableLocationFilter = false.obs;
   RxBool sortByDistance = false.obs;
-  
+
   // Filter options
   final List<String> sortOptions = [
     'newest_first',
@@ -27,7 +39,7 @@ class FilterController extends GetxController {
     'location_z_to_a',
     'distance_nearest_first', // New radius-based sorting
   ];
-  
+
   // Radius options in kilometers
   final List<double> radiusOptions = [5.0, 10.0, 25.0, 50.0, 100.0, 200.0];
 
@@ -37,26 +49,29 @@ class FilterController extends GetxController {
     'MOTORCYCLES',
     'VANS',
     'BUSES',
-    'TRACTORS'
+    'TRACTORS',
   ];
-  
+
   // Helper to get display name from backend value
   String getDisplayName(String backendValue) {
-    switch(backendValue) {
-      case 'CARS': return 'Cars';
-      case 'MOTORCYCLES': return 'Motorcycles';
-      case 'VANS': return 'Vans';
-      case 'BUSES': return 'Buses';
-      case 'TRACTORS': return 'Tractors';
-      default: return backendValue;
+    switch (backendValue) {
+      case 'CARS':
+        return 'Cars';
+      case 'MOTORCYCLES':
+        return 'Motorcycles';
+      case 'VANS':
+        return 'Vans';
+      case 'BUSES':
+        return 'Buses';
+      case 'TRACTORS':
+        return 'Tractors';
+      default:
+        return backendValue;
     }
   }
-  
-  final List<String> listingTypes = [
-    'for_sale',
-    'for_rent'
-  ];
-  
+
+  final List<String> listingTypes = ['for_sale', 'for_rent'];
+
   final List<String> cities = [
     'damascus',
     'aleppo',
@@ -71,22 +86,33 @@ class FilterController extends GetxController {
     'ldlib',
     'dara',
     'sweden',
-    'quneitra'
+    'quneitra',
   ];
-  
-  final List<int> years = List.generate(2025 - 1990 + 1, (index) => 2025 - index);
+
+  final List<int> years = List.generate(
+    2025 - 1990 + 1,
+    (index) => 2025 - index,
+  );
 
   /// Check if any filters are applied
   bool get hasActiveFilters {
     return selectedSort.value.isNotEmpty ||
-           selectedSubcategory.value.isNotEmpty ||
-           selectedListingType.value.isNotEmpty ||
-           selectedCity.value.isNotEmpty ||
-           selectedYear.value != null ||
-           minPrice.value != null ||
-           maxPrice.value != null ||
-           enableLocationFilter.value ||
-           sortByDistance.value;
+        selectedSubcategory.value.isNotEmpty ||
+        selectedListingType.value.isNotEmpty ||
+        selectedCity.value.isNotEmpty ||
+        selectedYear.value != null ||
+        minPrice.value != null ||
+        maxPrice.value != null ||
+        enableLocationFilter.value ||
+        sortByDistance.value ||
+        selectedFuelType.value.isNotEmpty ||
+        selectedTransmission.value.isNotEmpty ||
+        selectedBodyType.value.isNotEmpty ||
+        selectedCondition.value.isNotEmpty ||
+        selectedBedrooms.value != null ||
+        selectedBathrooms.value != null ||
+        selectedFurnishing.value.isNotEmpty ||
+        selectedParking.value.isNotEmpty;
   }
 
   /// Get count of active filters
@@ -101,6 +127,14 @@ class FilterController extends GetxController {
     if (maxPrice.value != null) count++;
     if (enableLocationFilter.value) count++;
     if (sortByDistance.value) count++;
+    if (selectedFuelType.value.isNotEmpty) count++;
+    if (selectedTransmission.value.isNotEmpty) count++;
+    if (selectedBodyType.value.isNotEmpty) count++;
+    if (selectedCondition.value.isNotEmpty) count++;
+    if (selectedBedrooms.value != null) count++;
+    if (selectedBathrooms.value != null) count++;
+    if (selectedFurnishing.value.isNotEmpty) count++;
+    if (selectedParking.value.isNotEmpty) count++;
     return count;
   }
 
@@ -119,7 +153,7 @@ class FilterController extends GetxController {
     print('    radiusKm: ${radiusKm.value}');
     print('    enableLocationFilter: ${enableLocationFilter.value}');
     print('    sortByDistance: ${sortByDistance.value}');
-    
+
     selectedSort.value = '';
     selectedSubcategory.value = '';
     selectedListingType.value = '';
@@ -131,7 +165,19 @@ class FilterController extends GetxController {
     radiusKm.value = 50.0;
     enableLocationFilter.value = false;
     sortByDistance.value = false;
-    
+
+    // Reset vehicle filters
+    selectedFuelType.value = '';
+    selectedTransmission.value = '';
+    selectedBodyType.value = '';
+    selectedCondition.value = '';
+
+    // Reset real estate filters
+    selectedBedrooms.value = null;
+    selectedBathrooms.value = null;
+    selectedFurnishing.value = '';
+    selectedParking.value = '';
+
     print('  After reset:');
     print('    selectedSort: "${selectedSort.value}"');
     print('    selectedSubcategory: "${selectedSubcategory.value}"');
@@ -170,27 +216,37 @@ class FilterController extends GetxController {
     print('    radiusKm: ${radiusKm.value}');
     print('    enableLocationFilter: ${enableLocationFilter.value}');
     print('    sortByDistance: ${sortByDistance.value}');
-    
+
     // Determine final sort option
-    String? finalSort = selectedSort.value.isNotEmpty ? selectedSort.value : null;
+    String? finalSort = selectedSort.value.isNotEmpty
+        ? selectedSort.value
+        : null;
     if (sortByDistance.value && selectedLocation.value != null) {
       finalSort = 'distance_nearest_first';
       print('  🎯 Using distance-based sorting');
     }
-    
+
     return SearchQuery(
       query: query,
       category: category,
-      subCategory: selectedSubcategory.value.isNotEmpty ? selectedSubcategory.value : null,
-      listingAction: selectedListingType.value.isNotEmpty ? selectedListingType.value : null,
+      subCategory: selectedSubcategory.value.isNotEmpty
+          ? selectedSubcategory.value
+          : null,
+      listingAction: selectedListingType.value.isNotEmpty
+          ? selectedListingType.value
+          : null,
       city: selectedCity.value.isNotEmpty ? selectedCity.value : null,
       sortBy: finalSort,
       year: selectedYear.value,
       minPrice: minPrice.value,
       maxPrice: maxPrice.value,
       // Location-based parameters
-      latitude: enableLocationFilter.value ? selectedLocation.value?.latitude : null,
-      longitude: enableLocationFilter.value ? selectedLocation.value?.longitude : null,
+      latitude: enableLocationFilter.value
+          ? selectedLocation.value?.latitude
+          : null,
+      longitude: enableLocationFilter.value
+          ? selectedLocation.value?.longitude
+          : null,
       radiusKm: enableLocationFilter.value ? radiusKm.value : null,
       page: page ?? 1,
       limit: limit ?? 10,
@@ -206,7 +262,7 @@ class FilterController extends GetxController {
     selectedYear.value = query.year;
     minPrice.value = query.minPrice;
     maxPrice.value = query.maxPrice;
-    
+
     // Apply location filters
     if (query.latitude != null && query.longitude != null) {
       selectedLocation.value = CityInfo(
@@ -221,7 +277,7 @@ class FilterController extends GetxController {
       selectedLocation.value = null;
       enableLocationFilter.value = false;
     }
-    
+
     sortByDistance.value = query.sortBy == 'distance_nearest_first';
   }
 
@@ -266,17 +322,17 @@ class FilterController extends GetxController {
     print('  Location: ${location?.name}');
     print('  Coordinates: ${location?.latitude}, ${location?.longitude}');
     print('  Radius: ${radius ?? radiusKm.value} km');
-    
+
     selectedLocation.value = location;
     enableLocationFilter.value = location != null;
     if (radius != null) {
       radiusKm.value = radius;
     }
-    
+
     print('  enableLocationFilter: ${enableLocationFilter.value}');
     print('  radiusKm: ${radiusKm.value}');
   }
-  
+
   /// Clear location filter
   void clearLocationFilter() {
     print('🗑️ CLEARING LOCATION FILTER');
@@ -284,13 +340,13 @@ class FilterController extends GetxController {
     enableLocationFilter.value = false;
     sortByDistance.value = false;
   }
-  
+
   /// Toggle distance-based sorting
   void toggleDistanceSorting() {
     if (selectedLocation.value != null) {
       sortByDistance.value = !sortByDistance.value;
       print('🎯 TOGGLED DISTANCE SORTING: ${sortByDistance.value}');
-      
+
       if (sortByDistance.value) {
         selectedSort.value = 'distance_nearest_first';
         enableLocationFilter.value = true;
@@ -299,36 +355,44 @@ class FilterController extends GetxController {
       print('⚠️ Cannot enable distance sorting without location');
     }
   }
-  
+
   /// Get current location filter status
   String getLocationFilterStatus() {
     if (!enableLocationFilter.value) return 'No location filter';
-    
+
     String status = 'Location: ${selectedLocation.value?.name ?? "Unknown"}';
     status += ' (${radiusKm.value.toInt()}km radius)';
-    
+
     if (sortByDistance.value) {
       status += ' - Sorted by distance';
     }
-    
+
     return status;
   }
 
   /// Get filter summary for display
   String getFilterSummary() {
     List<String> activeSummary = [];
-    
+
     if (selectedSort.value.isNotEmpty) {
-      activeSummary.add('${'sort'.tr}: ${getTranslatedSortOption(selectedSort.value)}');
+      activeSummary.add(
+        '${'sort'.tr}: ${getTranslatedSortOption(selectedSort.value)}',
+      );
     }
     if (selectedSubcategory.value.isNotEmpty) {
-      activeSummary.add('${'subcategory'.tr}: ${getTranslatedSubcategory(selectedSubcategory.value)}');
+      activeSummary.add(
+        '${'subcategory'.tr}: ${getTranslatedSubcategory(selectedSubcategory.value)}',
+      );
     }
     if (selectedListingType.value.isNotEmpty) {
-      activeSummary.add('${'type'.tr}: ${getTranslatedListingType(selectedListingType.value)}');
+      activeSummary.add(
+        '${'type'.tr}: ${getTranslatedListingType(selectedListingType.value)}',
+      );
     }
     if (selectedCity.value.isNotEmpty) {
-      activeSummary.add('${'city'.tr}: ${getTranslatedCity(selectedCity.value)}');
+      activeSummary.add(
+        '${'city'.tr}: ${getTranslatedCity(selectedCity.value)}',
+      );
     }
     if (selectedYear.value != null) {
       activeSummary.add('${'year'.tr}: ${selectedYear.value}');
@@ -344,13 +408,14 @@ class FilterController extends GetxController {
       }
       activeSummary.add(priceRange);
     }
-    
+
     // Add location filter summary
     if (enableLocationFilter.value && selectedLocation.value != null) {
-      String locationSummary = '${'location'.tr}: ${selectedLocation.value!.name} (${radiusKm.value.toInt()}km)';
+      String locationSummary =
+          '${'location'.tr}: ${selectedLocation.value!.name} (${radiusKm.value.toInt()}km)';
       activeSummary.add(locationSummary);
     }
-    
+
     return activeSummary.join(', ');
   }
 }

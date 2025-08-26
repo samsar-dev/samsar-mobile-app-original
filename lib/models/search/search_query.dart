@@ -36,9 +36,12 @@ class SearchQuery {
   Map<String, dynamic> toQueryParams() {
     final params = <String, dynamic>{};
     if (query != null && query!.isNotEmpty) params['query'] = query!;
-    if (category != null && category!.isNotEmpty) params['category'] = category!;
-    if (subCategory != null && subCategory!.isNotEmpty) params['subCategory'] = subCategory!;
-    if (listingAction != null && listingAction!.isNotEmpty) params['listingAction'] = listingAction!;
+    if (category != null && category!.isNotEmpty)
+      params['category'] = category!;
+    if (subCategory != null && subCategory!.isNotEmpty)
+      params['subCategory'] = subCategory!;
+    if (listingAction != null && listingAction!.isNotEmpty)
+      params['listingAction'] = listingAction!;
     if (city != null && city!.isNotEmpty) params['city'] = city!;
     if (sortBy != null && sortBy!.isNotEmpty) params['sortBy'] = sortBy!;
     if (year != null) params['year'] = year.toString();
@@ -86,206 +89,297 @@ class SearchQuery {
       limit: limit ?? this.limit,
     );
   }
-  
+
   @override
   String toString() {
     return 'SearchQuery(query: $query, category: $category, subCategory: $subCategory, listingAction: $listingAction, city: $city, sortBy: $sortBy, year: $year, minPrice: $minPrice, maxPrice: $maxPrice, latitude: $latitude, longitude: $longitude, radiusKm: $radiusKm, page: $page, limit: $limit)';
   }
-  
+
   /// Check if this query has any filters applied
   bool get hasFilters {
     return subCategory != null ||
-           listingAction != null ||
-           city != null ||
-           sortBy != null ||
-           year != null ||
-           minPrice != null ||
-           maxPrice != null ||
-           latitude != null ||
-           longitude != null ||
-           radiusKm != null;
+        listingAction != null ||
+        city != null ||
+        sortBy != null ||
+        year != null ||
+        minPrice != null ||
+        maxPrice != null ||
+        latitude != null ||
+        longitude != null ||
+        radiusKm != null;
   }
 }
 
 class SearchIndividualListingModel {
-    SearchIndividualListingModel({
-        required this.id,
-        required this.title,
-        required this.description,
-        required this.price,
-        required this.category,
-        required this.location,
-        required this.images,
-        required this.createdAt,
-        required this.updatedAt,
-        required this.userId,
-        required this.details,
-        required this.listingAction,
-        required this.status,
-        required this.seller,
-        required this.savedBy,
-    });
+  SearchIndividualListingModel({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.price,
+    required this.category,
+    required this.location,
+    required this.images,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.userId,
+    required this.details,
+    required this.listingAction,
+    required this.status,
+    required this.seller,
+    required this.savedBy,
+    // Root level vehicle fields
+    required this.makeRoot,
+    required this.modelRoot,
+    required this.yearRoot,
+    required this.mileageRoot,
+    required this.fuelTypeRoot,
+    required this.transmissionTypeRoot,
+    required this.colorRoot,
+    required this.conditionRoot,
+  });
 
-    final String? id;
-    final String? title;
-    final String? description;
-    final int? price;
-    final Category? category;
-    final String? location;
-    final List<String> images;
-    final DateTime? createdAt;
-    final DateTime? updatedAt;
-    final String? userId;
-    final Details? details;
-    final String? listingAction;
-    final String? status;
-    final Seller? seller;
-    final List<SavedBy> savedBy;
+  final String? id;
+  final String? title;
+  final String? description;
+  final int? price;
+  final Category? category;
+  final String? location;
+  final List<String> images;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final String? userId;
+  final Details? details;
+  final String? listingAction;
+  final String? status;
+  final Seller? seller;
+  final List<SavedBy> savedBy;
+  // Root level vehicle fields
+  final String? makeRoot;
+  final String? modelRoot;
+  final int? yearRoot;
+  final int? mileageRoot;
+  final String? fuelTypeRoot;
+  final String? transmissionTypeRoot;
+  final String? colorRoot;
+  final String? conditionRoot;
 
-    factory SearchIndividualListingModel.fromJson(Map<String, dynamic> json){ 
-        return SearchIndividualListingModel(
-            id: json["id"],
-            title: json["title"],
-            description: json["description"],
-            price: json["price"],
-            category: json["category"] == null ? null : Category.fromJson(json["category"]),
-            location: json["location"],
-            images: json["images"] == null ? [] : List<String>.from(json["images"]!.map((x) => x)),
-            createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
-            updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
-            userId: json["userId"],
-            details: json["details"] == null ? null : Details.fromJson(json["details"]),
-            listingAction: json["listingAction"],
-            status: json["status"],
-            seller: json["seller"] == null ? null : Seller.fromJson(json["seller"]),
-            savedBy: json["savedBy"] == null ? [] : List<SavedBy>.from(json["savedBy"]!.map((x) => SavedBy.fromJson(x))),
-        );
-    }
+  // Vehicle-specific getters - check root level first, then nested details
+  String? get fuelType {
+    // Check root level first, then nested
+    final rootLevel = fuelTypeRoot;
+    final nested = details?.json['vehicles']?['fuelType'] ?? details?.json['fuelType'];
+    final result = rootLevel ?? nested;
+    print('🔍 [SEARCH MODEL DEBUG] FuelType getter: $result (root: $rootLevel, nested: $nested)');
+    return result;
+  }
+  
+  int? get year {
+    final rootLevel = yearRoot;
+    final nested = details?.json['vehicles']?['year'] ?? details?.json['year'];
+    final result = rootLevel ?? nested;
+    print('🔍 [SEARCH MODEL DEBUG] Year getter: $result (root: $rootLevel, nested: $nested)');
+    return result;
+  }
+  
+  String? get transmission {
+    final rootLevel = transmissionTypeRoot;
+    final nested = details?.json['vehicles']?['transmissionType'] ?? details?.json['vehicles']?['transmission'] ?? details?.json['transmissionType'] ?? details?.json['transmission'];
+    final result = rootLevel ?? nested;
+    print('🔍 [SEARCH MODEL DEBUG] Transmission getter: $result (root: $rootLevel, nested: $nested)');
+    return result;
+  }
+  
+  int? get mileage {
+    final rootLevel = mileageRoot;
+    final nested = details?.json['vehicles']?['mileage'] ?? details?.json['mileage'];
+    final result = rootLevel ?? nested;
+    print('🔍 [SEARCH MODEL DEBUG] Mileage getter: $result (root: $rootLevel, nested: $nested)');
+    return result;
+  }
+  
+  String? get make {
+    final rootLevel = makeRoot;
+    final nested = details?.json['vehicles']?['make'] ?? details?.json['make'];
+    final result = rootLevel ?? nested;
+    print('🔍 [SEARCH MODEL DEBUG] Make getter: $result (root: $rootLevel, nested: $nested)');
+    return result;
+  }
+  
+  String? get model {
+    final rootLevel = modelRoot;
+    final nested = details?.json['vehicles']?['model'] ?? details?.json['model'];
+    final result = rootLevel ?? nested;
+    print('🔍 [SEARCH MODEL DEBUG] Model getter: $result (root: $rootLevel, nested: $nested)');
+    return result;
+  }
 
-    Map<String, dynamic> toJson() => {
-        "id": id,
-        "title": title,
-        "description": description,
-        "price": price,
-        "category": category?.toJson(),
-        "location": location,
-        "images": images.map((x) => x).toList(),
-        "createdAt": createdAt?.toIso8601String(),
-        "updatedAt": updatedAt?.toIso8601String(),
-        "userId": userId,
-        "details": details?.toJson(),
-        "listingAction": listingAction,
-        "status": status,
-        "seller": seller?.toJson(),
-        "savedBy": savedBy.map((x) => x.toJson()).toList(),
-    };
+  factory SearchIndividualListingModel.fromJson(Map<String, dynamic> json) {
+    print('🔍 [SEARCH MODEL DEBUG] Parsing search result with root vehicle fields:');
+    print('  - make: ${json["make"]}');
+    print('  - model: ${json["model"]}');
+    print('  - year: ${json["year"]}');
+    print('  - mileage: ${json["mileage"]}');
+    print('  - fuelType: ${json["fuelType"]}');
+    print('  - transmission: ${json["transmission"]} (backend field name)');
+    print('  - exteriorColor: ${json["exteriorColor"]} (backend field name)');
+    print('  - condition: ${json["condition"]}');
+    
+    return SearchIndividualListingModel(
+      id: json["id"],
+      title: json["title"],
+      description: json["description"],
+      price: json["price"],
+      category: json["category"] == null
+          ? null
+          : Category.fromJson(json["category"]),
+      location: json["location"],
+      images: json["images"] == null
+          ? []
+          : List<String>.from(json["images"]!.map((x) => x)),
+      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
+      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+      userId: json["userId"],
+      details: json["details"] == null
+          ? null
+          : Details.fromJson(json["details"]),
+      listingAction: json["listingAction"],
+      status: json["status"],
+      seller: json["seller"] == null ? null : Seller.fromJson(json["seller"]),
+      savedBy: json["savedBy"] == null
+          ? []
+          : List<SavedBy>.from(
+              json["savedBy"]!.map((x) => SavedBy.fromJson(x))),
+      // Root level vehicle fields (matching backend field names)
+      makeRoot: json["make"],
+      modelRoot: json["model"],
+      yearRoot: json["year"],
+      mileageRoot: json["mileage"],
+      fuelTypeRoot: json["fuelType"],
+      transmissionTypeRoot: json["transmission"], // Backend sends "transmission"
+      colorRoot: json["exteriorColor"], // Backend sends "exteriorColor"
+      conditionRoot: json["condition"],
+    );
+  }
 
-    @override
-    String toString(){
-        return "$id, $title, $description, $price, $category, $location, $images, $createdAt, $updatedAt, $userId, $details, $listingAction, $status, $seller, $savedBy, ";
-    }
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "title": title,
+    "description": description,
+    "price": price,
+    "category": category?.toJson(),
+    "location": location,
+    "images": images.map((x) => x).toList(),
+    "createdAt": createdAt?.toIso8601String(),
+    "updatedAt": updatedAt?.toIso8601String(),
+    "userId": userId,
+    "details": details?.toJson(),
+    "listingAction": listingAction,
+    "status": status,
+    "seller": seller?.toJson(),
+    "savedBy": savedBy.map((x) => x.toJson()).toList(),
+    // Root level vehicle fields
+    "make": makeRoot,
+    "model": modelRoot,
+    "year": yearRoot,
+    "mileage": mileageRoot,
+    "fuelType": fuelTypeRoot,
+    "transmissionType": transmissionTypeRoot,
+    "color": colorRoot,
+    "condition": conditionRoot,
+  };
+
+  @override
+  String toString() {
+    return "$id, $title, $description, $price, $category, $location, $images, $createdAt, $updatedAt, $userId, $details, $listingAction, $status, $seller, $savedBy, ";
+  }
 }
 
 class Category {
-    Category({
-        required this.mainCategory,
-        required this.subCategory,
-    });
+  Category({required this.mainCategory, required this.subCategory});
 
-    final String? mainCategory;
-    final String? subCategory;
+  final String? mainCategory;
+  final String? subCategory;
 
-    factory Category.fromJson(Map<String, dynamic> json){ 
-        return Category(
-            mainCategory: json["mainCategory"],
-            subCategory: json["subCategory"],
-        );
-    }
+  factory Category.fromJson(Map<String, dynamic> json) {
+    return Category(
+      mainCategory: json["mainCategory"],
+      subCategory: json["subCategory"],
+    );
+  }
 
-    Map<String, dynamic> toJson() => {
-        "mainCategory": mainCategory,
-        "subCategory": subCategory,
-    };
+  Map<String, dynamic> toJson() => {
+    "mainCategory": mainCategory,
+    "subCategory": subCategory,
+  };
 
-    @override
-    String toString(){
-        return "$mainCategory, $subCategory, ";
-    }
+  @override
+  String toString() {
+    return "$mainCategory, $subCategory, ";
+  }
 }
 
 class Details {
-    Details({required this.json});
-    final Map<String,dynamic> json;
+  Details({required this.json});
+  final Map<String, dynamic> json;
 
-    factory Details.fromJson(Map<String, dynamic> json){ 
-        return Details(
-        json: json
-        );
-    }
+  factory Details.fromJson(Map<String, dynamic> json) {
+    print('🔍 [DETAILS DEBUG] Parsing details from JSON: $json');
+    return Details(json: json);
+  }
 
-    Map<String, dynamic> toJson() => {
-    };
+  Map<String, dynamic> toJson() => json;
 
-    @override
-    String toString(){
-        return "";
-    }
+  @override
+  String toString() {
+    return "Details: $json";
+  }
 }
 
 class SavedBy {
-    SavedBy({
-        required this.id,
-        required this.userId,
-    });
+  SavedBy({required this.id, required this.userId});
 
-    final String? id;
-    final String? userId;
+  final String? id;
+  final String? userId;
 
-    factory SavedBy.fromJson(Map<String, dynamic> json){ 
-        return SavedBy(
-            id: json["id"],
-            userId: json["userId"],
-        );
-    }
+  factory SavedBy.fromJson(Map<String, dynamic> json) {
+    return SavedBy(id: json["id"], userId: json["userId"]);
+  }
 
-    Map<String, dynamic> toJson() => {
-        "id": id,
-        "userId": userId,
-    };
+  Map<String, dynamic> toJson() => {"id": id, "userId": userId};
 
-    @override
-    String toString(){
-        return "$id, $userId, ";
-    }
+  @override
+  String toString() {
+    return "$id, $userId, ";
+  }
 }
 
 class Seller {
-    Seller({
-        required this.id,
-        required this.username,
-        required this.profilePicture,
-    });
+  Seller({
+    required this.id,
+    required this.username,
+    required this.profilePicture,
+  });
 
-    final String? id;
-    final String? username;
-    final dynamic profilePicture;
+  final String? id;
+  final String? username;
+  final dynamic profilePicture;
 
-    factory Seller.fromJson(Map<String, dynamic> json){ 
-        return Seller(
-            id: json["id"],
-            username: json["username"],
-            profilePicture: json["profilePicture"],
-        );
-    }
+  factory Seller.fromJson(Map<String, dynamic> json) {
+    return Seller(
+      id: json["id"],
+      username: json["username"],
+      profilePicture: json["profilePicture"],
+    );
+  }
 
-    Map<String, dynamic> toJson() => {
-        "id": id,
-        "username": username,
-        "profilePicture": profilePicture,
-    };
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "username": username,
+    "profilePicture": profilePicture,
+  };
 
-    @override
-    String toString(){
-        return "$id, $username, $profilePicture, ";
-    }
+  @override
+  String toString() {
+    return "$id, $username, $profilePicture, ";
+  }
 }

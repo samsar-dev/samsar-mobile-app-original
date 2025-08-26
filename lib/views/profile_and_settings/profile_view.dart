@@ -18,19 +18,17 @@ class ProfileView extends StatefulWidget {
   final String imageUrl;
   final String street;
   final String city;
-  const ProfileView(
-    {
-      super.key,
-      required this.name,
-      required this.userName,
-      required this.email,
-      required this.mobileNo,
-      required this.bio,
-      required this.imageUrl,
-      required this.street,
-      required this.city
-    }
-  );
+  const ProfileView({
+    super.key,
+    required this.name,
+    required this.userName,
+    required this.email,
+    required this.mobileNo,
+    required this.bio,
+    required this.imageUrl,
+    required this.street,
+    required this.city,
+  });
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
@@ -58,11 +56,17 @@ class _ProfileViewState extends State<ProfileView> {
   void _initializeControllers() {
     // Initialize controllers with current user data from controller
     final user = authController.user.value;
-    usernameController = TextEditingController(text: user?.username ?? widget.userName);
+    usernameController = TextEditingController(
+      text: user?.username ?? widget.userName,
+    );
     emailController = TextEditingController(text: user?.email ?? widget.email);
-    phoneController = TextEditingController(text: user?.phone ?? widget.mobileNo);
+    phoneController = TextEditingController(
+      text: user?.phone ?? widget.mobileNo,
+    );
     bioController = TextEditingController(text: user?.bio ?? widget.bio);
-    streetController = TextEditingController(text: user?.street ?? widget.street);
+    streetController = TextEditingController(
+      text: user?.street ?? widget.street,
+    );
     cityController = TextEditingController(text: user?.city ?? widget.city);
   }
 
@@ -84,7 +88,7 @@ class _ProfileViewState extends State<ProfileView> {
     final screenSize = MediaQuery.of(context).size;
     final width = screenSize.width;
     final height = screenSize.height;
-    
+
     return Obx(() {
       // Update controllers when user data changes
       final user = authController.user.value;
@@ -94,136 +98,130 @@ class _ProfileViewState extends State<ProfileView> {
           _updateControllersFromUserData();
         }
       }
-      
+
       return Scaffold(
-      backgroundColor: whiteColor,
-
-      appBar: AppBar(
         backgroundColor: whiteColor,
-        elevation: 0,
-        title: Text(
-          "my_profile".tr,
-          style: TextStyle(
-            color: blackColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
+
+        appBar: AppBar(
+          backgroundColor: whiteColor,
+          elevation: 0,
+          title: Text(
+            "my_profile".tr,
+            style: TextStyle(
+              color: blackColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
+            ),
           ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
 
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Center(
-            child: Column(
-              children: [
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Center(
+              child: Column(
+                children: [
+                  SizedBox(height: height * 0.04),
+                  Hero(
+                    tag: "image_bridge",
+                    child: ImageHolder(
+                      isEditable: true,
+                      imageUrl:
+                          authController.user.value?.profilePicture ??
+                          widget.imageUrl,
+                      onImageSelected: (File selectedImage) {
+                        setState(() {
+                          profileImage = selectedImage;
+                        });
+                      },
+                    ),
+                  ),
 
-                SizedBox(height: height * 0.04),
-                Hero(
-                  tag: "image_bridge",
-                  child: ImageHolder(
-                    isEditable: true,
-                    imageUrl: authController.user.value?.profilePicture ?? widget.imageUrl,
-                    onImageSelected: (File selectedImage) {
+                  const SizedBox(height: 12),
+
+                  Text(
+                    widget.name,
+                    style: TextStyle(
+                      color: whiteColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Divider(
+                    indent: width * 0.18,
+                    endIndent: width * 0.18,
+                    thickness: 1,
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  buildProfileField("username".tr, usernameController),
+
+                  buildEmailField("email".tr, emailController),
+
+                  buildProfileField("phone_no".tr, phoneController),
+
+                  buildProfileField("bio".tr, bioController),
+
+                  buildProfileField("street".tr, streetController),
+
+                  buildProfileField("city".tr, cityController),
+
+                  const SizedBox(height: 22),
+                  AppButton(
+                    widthSize: 0.55,
+                    heightSize: 0.06,
+                    buttonColor: blueColor,
+                    text: isEditing ? "save".tr : "edit".tr,
+                    textColor: whiteColor,
+                    textSize: 22,
+                    onPressed: () async {
+                      if (isEditing) {
+                        // Save the changes
+                        final authController = Get.find<AuthController>();
+                        await authController.updateProfile(
+                          name:
+                              widget.name, // Name is not editable in this view
+                          username: usernameController.text,
+                          bio: bioController.text,
+                          street: streetController.text,
+                          city: cityController.text,
+                          phone: phoneController.text,
+                          profileImage: profileImage,
+                        );
+
+                        // Update controllers immediately after successful save
+                        _updateControllersFromUserData();
+                      }
                       setState(() {
-                        profileImage = selectedImage;
+                        isEditing = !isEditing;
                       });
                     },
-                  )
-                ),
-
-                const SizedBox(height: 12),
-
-               
-                Text(
-                  widget.name,
-                  style: TextStyle(
-                    color: whiteColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
                   ),
-                ),
-                
 
-                const SizedBox(height: 8),
+                  const SizedBox(height: 16),
 
-                Divider(
-                  indent: width * 0.18,
-                  endIndent: width * 0.18,
-                  thickness: 1,
-                ),
-
-                const SizedBox(height: 20),
-
-               buildProfileField("username".tr, usernameController),
-                
-               
-               buildEmailField("email".tr, emailController),
-               
-              
-               buildProfileField("phone_no".tr, phoneController),
-                
-               
-               buildProfileField("bio".tr, bioController),
-              
-                  
-              buildProfileField("street".tr, streetController),
-                
-             
-              buildProfileField("city".tr, cityController),
-             
-              const SizedBox(height: 22),
-                AppButton(
-                  widthSize: 0.55,
-                  heightSize: 0.06,
-                  buttonColor: blueColor,
-                  text: isEditing ? "save".tr : "edit".tr,
-                  textColor: whiteColor,
-                  textSize: 22,
-                  onPressed: () async {
-                    if (isEditing) {
-                      // Save the changes
-                      final authController = Get.find<AuthController>();
-                      await authController.updateProfile(
-                        name: widget.name, // Name is not editable in this view
-                        username: usernameController.text,
-                        bio: bioController.text,
-                        street: streetController.text,
-                        city: cityController.text,
-                        phone: phoneController.text,
-                        profileImage: profileImage,
-                      );
-                      
-                      // Update controllers immediately after successful save
-                      _updateControllersFromUserData();
-                    }
-                    setState(() {
-                      isEditing = !isEditing;
-                    });
-                  },
-                ),
-
-                const SizedBox(height: 16),
-
-                // Change Password Button
-                AppButton(
-                  widthSize: 0.55,
-                  heightSize: 0.06,
-                  buttonColor: Colors.orange,
-                  text: "change_password".tr,
-                  textColor: whiteColor,
-                  textSize: 20,
-                  onPressed: () {
-                    _showChangePasswordDialog();
-                  },
-                )
-
-              ],
+                  // Change Password Button
+                  AppButton(
+                    widthSize: 0.55,
+                    heightSize: 0.06,
+                    buttonColor: Colors.orange,
+                    text: "change_password".tr,
+                    textColor: whiteColor,
+                    textSize: 20,
+                    onPressed: () {
+                      _showChangePasswordDialog();
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
       );
     });
   }
@@ -237,19 +235,24 @@ class _ProfileViewState extends State<ProfileView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(label,
-                  style: TextStyle(
-                    color: blueColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  )),
+              Text(
+                label,
+                style: TextStyle(
+                  color: blueColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               if (!isEditing)
                 GestureDetector(
                   onTap: () {
                     _showEmailChangeDialog();
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: blueColor,
                       borderRadius: BorderRadius.circular(20),
@@ -257,11 +260,7 @@ class _ProfileViewState extends State<ProfileView> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.email,
-                          color: whiteColor,
-                          size: 16,
-                        ),
+                        Icon(Icons.email, color: whiteColor, size: 16),
                         const SizedBox(width: 4),
                         Text(
                           'change_email'.tr,
@@ -313,12 +312,14 @@ class _ProfileViewState extends State<ProfileView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
-              style: TextStyle(
-                color: blueColor,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              )),
+          Text(
+            label,
+            style: TextStyle(
+              color: blueColor,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: 4),
           Container(
             width: double.infinity,
@@ -363,10 +364,10 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   void _showEmailChangeDialog() async {
-    final result = await Get.to(() => EmailChangeView(
-      currentEmail: emailController.text,
-    ));
-    
+    final result = await Get.to(
+      () => EmailChangeView(currentEmail: emailController.text),
+    );
+
     if (result != null && result is String) {
       setState(() {
         emailController.text = result;

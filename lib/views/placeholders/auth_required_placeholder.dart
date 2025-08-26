@@ -33,15 +33,11 @@ class AuthRequiredPlaceholder extends StatelessWidget {
                   color: Colors.blue.shade50,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  icon,
-                  size: 60,
-                  color: Colors.blue.shade400,
-                ),
+                child: Icon(icon, size: 60, color: Colors.blue.shade400),
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Title
               Text(
                 featureKey.tr,
@@ -52,9 +48,9 @@ class AuthRequiredPlaceholder extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Description
               Text(
                 descriptionKey.tr,
@@ -65,9 +61,9 @@ class AuthRequiredPlaceholder extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Benefits Section
               Container(
                 padding: const EdgeInsets.all(20),
@@ -93,33 +89,33 @@ class AuthRequiredPlaceholder extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    ...benefitKeys.map((benefitKey) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              benefitKey.tr,
-                              style: TextStyle(
-                                color: Colors.grey.shade700,
+                    ...benefitKeys.map(
+                      (benefitKey) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                benefitKey.tr,
+                                style: TextStyle(color: Colors.grey.shade700),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    )),
+                    ),
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 40),
-              
+
               // Action Buttons
               Column(
                 children: [
@@ -145,9 +141,9 @@ class AuthRequiredPlaceholder extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -171,9 +167,9 @@ class AuthRequiredPlaceholder extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Browse as guest option
               TextButton(
                 onPressed: () {
@@ -182,10 +178,7 @@ class AuthRequiredPlaceholder extends StatelessWidget {
                 },
                 child: Text(
                   'continue_browsing'.tr,
-                  style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
                 ),
               ),
             ],

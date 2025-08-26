@@ -24,7 +24,8 @@ class EnhancedSearchBar extends StatefulWidget {
 }
 
 class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
-  final SearchModuleController _searchController = Get.find<SearchModuleController>();
+  final SearchModuleController _searchController =
+      Get.find<SearchModuleController>();
   final FocusNode _focusNode = FocusNode();
   bool _showSuggestions = false;
 
@@ -47,7 +48,7 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
     setState(() {
       _showSuggestions = _focusNode.hasFocus && widget.showSuggestions;
     });
-    
+
     if (_focusNode.hasFocus) {
       _searchController.getSearchSuggestions(widget.controller.text);
     }
@@ -121,20 +122,23 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
                       },
                     ),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
             ),
             onChanged: widget.onChanged,
             onSubmitted: widget.onSubmitted,
             style: const TextStyle(fontSize: 16),
           ),
         ),
-        
+
         // Search Suggestions
         if (_showSuggestions)
           Obx(() {
             final suggestions = _searchController.searchSuggestions;
             if (suggestions.isEmpty) return const SizedBox.shrink();
-            
+
             return Container(
               margin: const EdgeInsets.only(top: 4),
               decoration: BoxDecoration(
@@ -156,14 +160,22 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
                   final suggestion = suggestions[index];
                   return ListTile(
                     dense: true,
-                    leading: Icon(Icons.search, color: Colors.grey[400], size: 20),
+                    leading: Icon(
+                      Icons.search,
+                      color: Colors.grey[400],
+                      size: 20,
+                    ),
                     title: Text(
                       suggestion,
                       style: const TextStyle(fontSize: 14),
                     ),
                     onTap: () => _selectSuggestion(suggestion),
                     trailing: IconButton(
-                      icon: Icon(Icons.north_west, color: Colors.grey[400], size: 16),
+                      icon: Icon(
+                        Icons.north_west,
+                        color: Colors.grey[400],
+                        size: 16,
+                      ),
                       onPressed: () {
                         widget.controller.text = suggestion;
                         widget.onChanged(suggestion);
@@ -210,7 +222,7 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
                 ),
               );
             }
-            
+
             return ListView.builder(
               shrinkWrap: true,
               itemCount: history.length,

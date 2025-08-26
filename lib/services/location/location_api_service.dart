@@ -29,7 +29,9 @@ class LocationApiService {
             .map((json) => LocationSearchResult.fromJson(json))
             .toList();
       } else {
-        throw Exception('Failed to search locations: ${response.data['error']?['message'] ?? 'Unknown error'}');
+        throw Exception(
+          'Failed to search locations: ${response.data['error']?['message'] ?? 'Unknown error'}',
+        );
       }
     } catch (e) {
       print('Error searching locations: $e');
@@ -54,7 +56,9 @@ class LocationApiService {
       if (response.statusCode == 200 && response.data['success'] == true) {
         return LocationSearchResult.fromJson(response.data['data']);
       } else {
-        throw Exception('Failed to reverse geocode: ${response.data['error']?['message'] ?? 'Unknown error'}');
+        throw Exception(
+          'Failed to reverse geocode: ${response.data['error']?['message'] ?? 'Unknown error'}',
+        );
       }
     } catch (e) {
       print('Error reverse geocoding: $e');
@@ -62,7 +66,7 @@ class LocationApiService {
     }
   }
 
-  /// Get all Syrian cities from backend
+  /// Get all Syrian cities from backend (Arabic only)
   static Future<List<CityInfo>> getAllCities() async {
     try {
       final response = await _dio.get(getAllCitiesRoute);
@@ -71,7 +75,9 @@ class LocationApiService {
         final List<dynamic> cities = response.data['data'] ?? [];
         return cities.map((json) => CityInfo.fromJson(json)).toList();
       } else {
-        throw Exception('Failed to get cities: ${response.data['error']?['message'] ?? 'Unknown error'}');
+        throw Exception(
+          'Failed to get cities: ${response.data['error']?['message'] ?? 'Unknown error'}',
+        );
       }
     } catch (e) {
       print('Error getting cities: $e');
@@ -92,7 +98,7 @@ class LocationApiService {
         'lng': longitude.toString(),
         'radiusKm': radiusKm.toString(),
       };
-      
+
       if (limit != null) {
         queryParams['limit'] = limit.toString();
       }
@@ -106,7 +112,9 @@ class LocationApiService {
         final List<dynamic> cities = response.data['data']['cities'] ?? [];
         return cities.map((json) => CityInfo.fromJson(json)).toList();
       } else {
-        throw Exception('Failed to get nearby cities: ${response.data['error']?['message'] ?? 'Unknown error'}');
+        throw Exception(
+          'Failed to get nearby cities: ${response.data['error']?['message'] ?? 'Unknown error'}',
+        );
       }
     } catch (e) {
       print('Error getting nearby cities: $e');

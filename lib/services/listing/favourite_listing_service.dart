@@ -3,11 +3,12 @@ import 'package:samsar/constants/api_route_constants.dart';
 import 'package:samsar/models/api_error.dart';
 import 'package:samsar/models/api_response.dart';
 
-
 class FavouriteListingService {
   final Dio _dio = Dio();
 
-  Future<ApiResponse<Map<String, dynamic>>> getFavouriteListingService(String token) async {
+  Future<ApiResponse<Map<String, dynamic>>> getFavouriteListingService(
+    String token,
+  ) async {
     try {
       final response = await _dio.get(
         getFavouriteListingRoute,
@@ -30,17 +31,11 @@ class FavouriteListingService {
       }
 
       return ApiResponse.failure(
-        ApiError(
-          fastifyErrorResponse: null,
-          errorResponse: null,
-        ),
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     } catch (e) {
       return ApiResponse.failure(
-        ApiError(
-          fastifyErrorResponse: null,
-          errorResponse: null,
-        ),
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     }
   }
@@ -50,16 +45,10 @@ class FavouriteListingService {
     required String listingId,
   }) async {
     try {
-
       final response = await _dio.post(
         addListingToFavouriteRoute(listingId),
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-
 
       if (response.statusCode == 200) {
         return ApiResponse.success(response.data as Map<String, dynamic>);
@@ -72,17 +61,11 @@ class FavouriteListingService {
       }
 
       return ApiResponse.failure(
-        ApiError(
-          fastifyErrorResponse: null,
-          errorResponse: null,
-        ),
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     } catch (e) {
       return ApiResponse.failure(
-        ApiError(
-          fastifyErrorResponse: null,
-          errorResponse: null,
-        ),
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     }
   }
@@ -92,15 +75,10 @@ class FavouriteListingService {
     required String listingId,
   }) async {
     try {
-
       print("We are executing this funtion🔥");
       final response = await _dio.delete(
-        removeFavouriteListingRoute(listingId), 
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        removeFavouriteListingRoute(listingId),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       if (response.statusCode == 200) {
@@ -114,17 +92,11 @@ class FavouriteListingService {
       }
 
       return ApiResponse.failure(
-        ApiError(
-          fastifyErrorResponse: null,
-          errorResponse: null,
-        ),
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     } catch (e) {
       return ApiResponse.failure(
-        ApiError(
-          fastifyErrorResponse: null,
-          errorResponse: null,
-        ),
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     }
   }

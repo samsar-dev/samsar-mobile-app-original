@@ -12,18 +12,18 @@ class SearchHistoryService {
 
     final prefs = await SharedPreferences.getInstance();
     final history = await getSearchHistory();
-    
+
     // Remove if already exists to avoid duplicates
     history.removeWhere((item) => item.toLowerCase() == query.toLowerCase());
-    
+
     // Add to beginning
     history.insert(0, query.trim());
-    
+
     // Limit history size
     if (history.length > _maxHistoryItems) {
       history.removeRange(_maxHistoryItems, history.length);
     }
-    
+
     await prefs.setStringList(_searchHistoryKey, history);
   }
 
@@ -51,26 +51,33 @@ class SearchHistoryService {
   static Future<void> saveSuggestions(List<String> suggestions) async {
     final prefs = await SharedPreferences.getInstance();
     final currentSuggestions = await getSuggestions();
-    
+
     // Merge with existing suggestions
-    final allSuggestions = <String>{...currentSuggestions, ...suggestions}.toList();
-    
+    final allSuggestions = <String>{
+      ...currentSuggestions,
+      ...suggestions,
+    }.toList();
+
     // Limit suggestions
     if (allSuggestions.length > _maxSuggestions) {
       allSuggestions.removeRange(_maxSuggestions, allSuggestions.length);
     }
-    
+
     await prefs.setStringList(_searchSuggestionsKey, allSuggestions);
   }
 
   /// Get search suggestions
   static Future<List<String>> getSuggestions() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList(_searchSuggestionsKey) ?? _getDefaultSuggestions();
+    return prefs.getStringList(_searchSuggestionsKey) ??
+        _getDefaultSuggestions();
   }
 
   /// Get filtered suggestions based on query
-  static Future<List<String>> getFilteredSuggestions(String query, {int limit = 5}) async {
+  static Future<List<String>> getFilteredSuggestions(
+    String query, {
+    int limit = 5,
+  }) async {
     if (query.trim().isEmpty) return [];
 
     final suggestions = await getSuggestions();
@@ -88,7 +95,7 @@ class SearchHistoryService {
 
     // Then, add matching suggestions
     for (final suggestion in suggestions) {
-      if (suggestion.toLowerCase().contains(queryLower) && 
+      if (suggestion.toLowerCase().contains(queryLower) &&
           !filtered.any((f) => f.toLowerCase() == suggestion.toLowerCase()) &&
           filtered.length < limit) {
         filtered.add(suggestion);
@@ -102,23 +109,30 @@ class SearchHistoryService {
   static List<String> _getDefaultSuggestions() {
     return [
       // Vehicle brands
-      'Mercedes', 'BMW', 'Audi', 'Toyota', 'Honda', 'Nissan', 'Ford', 'Volkswagen',
+      'Mercedes',
+      'BMW',
+      'Audi',
+      'Toyota',
+      'Honda',
+      'Nissan',
+      'Ford',
+      'Volkswagen',
       'Hyundai', 'Kia', 'Mazda', 'Subaru', 'Lexus', 'Infiniti', 'Acura',
       'Chevrolet', 'Dodge', 'Jeep', 'Land Rover', 'Jaguar', 'Porsche',
-      
+
       // Vehicle types
       'Sedan', 'SUV', 'Hatchback', 'Coupe', 'Convertible',
       'Motorcycle', 'Scooter', 'Electric', 'Hybrid',
-      
+
       // Real estate types
       'Apartment', 'Villa', 'House', 'Studio', 'Penthouse', 'Duplex',
       'Townhouse', 'Condo', 'Office', 'Shop', 'Warehouse', 'Land',
-      
+
       // Common features
       'Automatic', 'Manual', 'Leather', 'Sunroof', 'GPS', 'Bluetooth',
       'Parking', 'Garden', 'Pool', 'Gym', 'Security', 'Furnished',
       'Balcony', 'Terrace', 'Sea view', 'City view',
-      
+
       // Price ranges
       'Under 50000', 'Under 100000', 'Under 200000', 'Luxury',
       'Budget', 'Premium', 'New', 'Used', 'Excellent condition',

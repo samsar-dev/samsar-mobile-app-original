@@ -5,7 +5,6 @@ import 'package:samsar/services/settings/settings_service.dart';
 import 'package:samsar/widgets/custom_snackbar/custom_snackbar.dart';
 
 class SettingsController extends GetxController {
-
   final AuthController _authController = Get.put(AuthController());
 
   RxBool isLoading = false.obs;
@@ -43,23 +42,31 @@ class SettingsController extends GetxController {
       final accessToken = await _authController.getAccessToken();
       if (accessToken == null) {
         print('❌ Access token not found');
-        showCustomSnackbar("Access token not found. Please log in again.", true);
+        showCustomSnackbar(
+          "Access token not found. Please log in again.",
+          true,
+        );
         isLoading.value = false;
         return;
       }
 
       print('📡 Fetching settings from API...');
-      final result = await SettingsService().getUserSettingsService(accessToken);
+      final result = await SettingsService().getUserSettingsService(
+        accessToken,
+      );
 
-      if(result.isSuccess && result.successResponse != null) {
+      if (result.isSuccess && result.successResponse != null) {
         print('✅ Settings loaded successfully');
         final settings = GetSettingsModel.fromJson(result.successResponse!);
 
         allowMessaging.value = settings.data?.allowMessaging ?? false;
-        listingNotifications.value = settings.data?.listingNotifications ?? false;
-        messageNotifications.value = settings.data?.messageNotifications ?? false;
+        listingNotifications.value =
+            settings.data?.listingNotifications ?? false;
+        messageNotifications.value =
+            settings.data?.messageNotifications ?? false;
         loginNotifications.value = settings.data?.loginNotifications ?? false;
-        newsletterSubscribed.value = settings.data?.newsletterSubscribed ?? false;
+        newsletterSubscribed.value =
+            settings.data?.newsletterSubscribed ?? false;
         showEmail.value = settings.data?.showEmail ?? false;
         showOnlineStatus.value = settings.data?.showOnlineStatus ?? false;
         showPhoneNumber.value = settings.data?.showPhoneNumber ?? false;
@@ -69,7 +76,10 @@ class SettingsController extends GetxController {
         print('🎯 Settings state updated successfully');
       } else {
         print('❌ Failed to load settings: ${result.apiError?.message}');
-        showCustomSnackbar("Failed to load settings: ${result.apiError?.message ?? 'Unknown error'}", true);
+        showCustomSnackbar(
+          "Failed to load settings: ${result.apiError?.message ?? 'Unknown error'}",
+          true,
+        );
       }
     } catch (e) {
       print('❌ Exception loading settings: $e');
@@ -96,7 +106,10 @@ class SettingsController extends GetxController {
       final accessToken = await _authController.getAccessToken();
       if (accessToken == null) {
         print('❌ Access token not found');
-        showCustomSnackbar("Access token not found. Please log in again.", true);
+        showCustomSnackbar(
+          "Access token not found. Please log in again.",
+          true,
+        );
         isLoading.value = false;
         return;
       }
@@ -115,9 +128,9 @@ class SettingsController extends GetxController {
           "showEmail": showEmail.value,
           "showOnlineStatus": showOnlineStatus.value,
           "showPhone": showPhoneNumber.value,
-        }
+        },
       };
-      
+
       final result = await SettingsService().updateUserSettingsService(
         accessToken: accessToken,
         requestBody: requestBody,
@@ -128,7 +141,10 @@ class SettingsController extends GetxController {
         showCustomSnackbar("Settings updated successfully", false);
       } else {
         print("❌ Settings update failed: ${result.apiError?.message}");
-        showCustomSnackbar("Failed to update settings: ${result.apiError?.message ?? 'Unknown error'}", true);
+        showCustomSnackbar(
+          "Failed to update settings: ${result.apiError?.message ?? 'Unknown error'}",
+          true,
+        );
       }
     } catch (e) {
       print('❌ Exception updating settings: $e');

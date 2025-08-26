@@ -1,10 +1,6 @@
 class VehicleFilters {
   // Base filters for all vehicles
-  static const List<String> all = [
-    "location",
-    "price", 
-    "sort"
-  ];
+  static const List<String> all = ["location", "price", "sort"];
 
   // Car-specific filters
   static const List<String> car = [
@@ -12,14 +8,14 @@ class VehicleFilters {
     "price",
     "sort",
     "make",
-    "model", 
+    "model",
     "year",
     "mileage",
     "fuel",
     "transmission",
     "bodyType",
     "driveType",
-    "condition"
+    "condition",
   ];
 
   // Motorcycle-specific filters
@@ -29,11 +25,11 @@ class VehicleFilters {
     "sort",
     "brand",
     "model",
-    "year", 
+    "year",
     "engineCapacity",
     "mileage",
     "condition",
-    "motorcycleType"
+    "motorcycleType",
   ];
 
   // Truck-specific filters
@@ -49,7 +45,7 @@ class VehicleFilters {
     "transmission",
     "payloadCapacity",
     "towingCapacity",
-    "condition"
+    "condition",
   ];
 
   // Van-specific filters
@@ -64,7 +60,7 @@ class VehicleFilters {
     "fuel",
     "transmission",
     "seatingCapacity",
-    "condition"
+    "condition",
   ];
 
   // Bus-specific filters
@@ -78,7 +74,7 @@ class VehicleFilters {
     "mileage",
     "fuel",
     "seatingCapacity",
-    "condition"
+    "condition",
   ];
 
   // Tractor-specific filters
@@ -91,7 +87,7 @@ class VehicleFilters {
     "year",
     "horsepower",
     "condition",
-    "attachments"
+    "attachments",
   ];
 
   // Get filters for specific subcategory
@@ -123,10 +119,10 @@ class VehicleFilters {
   // Get all available vehicle subcategories
   static const List<String> subcategories = [
     'car',
-    'motorcycle', 
+    'motorcycle',
     'truck',
     'van',
     'bus',
-    'tractor'
+    'tractor',
   ];
 }

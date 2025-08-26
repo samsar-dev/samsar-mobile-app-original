@@ -7,7 +7,10 @@ import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/controllers/features/location_controller.dart';
 import 'package:samsar/controllers/listing/listing_input_controller.dart';
 import 'package:samsar/controllers/features/theme_controller.dart';
-import 'package:samsar/data/vehicle/cars_brands.dart';
+import 'package:provider/provider.dart';
+import 'package:samsar/controllers/vehicle_controller.dart';
+import 'package:samsar/widgets/vehicle_selection_widget.dart';
+import 'package:samsar/models/vehicle/vehicle_data_model.dart';
 import 'package:samsar/widgets/build_input/build_input.dart';
 import 'package:samsar/widgets/select_type/select_type.dart';
 import 'package:samsar/widgets/build_input_with_options/build_input_with_options.dart';
@@ -27,7 +30,8 @@ class VehicleEssentialDetails extends StatefulWidget {
   });
 
   @override
-  State<VehicleEssentialDetails> createState() => _VehicleEssentialDetailsState();
+  State<VehicleEssentialDetails> createState() =>
+      _VehicleEssentialDetailsState();
 }
 
 class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
@@ -41,27 +45,45 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
   final TextEditingController priceController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController conditionController = TextEditingController();
-  
+  final TextEditingController sellerTypeController = TextEditingController();
+
   // Vehicle type selection
   String selectedVehicleType = "";
   int selectedIndex = -1;
-  
+
   // Image picker
   final List<XFile> _images = [];
   final ImagePicker _picker = ImagePicker();
-  
-  // Model options based on selected make
-  List<String> modelOptions = [];
-  
+
+  // Vehicle selection state
+  String? selectedMake;
+  String? selectedModel;
+
   // Vehicle types with translation keys for backend mapping and professional icons
   final List<Map<String, dynamic>> vehicleTypeData = [
     {'key': 'cars', 'title': 'cars'.tr, 'icon': Icons.directions_car_filled},
-    {'key': 'motorcycles', 'title': 'motorcycles'.tr, 'icon': Icons.two_wheeler},
-    {'key': 'passenger_vehicles', 'title': 'passenger_vehicles'.tr, 'icon': Icons.airport_shuttle},
-    {'key': 'commercial_transport', 'title': 'commercial_transport'.tr, 'icon': Icons.local_shipping_outlined},
-    {'key': 'construction_vehicles', 'title': 'construction_vehicles'.tr, 'icon': Icons.engineering},
+    {
+      'key': 'motorcycles',
+      'title': 'motorcycles'.tr,
+      'icon': Icons.two_wheeler,
+    },
+    {
+      'key': 'passenger_vehicles',
+      'title': 'passenger_vehicles'.tr,
+      'icon': Icons.airport_shuttle,
+    },
+    {
+      'key': 'commercial_transport',
+      'title': 'commercial_transport'.tr,
+      'icon': Icons.local_shipping_outlined,
+    },
+    {
+      'key': 'construction_vehicles',
+      'title': 'construction_vehicles'.tr,
+      'icon': Icons.engineering,
+    },
   ];
-  
+
   // Generate SelectTypeItem list for UI
   late final List<SelectTypeItem> vehicleTypes;
 
@@ -69,30 +91,42 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
   void initState() {
     super.initState();
     _themeController = Get.put(ThemeController());
-    
+
     // BULLETPROOF CONTROLLER ACCESS
     try {
       if (Get.isRegistered<ListingInputController>()) {
         _listingInputController = Get.find<ListingInputController>();
         print('✅ VehicleEssentialDetails: Found existing controller');
       } else {
-        print('🚨 VehicleEssentialDetails: Controller not registered, creating permanent instance');
-        _listingInputController = Get.put(ListingInputController(), permanent: true);
+        print(
+          '🚨 VehicleEssentialDetails: Controller not registered, creating permanent instance',
+        );
+        _listingInputController = Get.put(
+          ListingInputController(),
+          permanent: true,
+        );
       }
     } catch (e) {
       print('🚨 VehicleEssentialDetails: Error accessing controller: $e');
-      _listingInputController = Get.put(ListingInputController(), permanent: true);
+      _listingInputController = Get.put(
+        ListingInputController(),
+        permanent: true,
+      );
     }
-    
-    vehicleTypes = vehicleTypeData.map((data) => 
-      SelectTypeItem(title: data['title'], icon: data['icon'])
-    ).toList();
-    
+
+    vehicleTypes = vehicleTypeData
+        .map((data) => SelectTypeItem(title: data['title'], icon: data['icon']))
+        .toList();
+
     print('🚀 VehicleEssentialDetails initState() called');
     print('📊 Controller state at init:');
-    print('   📝 mainCategory: "${_listingInputController.mainCategory.value}"');
+    print(
+      '   📝 mainCategory: "${_listingInputController.mainCategory.value}"',
+    );
     print('   🚗 subCategory: "${_listingInputController.subCategory.value}"');
-    print('   🖼️ images count: ${_listingInputController.listingImage.value.length}');
+    print(
+      '   🖼️ images count: ${_listingInputController.listingImage.value.length}',
+    );
     print('   📋 title: "${_listingInputController.title.value}"');
     print('   💰 price: "${_listingInputController.price.value}"');
     print('   📍 location: "${_listingInputController.location.value}"');
@@ -100,16 +134,21 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
     print('   🚗 make: "${_listingInputController.make.value}"');
     print('   🚗 model: "${_listingInputController.model.value}"');
     print('   🚗 year: "${_listingInputController.year.value}"');
-    
+
     // 🔄 LOAD EXISTING DATA: Pre-populate fields when returning from review
     _loadExistingData();
-    
+
     // Add listeners for validation
     _addValidationListeners();
-    
-    // Listen to make controller changes to update model options
-    makeController.addListener(_updateModelOptions);
-    
+
+    // Initialize vehicle controller after widget is fully built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final vehicleController = Provider.of<VehicleController>(context, listen: false);
+        vehicleController.reset();
+      }
+    });
+
     // Debug controller changes
     ever(_listingInputController.title, (value) {
       print('🔄 VehicleEssentialDetails: title changed to "$value"');
@@ -121,17 +160,19 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
       print('🔄 VehicleEssentialDetails: location changed to "$value"');
     });
   }
-  
+
   void _loadExistingData() {
     print('🔄 _loadExistingData() called');
     print('📊 BEFORE loading - Controller state:');
-    print('   📝 mainCategory: "${_listingInputController.mainCategory.value}"');
+    print(
+      '   📝 mainCategory: "${_listingInputController.mainCategory.value}"',
+    );
     print('   🚗 subCategory: "${_listingInputController.subCategory.value}"');
     print('   🖼️ images: ${_listingInputController.listingImage.value}');
     print('   📋 title: "${_listingInputController.title.value}"');
     print('   🏭 make: "${_listingInputController.make.value}"');
     print('   🚙 model: "${_listingInputController.model.value}"');
-    
+
     // 🔄 Load existing data from shared controller
     if (_listingInputController.title.value.isNotEmpty) {
       titleController.text = _listingInputController.title.value;
@@ -152,6 +193,18 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
       conditionController.text = _listingInputController.condition.value;
       print('✅ Condition loaded: "${conditionController.text}"');
     }
+    if (_listingInputController.sellerType.value.isNotEmpty) {
+      // Map database value to display text
+      String value = _listingInputController.sellerType.value;
+      if (value == 'broker') {
+        sellerTypeController.text = 'broker'.tr;
+      } else if (value == 'owner') {
+        sellerTypeController.text = 'owner'.tr;
+      } else if (value == 'business_firm') {
+        sellerTypeController.text = 'business_firm'.tr;
+      }
+      print('✅ Seller type loaded: "${sellerTypeController.text}"');
+    }
     if (_listingInputController.make.value.isNotEmpty) {
       makeController.text = _listingInputController.make.value;
       print('✅ Make loaded: "${makeController.text}"');
@@ -164,13 +217,14 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
       yearController.text = _listingInputController.year.value.toString();
       print('✅ Year loaded: "${yearController.text}"');
     }
-    
+
     // 🚗 CRITICAL FIX: Load vehicle type from subCategory (not mainCategory)
     print('🚗 Attempting to load vehicle type from subCategory...');
     if (_listingInputController.subCategory.value.isNotEmpty) {
-      final subCategory = _listingInputController.subCategory.value.toUpperCase();
+      final subCategory = _listingInputController.subCategory.value
+          .toUpperCase();
       print('🚗 Found subCategory: "$subCategory"');
-      
+
       // Map subcategory to vehicle type display name
       String vehicleTypeDisplay = '';
       switch (subCategory) {
@@ -197,11 +251,11 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
         default:
           print('❌ Unknown subCategory: "$subCategory"');
       }
-      
+
       if (vehicleTypeDisplay.isNotEmpty) {
         selectedVehicleType = vehicleTypeDisplay;
         final index = vehicleTypes.indexWhere(
-          (type) => type.title == vehicleTypeDisplay
+          (type) => type.title == vehicleTypeDisplay,
         );
         if (index != -1) {
           selectedIndex = index;
@@ -213,12 +267,14 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
     } else {
       print('❌ No subCategory found in controller');
     }
-    
+
     // 🖼️ CRITICAL FIX: Load existing images
     print('🖼️ Attempting to load existing images...');
     final existingImages = _listingInputController.listingImage.value;
-    print('🖼️ Controller has ${existingImages.length} image paths: $existingImages');
-    
+    print(
+      '🖼️ Controller has ${existingImages.length} image paths: $existingImages',
+    );
+
     if (existingImages.isNotEmpty) {
       _images.clear();
       for (String imagePath in existingImages) {
@@ -229,7 +285,7 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
     } else {
       print('❌ No images found in controller');
     }
-    
+
     print('📊 AFTER loading - Local state:');
     print('   🚗 selectedVehicleType: "$selectedVehicleType"');
     print('   📍 selectedIndex: $selectedIndex');
@@ -260,7 +316,8 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
       if (widget.showValidation) setState(() {});
       // 🔄 SYNC: Update controller with current value
       if (yearController.text.isNotEmpty) {
-        _listingInputController.year.value = int.tryParse(yearController.text) ?? 0;
+        _listingInputController.year.value =
+            int.tryParse(yearController.text) ?? 0;
       }
     });
     priceController.addListener(() {
@@ -268,7 +325,8 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
       if (widget.showValidation) setState(() {});
       // 🔄 SYNC: Update controller with current value
       if (priceController.text.isNotEmpty) {
-        _listingInputController.price.value = int.tryParse(priceController.text) ?? 0;
+        _listingInputController.price.value =
+            int.tryParse(priceController.text) ?? 0;
       }
     });
     descriptionController.addListener(() {
@@ -283,25 +341,37 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
         widget.onValidationChanged(validateForm());
       }
     });
+    sellerTypeController.addListener(() {
+      // Map display text back to database value
+      String value = sellerTypeController.text;
+      if (value == 'broker'.tr) {
+        _listingInputController.sellerType.value = 'broker';
+      } else if (value == 'owner'.tr) {
+        _listingInputController.sellerType.value = 'owner';
+      } else if (value == 'business_firm'.tr) {
+        _listingInputController.sellerType.value = 'business_firm';
+      }
+      if (widget.showValidation) {
+        widget.onValidationChanged(validateForm());
+      }
+    });
   }
 
-  void _updateModelOptions() {
-    final selectedMake = makeController.text;
-    if (selectedMake.isNotEmpty && VehicleData.makeToModels.containsKey(selectedMake)) {
-      setState(() {
-        modelOptions = VehicleData.makeToModels[selectedMake]!;
-        // Clear model selection if make changes
-        if (modelController.text.isNotEmpty && 
-            !modelOptions.contains(modelController.text)) {
-          modelController.clear();
-        }
-      });
-    } else {
-      setState(() {
-        modelOptions = [];
-        modelController.clear();
-      });
-    }
+  void _onVehicleSelectionChanged(String? make, String? model) {
+    setState(() {
+      selectedMake = make;
+      selectedModel = model;
+      
+      // Update controllers
+      makeController.text = make ?? '';
+      modelController.text = model ?? '';
+      
+      // Update listing controller
+      _listingInputController.make.value = make ?? '';
+      _listingInputController.model.value = model ?? '';
+      
+      print('🚗 Vehicle selection changed: $make -> $model');
+    });
   }
 
   Future<void> _pickImage() async {
@@ -318,22 +388,24 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
     try {
       print('🖼️ _pickImage() called');
       print('🖼️ Current images count: ${_images.length}');
-      
+
       final List<XFile> pickedFiles = await _picker.pickMultiImage();
       if (pickedFiles.isNotEmpty) {
         print('🖼️ User picked ${pickedFiles.length} new images');
-        
+
         setState(() {
           // Add new images but don't exceed 20 total
           int remainingSlots = 20 - _images.length;
           List<XFile> newImages = pickedFiles.take(remainingSlots).toList();
           _images.addAll(newImages);
-          
+
           // CRITICAL FIX: Update the ListingInputController with image paths
           List<String> imagePaths = _images.map((image) => image.path).toList();
           _listingInputController.listingImage.value = imagePaths;
-          
-          print('✅ Images added: ${newImages.length}, Total: ${_images.length}');
+
+          print(
+            '✅ Images added: ${newImages.length}, Total: ${_images.length}',
+          );
           print('✅ Controller updated with ${imagePaths.length} image paths');
           print('🖼️ Image paths: $imagePaths');
         });
@@ -348,14 +420,18 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
 
   bool validateForm() {
     widget.onValidationChanged(true);
-    
+
     bool isValid = widget.formKey.currentState?.validate() ?? false;
     bool makeSelected = makeController.text.isNotEmpty;
     bool modelSelected = modelController.text.isNotEmpty;
     bool yearSelected = yearController.text.isNotEmpty;
     bool conditionSelected = conditionController.text.isNotEmpty;
-    
-    if (!isValid || !makeSelected || !modelSelected || !yearSelected || !conditionSelected) {
+
+    if (!isValid ||
+        !makeSelected ||
+        !modelSelected ||
+        !yearSelected ||
+        !conditionSelected) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('fill_all_fields_prompt'.tr),
@@ -364,7 +440,7 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
       );
       return false;
     }
-    
+
     if (selectedIndex == -1) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -374,7 +450,7 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
       );
       return false;
     }
-    
+
     if (_images.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -384,7 +460,7 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
       );
       return false;
     }
-    
+
     return true;
   }
 
@@ -392,15 +468,23 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
     setState(() {
       selectedIndex = index;
       selectedVehicleType = vehicleTypes[index].title;
-      
+
       // 🔧 CRITICAL FIX: Use translation key instead of translated text for backend
       String translationKey = vehicleTypeData[index]['key'];
-      _listingInputController.subCategory.value = translationKey.replaceAll(' ', '_').toUpperCase();
+      String newSubCategory = translationKey
+          .replaceAll(' ', '_')
+          .toUpperCase();
       
+      // Clear subcategory-specific features before setting new subcategory
+      _listingInputController.clearSubcategorySpecificFeatures(newSubCategory);
+      _listingInputController.subCategory.value = newSubCategory;
+
       print('🚗 Vehicle type selected: $selectedVehicleType (Display)');
       print('🔑 Translation key used: $translationKey');
-      print('📊 Controller subCategory updated to: ${_listingInputController.subCategory.value}');
-      
+      print(
+        '📊 Controller subCategory updated to: ${_listingInputController.subCategory.value}',
+      );
+
       // Validate form after selection
       bool isValid = validateForm();
       widget.onValidationChanged(isValid);
@@ -414,309 +498,86 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
     modelController.dispose();
     yearController.dispose();
     priceController.dispose();
-
     descriptionController.dispose();
     conditionController.dispose();
+    sellerTypeController.dispose();
+    
+    // Clean up vehicle controller if it exists
+    try {
+      if (mounted) {
+        final vehicleController = Provider.of<VehicleController>(context, listen: false);
+        vehicleController.reset();
+      }
+    } catch (e) {
+      print('🔄 VehicleController cleanup error: $e');
+    }
+    
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    
-    return Obx(() => SingleChildScrollView(
-      child: Form(
-        key: widget.formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-          TweenAnimationBuilder<double>(
-            duration: Duration(milliseconds: 800),
-            tween: Tween(begin: 0.0, end: 1.0),
-            builder: (context, value, child) {
-              return Transform.scale(
-                scale: 0.9 + (0.1 * value),
-                child: Opacity(
-                  opacity: value,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.indigo.shade600, Colors.blue.shade700],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.indigo.withOpacity(0.4),
-                          blurRadius: 12,
-                          offset: Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(
-                            Icons.directions_car_rounded,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                        ),
-                        SizedBox(width: 12),
-                        Text(
-                          "essential_details".tr,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: screenWidth * 0.055,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-          SizedBox(height: 16),
-          
-          SelectType(
-            items: vehicleTypes,
-            selectedIndex: selectedIndex,
-            onItemSelected: _onVehicleTypeSelected,
-            hasError: widget.showValidation && selectedIndex == -1,
-          ),
-          
-          SizedBox(height: 24),
-          
-          // Modern Listing Action Buttons
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.purple.shade400, Colors.purple.shade600],
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.sell_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                    SizedBox(width: 12),
-                    Text(
-                      "listing_action".tr,
-                      style: TextStyle(
-                        color: _themeController.isDarkMode.value ? Colors.white : blackColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: screenWidth * 0.05,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 12),
-                Obx(() => Column(
-                  children: [
-                    Row(
-                      children: [
-                        // For Sale Button (Green) - Enhanced
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              _listingInputController.listingAction.value = 'FOR_SALE';
-                              print('🚗 Vehicle listing action set to: FOR_SALE');
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 18),
-                              decoration: BoxDecoration(
-                                gradient: _listingInputController.listingAction.value == 'FOR_SALE'
-                                    ? LinearGradient(
-                                        colors: [Colors.green.shade500, Colors.green.shade700],
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                      )
-                                    : null,
-                                color: _listingInputController.listingAction.value == 'FOR_SALE'
-                                    ? null
-                                    : Colors.green.withOpacity(0.08),
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(
-                                  color: Colors.green.shade600,
-                                  width: 2.5,
-                                ),
-                                boxShadow: _listingInputController.listingAction.value == 'FOR_SALE'
-                                    ? [
-                                        BoxShadow(
-                                          color: Colors.green.withOpacity(0.4),
-                                          blurRadius: 8,
-                                          offset: Offset(0, 4),
-                                        ),
-                                      ]
-                                    : null,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.monetization_on,
-                                    color: _listingInputController.listingAction.value == 'FOR_SALE'
-                                        ? Colors.white
-                                        : Colors.green.shade700,
-                                    size: 22,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    'to_sale'.tr,
-                                    style: TextStyle(
-                                      color: _listingInputController.listingAction.value == 'FOR_SALE'
-                                          ? Colors.white
-                                          : Colors.green.shade700,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 17,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        // For Rent Button (Red) - Enhanced
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              _listingInputController.listingAction.value = 'FOR_RENT';
-                              print('🚗 Vehicle listing action set to: FOR_RENT');
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 18),
-                              decoration: BoxDecoration(
-                                gradient: _listingInputController.listingAction.value == 'FOR_RENT'
-                                    ? LinearGradient(
-                                        colors: [Colors.red.shade500, Colors.red.shade700],
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                      )
-                                    : null,
-                                color: _listingInputController.listingAction.value == 'FOR_RENT'
-                                    ? null
-                                    : Colors.red.withOpacity(0.08),
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(
-                                  color: Colors.red.shade600,
-                                  width: 2.5,
-                                ),
-                                boxShadow: _listingInputController.listingAction.value == 'FOR_RENT'
-                                    ? [
-                                        BoxShadow(
-                                          color: Colors.red.withOpacity(0.4),
-                                          blurRadius: 8,
-                                          offset: Offset(0, 4),
-                                        ),
-                                      ]
-                                    : null,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.key,
-                                    color: _listingInputController.listingAction.value == 'FOR_RENT'
-                                        ? Colors.white
-                                        : Colors.red.shade700,
-                                    size: 22,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    'to_rent'.tr,
-                                    style: TextStyle(
-                                      color: _listingInputController.listingAction.value == 'FOR_RENT'
-                                          ? Colors.white
-                                          : Colors.red.shade700,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 17,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 12),
-                    // Searching Button (Blue) - Enhanced
-                    GestureDetector(
-                      onTap: () {
-                        _listingInputController.listingAction.value = 'SEARCHING';
-                        print('🚗 Vehicle listing action set to: SEARCHING');
-                      },
+
+    return Obx(
+      () => SingleChildScrollView(
+        child: Form(
+          key: widget.formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TweenAnimationBuilder<double>(
+                duration: Duration(milliseconds: 800),
+                tween: Tween(begin: 0.0, end: 1.0),
+                builder: (context, value, child) {
+                  return Transform.scale(
+                    scale: 0.9 + (0.1 * value),
+                    child: Opacity(
+                      opacity: value,
                       child: Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(vertical: 18),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
-                          gradient: _listingInputController.listingAction.value == 'SEARCHING'
-                              ? LinearGradient(
-                                  colors: [Colors.blue.shade500, Colors.blue.shade700],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                )
-                              : null,
-                          color: _listingInputController.listingAction.value == 'SEARCHING'
-                              ? null
-                              : Colors.blue.withOpacity(0.08),
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(
-                            color: Colors.blue.shade600,
-                            width: 2.5,
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.indigo.shade600,
+                              Colors.blue.shade700,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                          boxShadow: _listingInputController.listingAction.value == 'SEARCHING'
-                              ? [
-                                  BoxShadow(
-                                    color: Colors.blue.withOpacity(0.4),
-                                    blurRadius: 8,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ]
-                              : null,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.indigo.withOpacity(0.4),
+                              blurRadius: 12,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
                         ),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.search_outlined,
-                              color: _listingInputController.listingAction.value == 'SEARCHING'
-                                  ? Colors.white
-                                  : Colors.blue.shade700,
-                              size: 22,
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.directions_car_rounded,
+                                color: Colors.white,
+                                size: 28,
+                              ),
                             ),
-                            SizedBox(width: 10),
+                            SizedBox(width: 12),
                             Text(
-                              'search'.tr,
+                              "essential_details".tr,
                               style: TextStyle(
-                                color: _listingInputController.listingAction.value == 'SEARCHING'
-                                    ? Colors.white
-                                    : Colors.blue.shade700,
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 17,
+                                fontSize: screenWidth * 0.055,
                                 letterSpacing: 0.5,
                               ),
                             ),
@@ -724,382 +585,786 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
                         ),
                       ),
                     ),
-                  ],
-                )),
-                if (widget.showValidation && _listingInputController.listingAction.value.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      "select_listing_action".tr,
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          
-          SizedBox(height: 32),
-          
-          BuildInput(
-            title: "title".tr, 
-            label: "title".tr, 
-            textController: titleController,
-            validator: (value) {
-              if(value!.isEmpty) {
-                return "title_is_required".tr;
-              }
-              return null;
-            },
-            hasError: widget.showValidation && titleController.text.trim().isEmpty,
-          ),
-          
-          BuildInputWithOptions(
-            title: "make".tr,
-            controller: makeController,
-            options: VehicleData.makes,
-            hasError: widget.showValidation && makeController.text.trim().isEmpty,
-          ),
-          
-          BuildInputWithOptions(
-            title: "model".tr,
-            controller: modelController,
-            options: modelOptions.isNotEmpty ? modelOptions : ["select_make_first".tr],
-            hasError: widget.showValidation && modelController.text.trim().isEmpty,
-          ),
-          
-          BuildInputWithOptions(
-            title: "year".tr,
-            controller: yearController,
-            options: List<String>.generate(
-              DateTime.now().year - 1989, (i) => (DateTime.now().year - i).toString()),
-            hasError: widget.showValidation && yearController.text.trim().isEmpty,
-          ),
-          
-          const SizedBox(height: 16.0),
-          
-          BuildInputWithOptions(
-            title: "condition".tr,
-            controller: conditionController,
-            options: ['new'.tr, 'used'.tr, 'reconditioned'.tr],
-            hasError: widget.showValidation && conditionController.text.trim().isEmpty,
-          ),
-          
-          // Seller Type Dropdown
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Obx(() => DropdownButtonFormField<String>(
-                  value: _listingInputController.sellerType.value.isEmpty 
-                      ? null 
-                      : _listingInputController.sellerType.value,
-                  decoration: InputDecoration(
-                    hintText: "sellerTypeHint".tr,
-                    hintStyle: TextStyle(
-                      color: _themeController.isDarkMode.value ? Colors.grey[400] : Colors.grey[600],
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: widget.showValidation && _listingInputController.sellerType.value.isEmpty 
-                            ? Colors.red 
-                            : (_themeController.isDarkMode.value ? Colors.grey[600]! : Colors.grey),
-                        width: widget.showValidation && _listingInputController.sellerType.value.isEmpty 
-                            ? 2.0 
-                            : 1.0,
-                      ),
-                    ),
-                    fillColor: _themeController.isDarkMode.value ? Colors.grey[800] : Colors.white,
-                    filled: true,
-                  ),
-                  items: [
-                    DropdownMenuItem(
-                      value: 'owner', 
-                      child: Text(
-                        'owner'.tr,
-                        style: TextStyle(
-                          color: _themeController.isDarkMode.value ? Colors.white : Colors.black,
-                        ),
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      value: 'broker', 
-                      child: Text(
-                        'broker'.tr,
-                        style: TextStyle(
-                          color: _themeController.isDarkMode.value ? Colors.white : Colors.black,
-                        ),
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      value: 'business_firm', 
-                      child: Text(
-                        'business_firm'.tr,
-                        style: TextStyle(
-                          color: _themeController.isDarkMode.value ? Colors.white : Colors.black,
-                        ),
-                      ),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    if (value != null) {
-                      _listingInputController.sellerType.value = value;
-                      print('🏢 Seller type selected: $value');
-                    }
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "field_is_required".tr;
-                    }
-                    return null;
-                  },
-                )),
-                if (widget.showValidation && _listingInputController.sellerType.value.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      "field_is_required".tr,
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          
-          LocationField(
-            label: "location".tr,
-            showValidationError: widget.showValidation && _listingInputController.location.value.trim().isEmpty,
-          ),
-          
-          const SizedBox(height: 16.0),
-          
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextFormField(
-                  controller: priceController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9\u0660-\u0669]')),
-                  ],
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return "price_is_required".tr;
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    labelText: "price".tr,
-                    labelStyle: TextStyle(
-                      color: _themeController.isDarkMode.value ? Colors.grey[300] : Colors.grey[700],
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: widget.showValidation && priceController.text.trim().isEmpty 
-                            ? Colors.red 
-                            : (_themeController.isDarkMode.value ? Colors.grey[600]! : Colors.grey),
-                        width: widget.showValidation && priceController.text.trim().isEmpty ? 2.0 : 1.0,
-                      ),
-                    ),
-                    fillColor: _themeController.isDarkMode.value ? Colors.grey[800] : Colors.white,
-                    filled: true,
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: widget.showValidation && priceController.text.trim().isEmpty ? Colors.red : blueColor,
-                        width: 2.0,
-                      ),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: Colors.red,
-                        width: 2.0,
-                      ),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: Colors.red,
-                        width: 2.0,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          BuildMultilineInput(
-            title: "description".tr, 
-            label: "description".tr, 
-            controller: descriptionController,
-            validator: (value) {
-              if(value == null || value.trim().isEmpty) {
-                return "description_is_required".tr;
-              }
-              return null;
-            },
-            hasError: widget.showValidation && descriptionController.text.trim().isEmpty,
-          ),
-          
-          SizedBox(height: 24),
-          
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: _themeController.isDarkMode.value ? Colors.grey[800] : Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: _themeController.isDarkMode.value ? Colors.grey[600]! : Colors.grey.shade300,
+                  );
+                },
               ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.photo_camera_outlined,
-                  color: Colors.purple.shade700,
-                  size: 24,
-                ),
-                SizedBox(width: 8),
-                Text(
-                  "add_pictures".tr,
-                  style: TextStyle(
-                    color: _themeController.isDarkMode.value ? Colors.purple[300] : Colors.purple.shade800,
-                    fontWeight: FontWeight.bold,
-                    fontSize: screenWidth * 0.048,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 16),
-          
-          // Image picker section
-          Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: _themeController.isDarkMode.value ? Colors.grey[600]! : Colors.grey[300]!,
+              SizedBox(height: 16),
+
+              SelectType(
+                items: vehicleTypes,
+                selectedIndex: selectedIndex,
+                onItemSelected: _onVehicleTypeSelected,
+                hasError: widget.showValidation && selectedIndex == -1,
               ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: _images.isEmpty 
-              ? GestureDetector(
-                  onTap: _pickImage,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add_photo_alternate, 
-                        size: 50, 
-                        color: _themeController.isDarkMode.value ? Colors.grey[300] : Colors.grey[400],
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        "tap_to_add_images".tr, 
-                        style: TextStyle(
-                          color: _themeController.isDarkMode.value ? Colors.grey[300] : Colors.grey[600],
-                        ),
-                      ),
-                      Text(
-                        "max_20_images".tr, 
-                        style: TextStyle(
-                          color: _themeController.isDarkMode.value ? Colors.grey[400] : Colors.grey[500], 
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : GridView.builder(
-                  padding: EdgeInsets.all(8),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                  ),
-                  itemCount: _images.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == _images.length) {
-                      return GestureDetector(
-                        onTap: _pickImage,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: _themeController.isDarkMode.value ? Colors.grey[600]! : Colors.grey[300]!,
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.add, 
-                            color: _themeController.isDarkMode.value ? Colors.grey[300] : Colors.grey[400],
-                          ),
-                        ),
-                      );
-                    }
-                    return Stack(
+
+              SizedBox(height: 24),
+
+              // Modern Listing Action Buttons
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
                         Container(
+                          padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            image: DecorationImage(
-                              image: FileImage(File(_images[index].path)),
-                              fit: BoxFit.cover,
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.purple.shade400,
+                                Colors.purple.shade600,
+                              ],
                             ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.sell_rounded,
+                            color: Colors.white,
+                            size: 20,
                           ),
                         ),
-                        Positioned(
-                          top: 4,
-                          right: 4,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _images.removeAt(index);
-                                
-                                // CRITICAL FIX: Update the ListingInputController when removing images
-                                List<String> imagePaths = _images.map((image) => image.path).toList();
-                                _listingInputController.listingImage.value = imagePaths;
-                                
-                                print('🖼️ Image removed, Total: ${_images.length}');
-                                print('🖼️ Controller updated with ${imagePaths.length} image paths');
-                              });
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(Icons.close, color: Colors.white, size: 16),
-                            ),
+                        SizedBox(width: 12),
+                        Text(
+                          "listing_action".tr,
+                          style: TextStyle(
+                            color: _themeController.isDarkMode.value
+                                ? Colors.white
+                                : blackColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: screenWidth * 0.05,
                           ),
                         ),
                       ],
-                    );
-                  },
+                    ),
+                    SizedBox(height: 12),
+                    Obx(
+                      () => Column(
+                        children: [
+                          Row(
+                            children: [
+                              // For Sale Button (Green) - Enhanced
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _listingInputController
+                                            .listingAction
+                                            .value =
+                                        'FOR_SALE';
+                                    print(
+                                      '🚗 Vehicle listing action set to: FOR_SALE',
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(vertical: 18),
+                                    decoration: BoxDecoration(
+                                      gradient:
+                                          _listingInputController
+                                                  .listingAction
+                                                  .value ==
+                                              'FOR_SALE'
+                                          ? LinearGradient(
+                                              colors: [
+                                                Colors.green.shade500,
+                                                Colors.green.shade700,
+                                              ],
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                            )
+                                          : null,
+                                      color:
+                                          _listingInputController
+                                                  .listingAction
+                                                  .value ==
+                                              'FOR_SALE'
+                                          ? null
+                                          : Colors.green.withOpacity(0.08),
+                                      borderRadius: BorderRadius.circular(15),
+                                      border: Border.all(
+                                        color: Colors.green.shade600,
+                                        width: 2.5,
+                                      ),
+                                      boxShadow:
+                                          _listingInputController
+                                                  .listingAction
+                                                  .value ==
+                                              'FOR_SALE'
+                                          ? [
+                                              BoxShadow(
+                                                color: Colors.green.withOpacity(
+                                                  0.4,
+                                                ),
+                                                blurRadius: 8,
+                                                offset: Offset(0, 4),
+                                              ),
+                                            ]
+                                          : null,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.monetization_on,
+                                          color:
+                                              _listingInputController
+                                                      .listingAction
+                                                      .value ==
+                                                  'FOR_SALE'
+                                              ? Colors.white
+                                              : Colors.green.shade700,
+                                          size: 22,
+                                        ),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'to_sale'.tr,
+                                          style: TextStyle(
+                                            color:
+                                                _listingInputController
+                                                        .listingAction
+                                                        .value ==
+                                                    'FOR_SALE'
+                                                ? Colors.white
+                                                : Colors.green.shade700,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              // For Rent Button (Red) - Enhanced
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _listingInputController
+                                            .listingAction
+                                            .value =
+                                        'FOR_RENT';
+                                    print(
+                                      '🚗 Vehicle listing action set to: FOR_RENT',
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(vertical: 18),
+                                    decoration: BoxDecoration(
+                                      gradient:
+                                          _listingInputController
+                                                  .listingAction
+                                                  .value ==
+                                              'FOR_RENT'
+                                          ? LinearGradient(
+                                              colors: [
+                                                Colors.red.shade500,
+                                                Colors.red.shade700,
+                                              ],
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                            )
+                                          : null,
+                                      color:
+                                          _listingInputController
+                                                  .listingAction
+                                                  .value ==
+                                              'FOR_RENT'
+                                          ? null
+                                          : Colors.red.withOpacity(0.08),
+                                      borderRadius: BorderRadius.circular(15),
+                                      border: Border.all(
+                                        color: Colors.red.shade600,
+                                        width: 2.5,
+                                      ),
+                                      boxShadow:
+                                          _listingInputController
+                                                  .listingAction
+                                                  .value ==
+                                              'FOR_RENT'
+                                          ? [
+                                              BoxShadow(
+                                                color: Colors.red.withOpacity(
+                                                  0.4,
+                                                ),
+                                                blurRadius: 8,
+                                                offset: Offset(0, 4),
+                                              ),
+                                            ]
+                                          : null,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.key,
+                                          color:
+                                              _listingInputController
+                                                      .listingAction
+                                                      .value ==
+                                                  'FOR_RENT'
+                                              ? Colors.white
+                                              : Colors.red.shade700,
+                                          size: 22,
+                                        ),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          'to_rent'.tr,
+                                          style: TextStyle(
+                                            color:
+                                                _listingInputController
+                                                        .listingAction
+                                                        .value ==
+                                                    'FOR_RENT'
+                                                ? Colors.white
+                                                : Colors.red.shade700,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 12),
+                          // Searching Button (Blue) - Enhanced
+                          GestureDetector(
+                            onTap: () {
+                              _listingInputController.listingAction.value =
+                                  'SEARCHING';
+                              print(
+                                '🚗 Vehicle listing action set to: SEARCHING',
+                              );
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.symmetric(vertical: 18),
+                              decoration: BoxDecoration(
+                                gradient:
+                                    _listingInputController
+                                            .listingAction
+                                            .value ==
+                                        'SEARCHING'
+                                    ? LinearGradient(
+                                        colors: [
+                                          Colors.blue.shade500,
+                                          Colors.blue.shade700,
+                                        ],
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                      )
+                                    : null,
+                                color:
+                                    _listingInputController
+                                            .listingAction
+                                            .value ==
+                                        'SEARCHING'
+                                    ? null
+                                    : Colors.blue.withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(15),
+                                border: Border.all(
+                                  color: Colors.blue.shade600,
+                                  width: 2.5,
+                                ),
+                                boxShadow:
+                                    _listingInputController
+                                            .listingAction
+                                            .value ==
+                                        'SEARCHING'
+                                    ? [
+                                        BoxShadow(
+                                          color: Colors.blue.withOpacity(0.4),
+                                          blurRadius: 8,
+                                          offset: Offset(0, 4),
+                                        ),
+                                      ]
+                                    : null,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.search_outlined,
+                                    color:
+                                        _listingInputController
+                                                .listingAction
+                                                .value ==
+                                            'SEARCHING'
+                                        ? Colors.white
+                                        : Colors.blue.shade700,
+                                    size: 22,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'search'.tr,
+                                    style: TextStyle(
+                                      color:
+                                          _listingInputController
+                                                  .listingAction
+                                                  .value ==
+                                              'SEARCHING'
+                                          ? Colors.white
+                                          : Colors.blue.shade700,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (widget.showValidation &&
+                        _listingInputController.listingAction.value.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          "select_listing_action".tr,
+                          style: TextStyle(color: Colors.red, fontSize: 12),
+                        ),
+                      ),
+                  ],
                 ),
+              ),
+
+              SizedBox(height: 32),
+
+              // Form Fields Section with consistent spacing
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  children: [
+                    BuildInput(
+                      title: "title".tr,
+                      label: "title".tr,
+                      textController: titleController,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "title_is_required".tr;
+                        }
+                        return null;
+                      },
+                      hasError:
+                          widget.showValidation &&
+                          titleController.text.trim().isEmpty,
+                    ),
+
+                    const SizedBox(height: 16.0),
+
+                    // Vehicle Make and Model Selection using new backend system
+                    if (selectedIndex != -1)
+                      Consumer<VehicleController>(
+                        builder: (context, vehicleController, child) {
+                          // Get the subcategory from the selected vehicle type
+                          final subcategoryKey = vehicleTypeData[selectedIndex]['key'];
+                          VehicleSubcategory? subcategory;
+                          
+                          switch (subcategoryKey) {
+                            case 'cars':
+                              subcategory = VehicleSubcategory.cars;
+                              break;
+                            case 'motorcycles':
+                              subcategory = VehicleSubcategory.motorcycles;
+                              break;
+                            case 'passenger_vehicles':
+                              subcategory = VehicleSubcategory.passengerVehicles;
+                              break;
+                            case 'commercial_transport':
+                              subcategory = VehicleSubcategory.commercialTransport;
+                              break;
+                            case 'construction_vehicles':
+                              subcategory = VehicleSubcategory.constructionVehicles;
+                              break;
+                          }
+                          
+                          if (subcategory == null) {
+                            return Text('Invalid vehicle type selected');
+                          }
+                          
+                          return VehicleSelectionWidget(
+                            subcategory: subcategory,
+                            initialMake: _listingInputController.make.value.isNotEmpty 
+                                ? _listingInputController.make.value 
+                                : selectedMake,
+                            initialModel: _listingInputController.model.value.isNotEmpty 
+                                ? _listingInputController.model.value 
+                                : selectedModel,
+                            onSelectionChanged: _onVehicleSelectionChanged,
+                            showError: widget.showValidation,
+                          );
+                        },
+                      )
+                    else
+                      Container(
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.info_outline, color: Colors.grey.shade600),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Please select a vehicle type first to choose make and model',
+                                style: TextStyle(color: Colors.grey.shade600),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    const SizedBox(height: 16.0),
+
+                    BuildInputWithOptions(
+                      title: "year".tr,
+                      controller: yearController,
+                      options: List<String>.generate(
+                        DateTime.now().year - 1989,
+                        (i) => (DateTime.now().year - i).toString(),
+                      ),
+                      hasError:
+                          widget.showValidation &&
+                          yearController.text.trim().isEmpty,
+                    ),
+
+                    const SizedBox(height: 16.0),
+
+                    BuildInputWithOptions(
+                      title: "condition".tr,
+                      controller: conditionController,
+                      options: ['new'.tr, 'used'.tr, 'damaged'.tr, 'not_working'.tr],
+                      hasError:
+                          widget.showValidation &&
+                          conditionController.text.trim().isEmpty,
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16.0),
+
+              // Seller Type, Location, Price, and Description Section
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  children: [
+                    // Seller Type using BuildInputWithOptions to match other dropdowns
+                    BuildInputWithOptions(
+                      title: "seller_type".tr,
+                      controller: sellerTypeController,
+                      options: ['broker'.tr, 'owner'.tr, 'business_firm'.tr],
+                      hasError:
+                          widget.showValidation &&
+                          sellerTypeController.text.trim().isEmpty,
+                    ),
+
+                    const SizedBox(height: 16.0),
+                  ],
+                ),
+              ),
+
+              LocationField(
+                label: "location".tr,
+                showValidationError:
+                    widget.showValidation &&
+                    _listingInputController.location.value.trim().isEmpty,
+              ),
+
+              const SizedBox(height: 16.0),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  children: [
+                    // Price Field
+                    TextFormField(
+                      controller: priceController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'[0-9\u0660-\u0669]'),
+                        ),
+                      ],
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return "price_is_required".tr;
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        labelText: "price".tr,
+                        labelStyle: TextStyle(
+                          color: _themeController.isDarkMode.value
+                              ? Colors.grey[300]
+                              : Colors.grey[700],
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color:
+                                widget.showValidation &&
+                                    priceController.text.trim().isEmpty
+                                ? Colors.red
+                                : (_themeController.isDarkMode.value
+                                      ? Colors.grey[600]!
+                                      : Colors.grey),
+                            width:
+                                widget.showValidation &&
+                                    priceController.text.trim().isEmpty
+                                ? 2.0
+                                : 1.0,
+                          ),
+                        ),
+                        fillColor: _themeController.isDarkMode.value
+                            ? Colors.grey[800]
+                            : Colors.white,
+                        filled: true,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(
+                            color:
+                                widget.showValidation &&
+                                    priceController.text.trim().isEmpty
+                                ? Colors.red
+                                : blueColor,
+                            width: 2.0,
+                          ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(color: Colors.red, width: 2.0),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(color: Colors.red, width: 2.0),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16.0),
+                  ],
+                ),
+              ),
+
+              BuildMultilineInput(
+                title: "description".tr,
+                label: "description".tr,
+                controller: descriptionController,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "description_is_required".tr;
+                  }
+                  return null;
+                },
+                hasError:
+                    widget.showValidation &&
+                    descriptionController.text.trim().isEmpty,
+              ),
+
+              const SizedBox(height: 24),
+
+              // Images Section
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _themeController.isDarkMode.value
+                            ? Colors.grey[800]
+                            : Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: _themeController.isDarkMode.value
+                              ? Colors.grey[600]!
+                              : Colors.grey.shade300,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.photo_camera_outlined,
+                            color: Colors.purple.shade700,
+                            size: 24,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            "add_pictures".tr,
+                            style: TextStyle(
+                              color: _themeController.isDarkMode.value
+                                  ? Colors.purple[300]
+                                  : Colors.purple.shade800,
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.048,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Image picker section
+                    Container(
+                      width: double.infinity,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: _themeController.isDarkMode.value
+                              ? Colors.grey[600]!
+                              : Colors.grey[300]!,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: _images.isEmpty
+                          ? GestureDetector(
+                              onTap: _pickImage,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add_photo_alternate,
+                                    size: 50,
+                                    color: _themeController.isDarkMode.value
+                                        ? Colors.grey[300]
+                                        : Colors.grey[400],
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    "tap_to_add_images".tr,
+                                    style: TextStyle(
+                                      color: _themeController.isDarkMode.value
+                                          ? Colors.grey[300]
+                                          : Colors.grey[600],
+                                    ),
+                                  ),
+                                  Text(
+                                    "max_20_images".tr,
+                                    style: TextStyle(
+                                      color: _themeController.isDarkMode.value
+                                          ? Colors.grey[400]
+                                          : Colors.grey[500],
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : GridView.builder(
+                              padding: EdgeInsets.all(8),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 8,
+                                    mainAxisSpacing: 8,
+                                  ),
+                              itemCount: _images.length + 1,
+                              itemBuilder: (context, index) {
+                                if (index == _images.length) {
+                                  return GestureDetector(
+                                    onTap: _pickImage,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color:
+                                              _themeController.isDarkMode.value
+                                              ? Colors.grey[600]!
+                                              : Colors.grey[300]!,
+                                        ),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(
+                                        Icons.add,
+                                        color: _themeController.isDarkMode.value
+                                            ? Colors.grey[300]
+                                            : Colors.grey[400],
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return Stack(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        image: DecorationImage(
+                                          image: FileImage(
+                                            File(_images[index].path),
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 4,
+                                      right: 4,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _images.removeAt(index);
+
+                                            // CRITICAL FIX: Update the ListingInputController when removing images
+                                            List<String> imagePaths = _images
+                                                .map((image) => image.path)
+                                                .toList();
+                                            _listingInputController
+                                                    .listingImage
+                                                    .value =
+                                                imagePaths;
+
+                                            print(
+                                              '🖼️ Image removed, Total: ${_images.length}',
+                                            );
+                                            print(
+                                              '🖼️ Controller updated with ${imagePaths.length} image paths',
+                                            );
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            Icons.close,
+                                            color: Colors.white,
+                                            size: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
         ),
       ),
-    ));
+    );
   }
 }

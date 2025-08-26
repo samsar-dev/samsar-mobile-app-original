@@ -17,17 +17,22 @@ class ChangePasswordDialog extends StatefulWidget {
 class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   final AuthApiServices _authApiServices = AuthApiServices();
   final PageController _pageController = PageController();
-  
+
   // Controllers
-  final TextEditingController _currentPasswordController = TextEditingController();
+  final TextEditingController _currentPasswordController =
+      TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  final List<TextEditingController> _otpControllers = List.generate(6, (index) => TextEditingController());
-  
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final List<TextEditingController> _otpControllers = List.generate(
+    6,
+    (index) => TextEditingController(),
+  );
+
   // Form keys
   final GlobalKey<FormState> _passwordFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _verificationFormKey = GlobalKey<FormState>();
-  
+
   // State
   bool _isLoading = false;
 
@@ -90,7 +95,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                 ],
               ),
             ),
-            
+
             // Content
             Expanded(
               child: SingleChildScrollView(
@@ -99,10 +104,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                   child: PageView(
                     controller: _pageController,
                     physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      _buildPasswordStep(),
-                      _buildVerificationStep(),
-                    ],
+                    children: [_buildPasswordStep(), _buildVerificationStep()],
                   ),
                 ),
               ),
@@ -125,13 +127,10 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               const SizedBox(height: 20),
               Text(
                 "enter_current_and_new_password".tr,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
               const SizedBox(height: 30),
-              
+
               // Current Password Field
               Text(
                 "current_password".tr,
@@ -142,7 +141,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                 ),
               ),
               const SizedBox(height: 8),
-              
+
               InputField(
                 widthPercentage: 1.0,
                 heightPercentage: 0.08,
@@ -156,9 +155,9 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                   return null;
                 },
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // New Password Field
               Text(
                 "new_password".tr,
@@ -169,7 +168,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                 ),
               ),
               const SizedBox(height: 8),
-              
+
               InputField(
                 widthPercentage: 1.0,
                 heightPercentage: 0.08,
@@ -189,9 +188,9 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                   return null;
                 },
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Confirm Password Field
               Text(
                 "confirm_password".tr,
@@ -202,7 +201,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                 ),
               ),
               const SizedBox(height: 8),
-              
+
               InputField(
                 widthPercentage: 1.0,
                 heightPercentage: 0.08,
@@ -219,9 +218,9 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                   return null;
                 },
               ),
-              
+
               const SizedBox(height: 40),
-              
+
               AppButton(
                 widthSize: 1.0,
                 heightSize: 0.07,
@@ -248,13 +247,10 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             const SizedBox(height: 20),
             Text(
               "enter_verification_code_to_confirm".tr,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
             const SizedBox(height: 30),
-            
+
             // OTP Field
             Text(
               "verification_code".tr,
@@ -265,16 +261,16 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               ),
             ),
             const SizedBox(height: 8),
-            
+
             Center(
               child: OtpField(
                 widthMultiplier: 0.9,
                 controllers: _otpControllers,
               ),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -289,18 +285,15 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                   Expanded(
                     child: Text(
                       "verification_code_sent_to_email".tr,
-                      style: TextStyle(
-                        color: blueColor,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: blueColor, fontSize: 12),
                     ),
                   ),
                 ],
               ),
             ),
-            
+
             const Spacer(),
-            
+
             Row(
               children: [
                 Expanded(
@@ -310,12 +303,14 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                     buttonColor: Colors.grey,
                     text: "back".tr,
                     textColor: whiteColor,
-                    onPressed: _isLoading ? null : () {
-                      _pageController.previousPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    },
+                    onPressed: _isLoading
+                        ? null
+                        : () {
+                            _pageController.previousPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -345,10 +340,11 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     });
 
     try {
-      final response = await _authApiServices.sendPasswordChangeVerificationService(
-        currentPassword: _currentPasswordController.text,
-      );
-      
+      final response = await _authApiServices
+          .sendPasswordChangeVerificationService(
+            currentPassword: _currentPasswordController.text,
+          );
+
       if (response.isSuccess) {
         Get.snackbar(
           "success".tr,
@@ -356,30 +352,38 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           backgroundColor: Colors.green,
           colorText: whiteColor,
         );
-        
+
         _pageController.nextPage(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
       } else {
         String errorMessage = "failed_to_send_verification_code".tr;
-        
+
         if (response.apiError?.message != null) {
           final message = response.apiError!.message;
-          
+
           // Check for rate limiting
-          if (message.contains("Rate limit exceeded") || message.contains("Too many requests")) {
+          if (message.contains("Rate limit exceeded") ||
+              message.contains("Too many requests")) {
             final retryTime = ErrorMessageMapper.extractRetryTime(message);
-            errorMessage = ErrorMessageMapper.getErrorMessage('RATE_LIMIT_EXCEEDED', retryAfter: retryTime);
-          } else if (message.contains("Invalid password") || message.contains("Current password is incorrect")) {
-            errorMessage = ErrorMessageMapper.getErrorMessage('INVALID_PASSWORD');
+            errorMessage = ErrorMessageMapper.getErrorMessage(
+              'RATE_LIMIT_EXCEEDED',
+              retryAfter: retryTime,
+            );
+          } else if (message.contains("Invalid password") ||
+              message.contains("Current password is incorrect")) {
+            errorMessage = ErrorMessageMapper.getErrorMessage(
+              'INVALID_PASSWORD',
+            );
           } else if (message.contains("User email not found")) {
             errorMessage = ErrorMessageMapper.getErrorMessage('USER_NOT_FOUND');
           } else {
-            errorMessage = ErrorMessageMapper.getErrorMessage(null) + ": $message";
+            errorMessage =
+                ErrorMessageMapper.getErrorMessage(null) + ": $message";
           }
         }
-        
+
         Get.snackbar(
           "error".tr,
           errorMessage,
@@ -403,7 +407,9 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   }
 
   Future<void> _changePassword() async {
-    String otpCode = _otpControllers.map((controller) => controller.text).join();
+    String otpCode = _otpControllers
+        .map((controller) => controller.text)
+        .join();
     if (otpCode.length != 6) {
       Get.snackbar(
         "error".tr,
@@ -424,7 +430,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         newPassword: _newPasswordController.text,
         verificationCode: otpCode,
       );
-      
+
       if (response.isSuccess) {
         Get.snackbar(
           "success".tr,
@@ -432,29 +438,35 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           backgroundColor: Colors.green,
           colorText: whiteColor,
         );
-        
+
         Navigator.of(context).pop();
       } else {
         String errorMessage = "failed_to_change_password".tr;
-        
+
         if (response.apiError?.message != null) {
           final message = response.apiError!.message;
-          
+
           // Check for specific error types
           if (message.contains("Rate limit exceeded")) {
             final retryTime = ErrorMessageMapper.extractRetryTime(message);
-            errorMessage = ErrorMessageMapper.getErrorMessage('RATE_LIMIT_EXCEEDED', retryAfter: retryTime);
+            errorMessage = ErrorMessageMapper.getErrorMessage(
+              'RATE_LIMIT_EXCEEDED',
+              retryAfter: retryTime,
+            );
           } else if (message.contains("Invalid verification code")) {
             errorMessage = ErrorMessageMapper.getErrorMessage('INVALID_CODE');
           } else if (message.contains("Current password is incorrect")) {
-            errorMessage = ErrorMessageMapper.getErrorMessage('INVALID_PASSWORD');
+            errorMessage = ErrorMessageMapper.getErrorMessage(
+              'INVALID_PASSWORD',
+            );
           } else if (message.contains("You must be logged in")) {
             errorMessage = ErrorMessageMapper.getErrorMessage('UNAUTHORIZED');
           } else {
-            errorMessage = ErrorMessageMapper.getErrorMessage(null) + ": $message";
+            errorMessage =
+                ErrorMessageMapper.getErrorMessage(null) + ": $message";
           }
         }
-        
+
         Get.snackbar(
           "error".tr,
           errorMessage,

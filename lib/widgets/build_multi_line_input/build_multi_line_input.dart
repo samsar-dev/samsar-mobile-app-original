@@ -24,12 +24,14 @@ class BuildMultilineInput extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: TextStyle(
-                color: blueColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              )),
+          Text(
+            title,
+            style: TextStyle(
+              color: blueColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
           const SizedBox(height: 6),
           Container(
             decoration: BoxDecoration(
@@ -45,7 +47,7 @@ class BuildMultilineInput extends StatelessWidget {
                         color: Colors.red.withOpacity(0.2),
                         blurRadius: 6,
                         offset: Offset(0, 2),
-                      )
+                      ),
                     ]
                   : null,
             ),
@@ -60,10 +62,7 @@ class BuildMultilineInput extends StatelessWidget {
                 hintText: label,
                 border: InputBorder.none,
                 errorText: hasError ? 'This field is required' : null,
-                errorStyle: TextStyle(
-                  color: Colors.red,
-                  fontSize: 12,
-                ),
+                errorStyle: TextStyle(color: Colors.red, fontSize: 12),
               ),
             ),
           ),

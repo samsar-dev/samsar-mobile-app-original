@@ -16,7 +16,8 @@ class CityInfo {
       name: json['name'] ?? '',
       latitude: (json['latitude'] ?? 0.0).toDouble(),
       longitude: (json['longitude'] ?? 0.0).toDouble(),
-      neighbors: (json['neighbors'] as List<dynamic>?)
+      neighbors:
+          (json['neighbors'] as List<dynamic>?)
               ?.map((neighbor) => NeighborInfo.fromJson(neighbor))
               .toList() ??
           [],
@@ -53,11 +54,7 @@ class NeighborInfo {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'latitude': latitude,
-      'longitude': longitude,
-    };
+    return {'name': name, 'latitude': latitude, 'longitude': longitude};
   }
 }
 
@@ -84,7 +81,7 @@ class LocationSearchResult {
       displayName: json['display_name'] ?? '',
       lat: (json['lat'] ?? 0.0).toDouble(),
       lon: (json['lon'] ?? 0.0).toDouble(),
-      address: json['address'] != null 
+      address: json['address'] != null
           ? LocationAddress.fromJson(json['address'])
           : null,
       nameDetails: json['namedetails'] != null
@@ -142,11 +139,7 @@ class LocationNameDetails {
   final String? nameAr;
   final String? nameEn;
 
-  LocationNameDetails({
-    this.name,
-    this.nameAr,
-    this.nameEn,
-  });
+  LocationNameDetails({this.name, this.nameAr, this.nameEn});
 
   factory LocationNameDetails.fromJson(Map<String, dynamic> json) {
     return LocationNameDetails(
@@ -157,10 +150,6 @@ class LocationNameDetails {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'name:ar': nameAr,
-      'name:en': nameEn,
-    };
+    return {'name': name, 'name:ar': nameAr, 'name:en': nameEn};
   }
 }

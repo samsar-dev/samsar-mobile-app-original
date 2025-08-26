@@ -6,15 +6,13 @@ import 'package:samsar/models/api_response.dart';
 class NotificationServices {
   final _dio = Dio();
 
-  Future<ApiResponse<Map<String, dynamic>>> getNotificationServices(String accessToken) async {
+  Future<ApiResponse<Map<String, dynamic>>> getNotificationServices(
+    String accessToken,
+  ) async {
     try {
       final response = await _dio.get(
         getNotificationsRoute,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
       );
 
       if (response.statusCode == 200) {
@@ -28,17 +26,11 @@ class NotificationServices {
       }
 
       return ApiResponse.failure(
-        ApiError(
-          fastifyErrorResponse: null,
-          errorResponse: null,
-        ),
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     } catch (e) {
       return ApiResponse.failure(
-        ApiError(
-          fastifyErrorResponse: null,
-          errorResponse: null,
-        ),
+        ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     }
   }

@@ -11,7 +11,6 @@ import 'package:samsar/widgets/custom_snackbar/custom_snackbar.dart';
 import 'package:samsar/widgets/loading_dialog/loading_dialog.dart';
 import 'package:samsar/utils/error_message_mapper.dart';
 
-
 class AuthController extends GetxController {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final AuthApiServices _authApiServices = AuthApiServices();
@@ -43,20 +42,35 @@ class AuthController extends GetxController {
     try {
       print('🔄 Starting session restoration...');
       final raw = await _storage.read(key: "samsar_user_data");
-      
+
       if (raw != null) {
         print('📱 Found stored session data');
         final json = jsonDecode(raw);
         final loginModel = LoginModel.fromJson(json);
 
-        if (loginModel.data?.user != null && loginModel.data?.tokens?.accessToken != null) {
-          user.value = loginModel.data!.user;
-          accessToken.value = loginModel.data!.tokens!.accessToken!;
-          await _storage.write(key: 'user_email', value: user.value?.email ?? "");
-          print('✅ Session restored successfully');
-          print('👤 User: ${user.value?.name}');
-          print('🔑 Token: ${accessToken.value.substring(0, 10)}...');
-          print('🖼️ Profile Picture: ${user.value?.profilePicture}');
+        if (loginModel.data?.user != null &&
+            loginModel.data?.tokens?.accessToken != null) {
+          // Validate user still exists on server before restoring session
+          print('🔍 Validating user exists on server...');
+          final isValid = await _validateUserExists(
+            loginModel.data!.tokens!.accessToken!,
+          );
+
+          if (isValid) {
+            user.value = loginModel.data!.user;
+            accessToken.value = loginModel.data!.tokens!.accessToken!;
+            await _storage.write(
+              key: 'user_email',
+              value: user.value?.email ?? "",
+            );
+            print('✅ Session restored successfully');
+            print('👤 User: ${user.value?.name}');
+            print('🔑 Token: ${accessToken.value.substring(0, 10)}...');
+            print('🖼️ Profile Picture: ${user.value?.profilePicture}');
+          } else {
+            print('❌ User no longer exists on server - clearing session');
+            await _clearInvalidSession();
+          }
         } else {
           print('❌ Invalid session data structure');
           await _clearInvalidSession();
@@ -70,16 +84,57 @@ class AuthController extends GetxController {
     } finally {
       // Always mark session restoration as complete
       isSessionRestored.value = true;
-      print('🏁 Session restoration completed. Authenticated: ${isAuthenticated}');
+      print(
+        '🏁 Session restoration completed. Authenticated: ${isAuthenticated}',
+      );
+    }
+  }
+
+  Future<bool> _validateUserExists(String token) async {
+    try {
+      print('🔍 Validating user existence with server...');
+      final response = await _authApiServices.getUserProfile(token);
+
+      if (response.apiError != null) {
+        final errorCode = response.apiError?.errorResponse?.error?.code;
+        print('❌ User validation failed with error: $errorCode');
+
+        // If user not found, account inactive, or email not verified, clear session
+        if (errorCode == 'USER_NOT_FOUND' ||
+            errorCode == 'ACCOUNT_INACTIVE' ||
+            errorCode == 'EMAIL_NOT_VERIFIED' ||
+            errorCode == 'INVALID_TOKEN' ||
+            errorCode == 'TOKEN_EXPIRED') {
+          return false;
+        }
+
+        // For other errors (like network issues), assume user exists to avoid blocking registration
+        print('⚠️ Non-critical validation error, assuming user exists');
+        return true;
+      }
+
+      if (response.successResponse != null &&
+          response.successResponse!['data'] != null) {
+        print('✅ User validation successful');
+        return true;
+      }
+
+      print(
+        '❌ User validation failed - no valid response, assuming user exists',
+      );
+      return true; // Changed: assume user exists if we can't validate to avoid blocking registration
+    } catch (e) {
+      print('❌ Error validating user existence: $e - assuming user exists');
+      return true; // Changed: assume user exists on error to avoid blocking registration
     }
   }
 
   Future<void> _clearInvalidSession() async {
     try {
-      await _storage.delete(key: "samsar_user_data");
+      await _storage.deleteAll(); // Clear all stored data including user_email
       user.value = null;
       accessToken.value = '';
-      print('🧹 Cleared invalid session data');
+      print('🧹 Cleared all invalid session data');
     } catch (e) {
       print('❌ Error clearing invalid session: $e');
     }
@@ -94,8 +149,6 @@ class AuthController extends GetxController {
     return null;
   }
 
-
-
   Future<void> _checkLocalLogin() async {
     // final token = await _storage.read(key: 'samsar_access_token');
     final userJson = await _storage.read(key: 'samsar_user_data');
@@ -106,12 +159,10 @@ class AuthController extends GetxController {
     }
   }
 
-
-
   Future<void> login(String email, String password) async {
     try {
       isLoading.value = true;
-      loadingDialog('Authenticating...');
+      loadingDialog('authenticating'.tr);
 
       final result = await _authApiServices.loginService(email, password);
 
@@ -119,34 +170,52 @@ class AuthController extends GetxController {
 
       if (result.apiError != null) {
         String errorMessage = "Unexpected error occurred";
-        
+
         // Extract error code and message
         final errorCode = result.apiError?.errorResponse?.error?.code;
         final originalMessage = result.apiError?.errorResponse?.error?.message;
-        
-        // Handle rate limiting and other specific errors
-        if (originalMessage != null && originalMessage.contains("Rate limit exceeded")) {
-          final retryTime = ErrorMessageMapper.extractRetryTime(originalMessage);
-          errorMessage = ErrorMessageMapper.getErrorMessage('RATE_LIMIT_EXCEEDED', retryAfter: retryTime);
+
+        // Handle specific authentication errors
+        if (errorCode == 'USER_NOT_FOUND') {
+          errorMessage = 'account_does_not_exist'.tr;
+          await logout(); // Clear local session
+          return;
+        } else if (errorCode == 'ACCOUNT_INACTIVE') {
+          errorMessage = 'account_inactive'.tr;
+          await logout(); // Clear local session
+          return;
+        } else if (errorCode == 'EMAIL_NOT_VERIFIED') {
+          errorMessage = 'email_not_verified_login'.tr;
+          return;
+        } else if (originalMessage != null &&
+            originalMessage.contains("Rate limit exceeded")) {
+          final retryTime = ErrorMessageMapper.extractRetryTime(
+            originalMessage,
+          );
+          errorMessage = ErrorMessageMapper.getErrorMessage(
+            'RATE_LIMIT_EXCEEDED',
+            retryAfter: retryTime,
+          );
         } else {
           errorMessage = ErrorMessageMapper.getErrorMessage(errorCode);
         }
-        
+
         showCustomSnackbar(errorMessage, true);
         return;
       }
 
       if (result.apiError?.fastifyErrorResponse != null) {
-        final message = result.apiError?.fastifyErrorResponse?.message ?? "Validation error";
-        showCustomSnackbar(ErrorMessageMapper.getErrorMessage('VALIDATION_ERROR') + ": $message", true);
+        final message =
+            result.apiError?.fastifyErrorResponse?.message ??
+            'validation_error'.tr;
+        showCustomSnackbar("${'validation_error'.tr}: $message", true);
         return;
       }
-
 
       final rawData = result.successResponse;
 
       if (rawData == null) {
-        showCustomSnackbar("Something went wrong. Try again later.", true);
+        showCustomSnackbar('something_went_wrong'.tr, true);
         return;
       }
 
@@ -154,25 +223,27 @@ class AuthController extends GetxController {
       user.value = loginModel.data?.user;
       accessToken.value = loginModel.data?.tokens?.accessToken ?? "";
 
-
-      if(user.value == null) {
+      if (user.value == null) {
         isLoading.value = false;
 
-        showCustomSnackbar("User is not present", true);
+        showCustomSnackbar('user_not_present'.tr, true);
         return;
       }
 
-
-
-      await _storage.write(key: 'samsar_user_data', value: jsonEncode(loginModel.toJson()));
+      await _storage.write(
+        key: 'samsar_user_data',
+        value: jsonEncode(loginModel.toJson()),
+      );
       await _storage.write(key: 'user_email', value: user.value?.email ?? "");
 
-
       Get.offAll(() => const HomeView());
-      showCustomSnackbar("Login successful", false);
+      showCustomSnackbar('login_successful'.tr, false);
     } catch (e) {
       Get.back();
-      showCustomSnackbar("Login failed: $e", true);
+      showCustomSnackbar(
+        'login_failed'.trParams({'error': e.toString()}),
+        true,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -186,32 +257,39 @@ class AuthController extends GetxController {
   }) async {
     try {
       registerLoading.value = true;
-      loadingDialog('Registering...');
+      loadingDialog('registering'.tr);
 
       final result = await _authApiServices.registerService(
         name: name,
         email: email,
         username: userName,
-        password: password
+        password: password,
       );
 
       Get.back();
 
       if (result.apiError?.errorResponse != null) {
         final errorCode = result.apiError?.errorResponse?.error?.code;
-        final originalMessage = result.apiError?.errorResponse?.error?.message ?? 'Registration failed';
-        
+        final originalMessage =
+            result.apiError?.errorResponse?.error?.message ??
+            'Registration failed';
+
         String errorMessage;
-        
+
         // Handle rate limiting first
         if (originalMessage.contains("Rate limit exceeded")) {
-          final retryTime = ErrorMessageMapper.extractRetryTime(originalMessage);
-          errorMessage = ErrorMessageMapper.getErrorMessage('RATE_LIMIT_EXCEEDED', retryAfter: retryTime);
+          final retryTime = ErrorMessageMapper.extractRetryTime(
+            originalMessage,
+          );
+          errorMessage = ErrorMessageMapper.getErrorMessage(
+            'RATE_LIMIT_EXCEEDED',
+            retryAfter: retryTime,
+          );
         } else {
           // Use error mapper for other errors
           errorMessage = ErrorMessageMapper.getErrorMessage(errorCode);
         }
-        
+
         showCustomSnackbar(errorMessage, true);
         return;
       }
@@ -220,7 +298,10 @@ class AuthController extends GetxController {
       showCustomSnackbar('registration_successful'.tr, false);
     } catch (e) {
       Get.back();
-      showCustomSnackbar('Registration failed: $e', true);
+      showCustomSnackbar(
+        'registration_failed'.trParams({'error': e.toString()}),
+        true,
+      );
     } finally {
       registerLoading.value = false;
     }
@@ -229,17 +310,22 @@ class AuthController extends GetxController {
   Future<void> verifyCode(String email, String code) async {
     try {
       isLoading.value = true;
-      loadingDialog('Verifying code...');
+      loadingDialog('verifying_code'.tr);
 
-      final result = await _authApiServices.verifyCodeService(email: email, code: code);
+      final result = await _authApiServices.verifyCodeService(
+        email: email,
+        code: code,
+      );
 
       Get.back();
 
       // Check if there's an error
       if (result.apiError != null) {
         final errorCode = result.apiError?.errorResponse?.error?.code;
-        final errorMessage = result.apiError?.errorResponse?.error?.message ?? 'Verification failed';
-        
+        final errorMessage =
+            result.apiError?.errorResponse?.error?.message ??
+            'Verification failed';
+
         switch (errorCode) {
           case 'INVALID_CODE':
             showCustomSnackbar('invalid_code'.tr, true);
@@ -262,7 +348,10 @@ class AuthController extends GetxController {
       Get.offAll(() => LoginView());
     } catch (e) {
       Get.back();
-      showCustomSnackbar('Verification failed: $e', true);
+      showCustomSnackbar(
+        'verification_failed'.trParams({'error': e.toString()}),
+        true,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -271,23 +360,35 @@ class AuthController extends GetxController {
   Future<void> resendVerification(String email) async {
     try {
       isLoading.value = true;
-      loadingDialog('Sending verification code...');
+      loadingDialog('sending_verification_code'.tr);
 
-      final result = await _authApiServices.resendVerificationService(email: email);
+      final result = await _authApiServices.resendVerificationService(
+        email: email,
+      );
 
       Get.back();
 
       if (result.apiError?.errorResponse != null) {
         final errorCode = result.apiError?.errorResponse?.error?.code;
-        final errorMessage = result.apiError?.errorResponse?.error?.message ?? 'Failed to resend verification code';
+        final errorMessage =
+            result.apiError?.errorResponse?.error?.message ??
+            'Failed to resend verification code';
         final retryAfter = result.apiError?.errorResponse?.error?.retryAfter;
-        
+
         switch (errorCode) {
           case 'RESEND_RATE_LIMITED':
             if (retryAfter != null) {
-              showCustomSnackbar('resend_rate_limited'.trParams({'seconds': retryAfter.toString()}), true);
+              showCustomSnackbar(
+                'resend_rate_limited'.trParams({
+                  'seconds': retryAfter.toString(),
+                }),
+                true,
+              );
             } else {
-              showCustomSnackbar('resend_rate_limited'.trParams({'seconds': '60'}), true);
+              showCustomSnackbar(
+                'resend_rate_limited'.trParams({'seconds': '60'}),
+                true,
+              );
             }
             break;
           case 'ALREADY_VERIFIED':
@@ -303,14 +404,20 @@ class AuthController extends GetxController {
       }
 
       if (result.apiError?.fastifyErrorResponse != null) {
-        showCustomSnackbar(result.apiError?.fastifyErrorResponse?.message ?? 'Failed to resend verification code', true);
+        showCustomSnackbar(
+          result.apiError?.fastifyErrorResponse?.message ?? 'resend_failed'.tr,
+          true,
+        );
         return;
       }
 
       showCustomSnackbar('code_sent_again'.tr, false);
     } catch (e) {
       Get.back();
-      showCustomSnackbar('Failed to resend verification code: $e', true);
+      showCustomSnackbar(
+        'resend_failed'.trParams({'error': e.toString()}),
+        true,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -321,7 +428,7 @@ class AuthController extends GetxController {
     user.value = null;
     accessToken.value = '';
     Get.offAll(() => LoginView());
-    showCustomSnackbar('Logged out successfully', true);
+    showCustomSnackbar('logout_successful'.tr, true);
   }
 
   Future<void> updateProfile({
@@ -335,21 +442,27 @@ class AuthController extends GetxController {
   }) async {
     try {
       isLoading.value = true;
-      loadingDialog('Updating profile...');
+      loadingDialog('updating_profile'.tr);
 
       print('Starting profile update...');
       print('Current user: ${user.value?.toJson()}');
 
       if (user.value?.id == null) {
         Get.back();
-        showCustomSnackbar('User session is invalid. Please log in again.', true);
+        showCustomSnackbar(
+          'User session is invalid. Please log in again.'.tr,
+          true,
+        );
         return;
       }
 
       final token = await _storage.read(key: "samsar_user_data");
       if (token == null) {
         Get.back();
-        showCustomSnackbar('Authentication token not found. Please log in again.', true);
+        showCustomSnackbar(
+          'Authentication token not found. Please log in again.'.tr,
+          true,
+        );
         return;
       }
 
@@ -384,7 +497,8 @@ class AuthController extends GetxController {
       if (response.apiError != null) {
         print('API Error: ${response.apiError}');
         showCustomSnackbar(
-          response.apiError?.errorResponse?.error?.message ?? 'Failed to update profile',
+          response.apiError?.errorResponse?.error?.message ??
+              'Failed to update profile'.tr,
           true,
         );
         return;
@@ -392,12 +506,13 @@ class AuthController extends GetxController {
 
       if (response.successResponse == null) {
         print('No response data received');
-        showCustomSnackbar('No response data received', true);
+        showCustomSnackbar('no_response_data'.tr, true);
         return;
       }
 
       // Check if the response contains user data
-      if (response.successResponse!.containsKey('data') && response.successResponse!['data'] != null) {
+      if (response.successResponse!.containsKey('data') &&
+          response.successResponse!['data'] != null) {
         final updatedUser = User.fromJson(response.successResponse!['data']);
         user.value = updatedUser;
 
@@ -405,18 +520,21 @@ class AuthController extends GetxController {
         if (raw != null) {
           final loginData = jsonDecode(raw);
           loginData['data']['user'] = updatedUser.toJson();
-          await _storage.write(key: "samsar_user_data", value: jsonEncode(loginData));
+          await _storage.write(
+            key: "samsar_user_data",
+            value: jsonEncode(loginData),
+          );
         }
       } else {
         // API returned success but no user data - update local user with current values
         print('API returned success but no user data, updating local user');
-        
+
         // If we uploaded a profile image, fetch the updated user profile
         if (profileImage != null) {
           print('Profile image was uploaded, fetching updated user profile...');
           try {
             await fetchUserProfile(); // This will fetch and update the user profile with the new image URL
-            showCustomSnackbar('Profile updated successfully!', false);
+            showCustomSnackbar('profile_updated_successfully'.tr, false);
             print('Profile update completed successfully');
             user.refresh();
             return; // Exit early since fetchUserProfile() already updated the user
@@ -425,7 +543,7 @@ class AuthController extends GetxController {
             // Continue with local update as fallback
           }
         }
-        
+
         if (user.value != null) {
           user.value = User(
             id: user.value!.id,
@@ -435,7 +553,10 @@ class AuthController extends GetxController {
             createdAt: user.value!.createdAt,
             updatedAt: DateTime.now(),
             phone: phone ?? '',
-            profilePicture: profileImage != null ? (response.successResponse?['data']?['profilePicture'] ?? user.value!.profilePicture) : user.value!.profilePicture,
+            profilePicture: profileImage != null
+                ? (response.successResponse?['data']?['profilePicture'] ??
+                      user.value!.profilePicture)
+                : user.value!.profilePicture,
             bio: bio,
             name: name,
             dateOfBirth: user.value!.dateOfBirth,
@@ -450,7 +571,7 @@ class AuthController extends GetxController {
             showPhoneNumber: user.value!.showPhoneNumber,
             privateProfile: user.value!.privateProfile,
           );
-          
+
           // Update local storage with new values
           final raw = await _storage.read(key: "samsar_user_data");
           if (raw != null) {
@@ -462,23 +583,30 @@ class AuthController extends GetxController {
             loginData['data']['user']['city'] = city;
             loginData['data']['user']['phone'] = phone;
             if (response.successResponse?['data']?['profilePicture'] != null) {
-              loginData['data']['user']['profilePicture'] = response.successResponse!['data']['profilePicture'];
+              loginData['data']['user']['profilePicture'] =
+                  response.successResponse!['data']['profilePicture'];
             }
-            await _storage.write(key: "samsar_user_data", value: jsonEncode(loginData));
+            await _storage.write(
+              key: "samsar_user_data",
+              value: jsonEncode(loginData),
+            );
           }
         }
       }
 
-      showCustomSnackbar('Profile updated successfully!', false);
+      showCustomSnackbar('profile_updated_successfully'.tr, false);
       print('Profile update completed successfully');
-      
+
       // Force refresh user state to ensure immediate UI update
       user.refresh();
     } catch (e, stackTrace) {
       Get.back();
       print('Profile update error: $e');
       print('Stack trace: $stackTrace');
-      showCustomSnackbar('Error updating profile: $e', true);
+      showCustomSnackbar(
+        'profile_update_error'.trParams({'error': e.toString()}),
+        true,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -494,37 +622,43 @@ class AuthController extends GetxController {
 
       final userData = jsonDecode(token);
       final accessToken = userData['data']['tokens']['accessToken'];
-      
+
       print('🔍 Fetching user profile from: $getUserProfileRoute');
       print('🔑 Using access token: ${accessToken.substring(0, 20)}...');
-      
+
       final response = await _authApiServices.getUserProfile(accessToken);
-      
+
       print('📥 Profile fetch response: ${response.toString()}');
       print('✅ Success response: ${response.successResponse}');
-      print('❌ Error response: ${response.apiError?.message ?? "Unknown error"}');
-      
-      if (response.successResponse != null && response.successResponse!['data'] != null) {
+      print(
+        '❌ Error response: ${response.apiError?.message ?? "Unknown error"}',
+      );
+
+      if (response.successResponse != null &&
+          response.successResponse!['data'] != null) {
         final updatedUser = User.fromJson(response.successResponse!['data']);
         print('🔄 Updating user profile...');
         print('🖼️ New profile picture URL: ${updatedUser.profilePicture}');
-        
+
         user.value = updatedUser;
-        
+
         // Update local storage
         final raw = await _storage.read(key: "samsar_user_data");
         if (raw != null) {
           final loginData = jsonDecode(raw);
           loginData['data']['user'] = updatedUser.toJson();
-          await _storage.write(key: "samsar_user_data", value: jsonEncode(loginData));
+          await _storage.write(
+            key: "samsar_user_data",
+            value: jsonEncode(loginData),
+          );
           print('✅ Local storage updated with new profile picture');
         } else {
           print('❌ Failed to update local storage - no existing data found');
         }
-        
+
         print('✅ User profile updated successfully with new data');
       } else {
-        print('Failed to fetch updated user profile');
+        showCustomSnackbar('fetch_profile_failed'.tr, true);
       }
     } catch (e) {
       print('Error fetching user profile: $e');

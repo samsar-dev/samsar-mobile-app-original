@@ -16,23 +16,19 @@ class LoginView extends StatelessWidget {
   final AuthController _authController = Get.find<AuthController>();
 
   void onSubmit() {
-    if(_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-
       _authController.login(_emailController.text, _passWordController.text);
-      
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-
       backgroundColor: blueColor,
 
       body: SingleChildScrollView(
@@ -48,17 +44,20 @@ class LoginView extends StatelessWidget {
                   child: Center(
                     child: Hero(
                       tag: "auth_title",
-                      child: Text("Samsar", style: TextStyle(
-                        color: whiteColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: screenWidth * 0.085
-                      ),),
+                      child: Text(
+                        "Samsar",
+                        style: TextStyle(
+                          color: whiteColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: screenWidth * 0.085,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-                    
-                SizedBox(height: screenHeight * 0.03,),
-          
+
+                SizedBox(height: screenHeight * 0.03),
+
                 loginCard(context),
               ],
             ),
@@ -69,7 +68,6 @@ class LoginView extends StatelessWidget {
   }
 
   Widget loginCard(BuildContext context) {
-
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
@@ -82,115 +80,134 @@ class LoginView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
             SizedBox(
               width: double.infinity,
               height: screenHeight * 0.08,
               child: Center(
-                child: Text("login".tr, style: TextStyle(
-                  color: blackColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: screenWidth * 0.08
-                ),),
+                child: Text(
+                  "login".tr,
+                  style: TextStyle(
+                    color: blackColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: screenWidth * 0.08,
+                  ),
+                ),
               ),
             ),
 
             inputCard(
-              "email".tr, 
-              "example_email".tr, 
-              _emailController, 
-              false, 
+              "email".tr,
+              "example_email".tr,
+              _emailController,
+              false,
               context,
               (value) {
-                if(value == null || value.isEmpty) {
+                if (value == null || value.isEmpty) {
                   return "please_provide_email".tr;
                 }
 
-                if(!value.contains("@")) {
+                if (!value.contains("@")) {
                   return "please_provide_valid_email".tr;
                 }
 
                 return null;
-              }
+              },
             ),
-            SizedBox(height: screenHeight * 0.01,),
+            SizedBox(height: screenHeight * 0.01),
             inputCard(
-              "password".tr, 
-              "enter_password".tr, 
-              _passWordController, 
-              true, 
+              "password".tr,
+              "enter_password".tr,
+              _passWordController,
+              true,
               context,
               (value) {
-                if(value == null || value.isEmpty) {
+                if (value == null || value.isEmpty) {
                   return "please_provide_valid_password".tr;
                 }
 
-                if(value.length < 6) {
+                if (value.length < 6) {
                   return "password_min_8_chars".tr;
                 }
 
                 return null;
-              }
+              },
             ),
 
-             Container(
-                width: screenWidth * 0.9,
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    _showForgotPasswordDialog(context);
-                  },
-                  child: Text(
-                    "forgot_password".tr,
-                    style: TextStyle(color: blueColor),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: screenHeight * 0.004,),
-
-              AppButton(
-                widthSize: 0.55,
-                heightSize: 0.06,
-                buttonColor: blueColor,
-                text: "login".tr,
-                textColor: whiteColor,
-                onPressed: onSubmit,
-              ),
-
-              SizedBox(height: screenHeight * 0.008,),
-
-               TextButton(
+            Container(
+              width: screenWidth * 0.9,
+              alignment: Alignment.centerRight,
+              child: TextButton(
                 onPressed: () {
-                  Get.to(RegisterView(), transition: Transition.downToUp, duration: Duration(milliseconds: 800), curve: Curves.linearToEaseOut);
+                  _showForgotPasswordDialog(context);
                 },
                 child: Text(
-                  "dont_have_account".tr,
-                  style: TextStyle(color: Colors.grey),
+                  "forgot_password".tr,
+                  style: TextStyle(color: blueColor),
                 ),
               ),
+            ),
+
+            SizedBox(height: screenHeight * 0.004),
+
+            AppButton(
+              widthSize: 0.55,
+              heightSize: 0.06,
+              buttonColor: blueColor,
+              text: "login".tr,
+              textColor: whiteColor,
+              onPressed: onSubmit,
+            ),
+
+            SizedBox(height: screenHeight * 0.008),
+
+            TextButton(
+              onPressed: () {
+                Get.to(
+                  RegisterView(),
+                  transition: Transition.downToUp,
+                  duration: Duration(milliseconds: 800),
+                  curve: Curves.linearToEaseOut,
+                );
+              },
+              child: Text(
+                "dont_have_account".tr,
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget inputCard(String title, String labelText, TextEditingController controller, bool isPassword, BuildContext context, String? Function(String?) validator,) {
+  Widget inputCard(
+    String title,
+    String labelText,
+    TextEditingController controller,
+    bool isPassword,
+    BuildContext context,
+    String? Function(String?) validator,
+  ) {
     return Column(
       children: [
         Align(
           alignment: Alignment.centerLeft,
           child: Padding(
-            padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.05),
-            child: Text(title, style: TextStyle(
-              color: blackColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 22
-            ),),
+            padding: EdgeInsets.only(
+              left: MediaQuery.of(context).size.width * 0.05,
+            ),
+            child: Text(
+              title,
+              style: TextStyle(
+                color: blackColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+              ),
+            ),
           ),
         ),
 
-        SizedBox(height: MediaQuery.of(context).size.height * 0.005,),
+        SizedBox(height: MediaQuery.of(context).size.height * 0.005),
 
         InputField(
           widthPercentage: 0.8,
@@ -198,7 +215,7 @@ class LoginView extends StatelessWidget {
           labelText: labelText,
           controller: controller,
           isPassword: isPassword,
-          validator: validator
+          validator: validator,
         ),
       ],
     );

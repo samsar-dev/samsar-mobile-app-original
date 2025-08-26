@@ -45,12 +45,20 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
         _listingInputController = Get.find<ListingInputController>();
         print('✅ AdvancedDetailsWrapper: Found existing controller');
       } else {
-        print('🚨 AdvancedDetailsWrapper: Controller not registered, creating permanent instance');
-        _listingInputController = Get.put(ListingInputController(), permanent: true);
+        print(
+          '🚨 AdvancedDetailsWrapper: Controller not registered, creating permanent instance',
+        );
+        _listingInputController = Get.put(
+          ListingInputController(),
+          permanent: true,
+        );
       }
     } catch (e) {
       print('🚨 AdvancedDetailsWrapper: Error accessing controller: $e');
-      _listingInputController = Get.put(ListingInputController(), permanent: true);
+      _listingInputController = Get.put(
+        ListingInputController(),
+        permanent: true,
+      );
     }
   }
 
@@ -140,7 +148,10 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
           formContent = VillaAdvancedDetails();
           break;
         default:
-          formContent = _buildPlaceholder(context, 'Real Estate Advanced Details');
+          formContent = _buildPlaceholder(
+            context,
+            'Real Estate Advanced Details',
+          );
       }
     } else {
       formContent = _buildPlaceholder(context, 'Unknown Category');
@@ -157,7 +168,7 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
 
   Widget _buildPlaceholder(BuildContext context, String title) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    
+
     return SingleChildScrollView(
       padding: EdgeInsets.all(16),
       child: Column(
@@ -172,7 +183,7 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
             ),
           ),
           SizedBox(height: 16),
-          
+
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(20),
@@ -197,10 +208,7 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
                 Text(
                   "Please select a vehicle type in Step 1 to see relevant advanced details",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey[500],
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.grey[500], fontSize: 14),
                 ),
               ],
             ),
@@ -212,7 +220,7 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
 
   Widget _buildNavigationButtons(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Container(
       padding: EdgeInsets.all(16),
       child: Row(
@@ -228,7 +236,7 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
             )
           else
             SizedBox(width: screenWidth * 0.35),
-          
+
           if (widget.onNext != null)
             _buildButton(
               width: screenWidth * 0.35,
@@ -256,16 +264,11 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         child: Text(
           text,
-          style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(color: textColor, fontWeight: FontWeight.w600),
         ),
       ),
     );

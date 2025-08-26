@@ -20,6 +20,14 @@ class AppTranslations extends Translations {
       'sort': 'Sort',
       'refresh': 'Refresh',
       'email': 'Email',
+      // Login Prompt
+      'login_prompt':
+          'To access @tabName, you need to sign in to your account.',
+      'login_prompt_benefits_title': 'Benefits of signing in:',
+      'login_benefit_save_favorites': '• Save your favorite listings',
+      'login_benefit_manage_listings': '• Create and manage your listings',
+      'login_benefit_chat': '• Chat with other users',
+      'login_benefit_recommendations': '• Personalized recommendations',
 
       // Location translations
       'select_location': 'Select Location',
@@ -40,6 +48,8 @@ class AppTranslations extends Translations {
       'passenger_vehicles': 'Passenger Vehicles',
       'commercial_transport': 'Commercial Transport',
       'passengers': 'Passengers',
+
+      // Seller Types (moved to avoid duplicates)
       'constructions': 'Constructions',
       'construction_vehicles': 'Construction Vehicles',
       'apartment': 'Apartment',
@@ -61,7 +71,7 @@ class AppTranslations extends Translations {
       'settings_saved': 'Settings saved successfully',
       'settings_error': 'Failed to save settings',
       'loading_settings': 'Loading settings...',
-      
+
       // Notifications Settings
       'inbox_messages': 'Inbox Messages',
       'inbox_messages_desc': 'Get notified about new messages',
@@ -71,12 +81,12 @@ class AppTranslations extends Translations {
       'new_login_alerts_desc': 'Be notified of new logins',
       'samsar_weekly': 'Samsar Weekly',
       'samsar_weekly_desc': 'Subscribe to tips, updates, and promotions',
-      
+
       // Language
       'english': 'English',
       'arabic': 'العربية',
       'language_changed': 'Language changed successfully',
-      
+
       // Notifications
       'listing_updates': 'Listing Updates',
       'listing_updates_desc': 'Get notified when your listings are updated',
@@ -86,7 +96,7 @@ class AppTranslations extends Translations {
       'login_notifications_desc': 'Get notified about account logins',
       'newsletter': 'Newsletter',
       'newsletter_desc': 'Subscribe to our newsletter for updates',
-      
+
       // Privacy
       'profile_visibility': 'Profile Visibility',
       'profile_visibility_desc': 'Control who can see your profile',
@@ -98,10 +108,10 @@ class AppTranslations extends Translations {
       'show_phone_desc': 'Display your phone number on your profile',
       'enable_dms': 'Enable DMs',
       'enable_dms_desc': 'Allow others to send you direct messages',
-      
+
       // Listings
       'my_listings': 'My Listings',
-      
+
       // Chat
       'chats': 'Chats',
       'type_a_message': 'Type a message...',
@@ -181,8 +191,6 @@ class AppTranslations extends Translations {
       'office_features': 'Office Features',
 
       // Passenger Vehicle Features
-      'power_steering': 'Power Steering',
-      'central_locking': 'Central Locking',
       'electric_windows': 'Electric Windows',
       'abs_brakes': 'ABS Brakes',
       'airbags': 'Airbags',
@@ -192,7 +200,6 @@ class AppTranslations extends Translations {
       'street_front': 'Street Front',
       'display_windows': 'Display Windows',
       'customer_parking': 'Customer Parking',
-      'loading_dock': 'Loading Dock',
       'office_space': 'Office Space',
       'restroom': 'Restroom',
       'store_features': 'Store Features',
@@ -218,6 +225,9 @@ class AppTranslations extends Translations {
       'missingPropertyTypeMessage': 'Property Type',
       'dataSummaryTitle': 'Data Summary',
       'closeButton': 'Close',
+      'pleaseCompleteTheFollowing': 'Please complete the following:',
+      'missingFieldsDetail': '• Missing fields: ',
+      'uploadOneImageDetail': '• Upload at least one image',
 
       // Vehicle Essential Details
       'tapToAddImages': 'Tap to add images',
@@ -238,10 +248,12 @@ class AppTranslations extends Translations {
       'priceFieldHint': 'e.g. 25000',
       'sellerTypeLabel': 'Seller Type',
       'sellerTypeHint': 'Select seller type',
-      'owner': 'Owner',
       'broker': 'Broker',
+      'owner': 'Owner',
       'business_firm': 'Business Firm',
       'ad_owner': 'Ad Owner',
+      'features_and_extras': 'Features & Extras',
+      'listing_action_type': 'Listing Action',
       'descriptionFieldLabel': 'Description',
       'descriptionFieldHint': 'e.g. Well-maintained, low mileage...',
       'enterTitleValidation': 'Please enter a title',
@@ -256,9 +268,6 @@ class AppTranslations extends Translations {
       'no_listings': 'You haven\'t listed anything yet.',
       'login_to_view': 'Please log in to view your listings',
       'go_to_login': 'Go to Login',
-      'engine_size' : 'Engine Size',
-      'enter_engine_size' : 'Enter Engine Size',
-
 
       // Car Details
       'car_details': 'Car Details',
@@ -268,6 +277,11 @@ class AppTranslations extends Translations {
       'select_drive_type': 'Select Drive Type',
       'fuel_type': 'Fuel Type',
       'select_fuel_type': 'Select Fuel Type',
+      'benzin': 'Benzin',
+      'diesel': 'Diesel',
+      'hybrid': 'Hybrid',
+      'electric': 'Electric',
+      'gasoline': 'Gasoline',
       'transmission': 'Transmission',
       'select_transmission': 'Select Transmission',
       'mileage': 'Mileage',
@@ -276,19 +290,19 @@ class AppTranslations extends Translations {
       'condition': 'Condition',
       'select_condition': 'Select Condition',
       'previous_owners': 'Previous Owners',
+      'number_of_owners': 'Number of Owners',
+      'full_service_history': 'Full Service History',
+      'partial_service_history': 'Partial Service History',
       'enter_previous_owners': 'Enter number of owners',
-      'warranty': 'Warranty',
-      'select_warranty': 'Select Warranty',
       'accidental': 'Accidental',
       'select_accident_history': 'Select Accident History',
       'service_history': 'Service History',
       'select_service_history': 'Select Service History',
       'import_status': 'Import Status',
       'select_import_status': 'Select Import Status',
-      'registration_expiry': 'Registration Expiry',
-      'select_registration_expiry': 'Select Expiry Date',
       'car_specifications': 'Car Specifications',
-      'car_specifications_info': 'These details help buyers understand your car better and can increase your listing\'s visibility.',
+      'car_specifications_info':
+          'These details help buyers understand your car better and can increase your listing\'s visibility.',
 
       // Car Dropdown Options
       'sedan': 'Sedan',
@@ -296,25 +310,21 @@ class AppTranslations extends Translations {
       'hatchback': 'Hatchback',
       'coupe': 'Coupe',
       'convertible': 'Convertible',
+
+      // Drive Types
+      'front_wheel_drive': 'Front Wheel Drive',
+      'rear_wheel_drive': 'Rear Wheel Drive',
+      'all_wheel_drive': 'All Wheel Drive',
+      'four_wheel_drive': 'Four Wheel Drive',
       'wagon': 'Wagon',
       'minivan': 'Minivan',
-      'front_wheel_drive': 'Front-Wheel Drive',
-      'rear_wheel_drive': 'Rear-Wheel Drive',
-      'all_wheel_drive': 'All-Wheel Drive',
-      'four_wheel_drive': 'Four-Wheel Drive',
-      'petrol': 'Petrol',
-      'diesel': 'Diesel',
-      'electric': 'Electric',
-      'hybrid': 'Hybrid',
-      'cng': 'CNG',
-      'lpg': 'LPG',
       'manual': 'Manual',
       'automatic': 'Automatic',
-      'continuously_variable': 'Continuously Variable (CVT)',
       'semi_automatic': 'Semi-Automatic',
       'new': 'New',
       'used': 'Used',
-      'reconditioned': 'Reconditioned',
+      'damaged': 'Damaged / Needs Repair',
+      'not_working': 'Not Working / For Parts',
       'yes': 'Yes',
       'no': 'No',
       'available': 'Available',
@@ -326,7 +336,7 @@ class AppTranslations extends Translations {
       'canadian_specs': 'Canadian Specs',
       'korean_specs': 'Korean Specs',
       'other': 'Other',
- 
+
       'add_pictures': 'Add Pictures',
       'tap_to_add_images': 'Tap to add images',
       'max_20_images': '(Maximum 20 images)',
@@ -335,7 +345,7 @@ class AppTranslations extends Translations {
       'price_hint': 'e.g., 250000',
       'description': 'Description',
       'description_hint': 'مثال: شقة جميلة تقع في قلب المدينة...',
-      
+
       // Feature translations
       'features_extras': 'Features & Extras',
       'vehicle_features_extras': 'Vehicle Features & Extras',
@@ -350,7 +360,7 @@ class AppTranslations extends Translations {
       'motorcycle_features_title': 'Motorcycle Features',
       'land_features': 'Land Features',
       'select_available_features': 'Select available features',
-      
+
       // Vehicle features
       'abs': 'ABS',
       'traction_control': 'Traction Control',
@@ -360,27 +370,19 @@ class AppTranslations extends Translations {
       'rear_camera': 'Rear Camera',
       '360_camera': '360° Camera',
       'cruise_control': 'Cruise Control',
-      'led_headlights': 'LED Headlights',
-      'fog_lights': 'Fog Lights',
-      'bluetooth': 'Bluetooth',
-      'apple_carplay': 'Apple CarPlay',
-      'android_auto': 'Android Auto',
-      'wireless_charging': 'Wireless Charging',
-      'usb_ports': 'USB Ports',
       'sunroof': 'Sunroof',
       'panoramic_roof': 'Panoramic Roof',
       'heated_seats': 'Heated Seats',
+      'heated_seat': 'Heated Seat',
       'cooled_seats': 'Cooled Seats',
       'electric_seats': 'Electric Seats',
-      'immobilizer': 'Immobilizer',
-      'alarm_system': 'Alarm System',
       'number_of_airbags': 'Number of Airbags',
       'enter_number_of_airbags': 'Enter number of airbags',
       'gps_navigation': 'GPS Navigation',
       'usb_charging': 'USB Charging',
       'backup_camera': 'Backup Camera',
       'leather_seats': 'Leather Seats',
-      
+
       // Commercial vehicle features
       'hydraulic_lift': 'Hydraulic Lift',
       'cargo_cover': 'Cargo Cover',
@@ -390,7 +392,7 @@ class AppTranslations extends Translations {
       'gps_tracking': 'GPS Tracking',
       'commercial_license': 'Commercial License',
       'cargo_barrier': 'Cargo Barrier',
-      
+
       // Construction vehicle features
       'hydraulic_system': 'Hydraulic System',
       'work_lights': 'Work Lights',
@@ -404,7 +406,7 @@ class AppTranslations extends Translations {
       'attachments': 'Attachments',
       'cab_type': 'Cab Type',
       'track_type': 'Track Type',
-      
+
       // Real estate features
       'elevator': 'Elevator',
       'balcony': 'Balcony',
@@ -431,9 +433,9 @@ class AppTranslations extends Translations {
       'flat_terrain': 'Flat Terrain',
       'fenced': 'Fenced',
       'fruit_trees': 'Fruit Trees',
+      'well_water': 'Well Water',
       'building_permit': 'Building Permit',
       'corner_lot': 'Corner Lot',
- 
 
       // Truck Details
       'truck_advanced_details': 'Truck Advanced Details',
@@ -444,7 +446,8 @@ class AppTranslations extends Translations {
       'towing_capacity_kg': 'Towing Capacity (kg)',
       'max_towing_capacity': 'Maximum towing capacity',
       'truck_specifications': 'Truck Specifications',
-      'truck_specifications_info': 'Payload and towing capacity are crucial for commercial buyers. Accurate specifications help match your truck to the right buyer.',
+      'truck_specifications_info':
+          'Payload and towing capacity are crucial for commercial buyers. Accurate specifications help match your truck to the right buyer.',
       'pickup_truck': 'Pickup Truck',
       'box_truck': 'Box Truck',
       'flatbed': 'Flatbed',
@@ -453,11 +456,14 @@ class AppTranslations extends Translations {
       'refrigerated': 'Refrigerated',
       'semi_trailer': 'Semi-Trailer',
       'automatic_manual': 'Automatic/Manual',
+      'enter_horsepower': 'Enter Horsepower',
+      'horsepower' : 'Horsepower',
 
       // Motorcycle Details
       'motorcycle_advanced_details': 'Motorcycle Advanced Details',
       'motorcycle_specifications': 'Motorcycle Specifications',
-      'motorcycle_specifications_info': 'Engine size (CC) and body type are key factors for motorcycle buyers. These details help match your bike to the right rider.',
+      'motorcycle_specifications_info':
+          'Engine size (CC) and body type are key factors for motorcycle buyers. These details help match your bike to the right rider.',
       'sport': 'Sport',
       'cruiser': 'Cruiser',
       'touring': 'Touring',
@@ -466,6 +472,8 @@ class AppTranslations extends Translations {
       'scooter': 'Scooter',
       'adventure': 'Adventure',
       'cafe_racer': 'Cafe Racer',
+      'engine_size':'Engine Size',
+     
 
       // Review Screen
       'review_screen': 'Review Listing',
@@ -473,11 +481,8 @@ class AppTranslations extends Translations {
       'make': 'Make',
       'model': 'Model',
       'year': 'Year',
- 
+
       'engine_and_performance': 'Engine & Performance',
-      'horsepower': 'Horsepower',
-      'enter_horsepower': 'Enter Horsepower',
-      'horsepower_hp' : 'Horsepower (HP)',
 
       'vehicle_specifications': 'Vehicle Specifications',
       'drivetrain': 'Drivetrain',
@@ -485,14 +490,22 @@ class AppTranslations extends Translations {
       'bodyType': 'Body Type',
       'driveType': 'Drive Type',
       'fuelType': 'Fuel Type',
-      'condition_and_history': 'Condition & History', 
+      'condition_and_history': 'Condition & History',
       'legal_and_documentation': 'Legal & Documentation',
-      'registration_expiry_date': 'Registration Expiry Date',
       'color_and_appearance': 'Color & Appearance',
       'exterior_color': 'Exterior Color',
-      'documentation' : 'Documentation',
-        'performance' : 'Performance',
-         ' number_of_owners' : 'Number of Owners',
+      'documentation': 'Documentation',
+      'performance': 'Performance',
+      ' number_of_owners': 'Number of Owners',
+      'legal_and_documents': 'Legal & Documents',
+      'engine_and_performance_title': 'Engine and Performance',
+      'condition_and_history_title': 'Condition and History',
+      'legal_and_documentation_title': 'Legal and Documentation',
+      'color_and_appearance_title': 'Color and Appearance',
+      'mileage_of_vehicle': 'Mileage of your vehicle',
+      'no_of_previous_owners': 'No of Previous owners',
+      'enter_registration_number': 'Enter registration number',
+      'features_and_extras_title': 'Features and Extras',
 
       // Profile
       'my_profile': 'My Profile',
@@ -501,13 +514,13 @@ class AppTranslations extends Translations {
       'bio': 'Bio',
       'street': 'Street',
       'city': 'City',
-      
+
       // Profile & Settings Screen
       'view_edit_profile': 'View / Edit Profile',
       'logout': 'Logout',
       'logout_confirmation': 'Are you sure you want to log out?',
       'ok': 'Ok',
-      
+
       // Default values
       'no_name_available': 'No name available',
       'no_username_available': 'No username is available',
@@ -517,7 +530,7 @@ class AppTranslations extends Translations {
       'no_street_available': 'No street is available',
       'no_city_available': 'No city is available',
       'no_notifications_available': 'No notifications are available',
-      
+
       // Status
       'enabled': 'Enabled',
       'disabled': 'Disabled',
@@ -526,30 +539,27 @@ class AppTranslations extends Translations {
 
       // Saved
       'no_favourites_yet': 'No favourites yet',
- 
 
-      
       // Navigation
       'home': 'Home',
       'favourites': 'Favourites',
       'listing': 'Listing',
-      'person': 'Person',
-      
+      'profile': 'Profile',
+
       // Location
       'open_settings': 'Open Settings',
       'retry': 'Retry',
-      
+
       // Filter
       'filter': 'Filter',
       'subcategory': 'Subcategory',
       'listing_type': 'Listing Type',
       'reset': 'Reset',
- 
-      
+
       // Dropdown Hints
       'select_sort_option': 'Select Sort Option',
       'select_subcategory': 'Select Subcategory',
- 
+
       'select_city': 'Select City',
       'select_year': 'Select Year',
 
@@ -565,8 +575,11 @@ class AppTranslations extends Translations {
 
       // Property Condition
       'property_condition_new': 'New',
+      'property_condition': 'Property Condition',
+
       'property_condition_renovated': 'Renovated',
       'property_condition_needs_renovation': 'Needs Renovation',
+      'needs_renovation': 'Needs Renovation',
 
       // Real Estate Essential Details
       'essential_details': 'Essential Details',
@@ -574,15 +587,16 @@ class AppTranslations extends Translations {
       'title_required': 'Title is required.',
       'select_listing_action': 'Please select a listing action.',
       'select_seller_type': 'Select Seller Type',
+      'seller_type': 'Seller Type',
       'price_required': 'Price is required.',
       'location_required': 'Location is required.',
       'select_property_type': 'Please select a property type',
-         'area_sqft': 'Area (sqft)',
-       'select_property_location': 'Please select a property location',
-       'select_property_condition': 'Please select a property condition',
+      'area_sqft': 'Area (sqft)',
+      'select_property_location': 'Please select a property location',
+      'select_property_condition': 'Please select a property condition',
+      'central_heating': 'Central Heating',
       'add_at_least_one_image': 'Please add at least one image',
       'fill_required_fields': 'Please fill all required fields',
-
 
       // Cities
       'damascus': 'Damascus',
@@ -599,32 +613,40 @@ class AppTranslations extends Translations {
       'dara': 'Dara',
       'sweden': 'Sweden',
       'quneitra': 'Quneitra',
-      
+
       // Location Error Messages
       'location_error': 'Location access is required to show nearby listings',
       'permanently_denied': 'permanently denied',
-      
+
       // Location Picker (removed duplicates)
       'search_location': 'Search for a location...',
-      
+
       // Auth & Registration
-      'registration_successful': 'Registration successful! Please check your email for the verification code.',
-      'user_already_verified': 'This email is already registered and verified. Please log in instead.',
-      'registration_rate_limited': 'Please wait @seconds seconds before trying again.',
-      'email_send_failed': 'Failed to send verification email. Please check your internet connection and try again.',
+      'registration_successful':
+          'Registration successful! Please check your email for the verification code.',
+      'user_already_verified':
+          'This email is already registered and verified. Please log in instead.',
+      'registration_rate_limited':
+          'Please wait @seconds seconds before trying again.',
+      'email_send_failed':
+          'Failed to send verification email. Please check your internet connection and try again.',
       'database_error': 'Server error occurred. Please try again in a moment.',
       'invalid_code': 'Invalid verification code. Please check and try again.',
-      'code_expired': 'Verification code has expired. Please request a new one.',
+      'code_expired':
+          'Verification code has expired. Please request a new one.',
       'already_verified': 'Email is already verified. You can now log in.',
-      'resend_rate_limited': 'Please wait @seconds seconds before requesting another code.',
+      'resend_rate_limited':
+          'Please wait @seconds seconds before requesting another code.',
       'code_sent_again': 'Code has been sent again to your email',
-      'email_missing': 'Email information is missing. Please try registering again.',
+      'email_missing':
+          'Email information is missing. Please try registering again.',
       'resend_code': 'Resend code',
       'verify': 'Verify',
       'enter_6_digit_otp': 'Enter 6-digit OTP',
-         'password_change_security_notice': 'For your security, you will receive a 6-digit verification code via email to confirm your password change.',
-       'verify_password_change': 'Verify Password Change',
-      
+      'password_change_security_notice':
+          'For your security, you will receive a 6-digit verification code via email to confirm your password change.',
+      'verify_password_change': 'Verify Password Change',
+
       // Auth Forms
       'signup': 'Signup',
       'login': 'Login',
@@ -638,16 +660,17 @@ class AppTranslations extends Translations {
       'enter_same_password': 'Enter same password',
       'example_email': 'example@email.com',
       'enter_password': 'Enter password',
-      'registering': 'Registering...',
       'register': 'Register',
       'passwords_do_not_match': 'Passwords do not match',
       'already_have_account': 'Already have an account? Login',
       'dont_have_account': "Don't have an account? Sign up",
       'forgot_password': 'Forgot Password?',
       'verify_your_email': 'Verify Your Email 📧',
-      'verification_code_sent': 'A 6-digit verification code has been sent to your email',
-      'verification_code_sent_to': 'A 6-digit verification code has been sent to @email',
-      
+      'verification_code_sent':
+          'A 6-digit verification code has been sent to your email',
+      'verification_code_sent_to':
+          'A 6-digit verification code has been sent to @email',
+
       // Validation Messages
       'please_enter_field': 'Please enter your @field',
       'please_enter_valid_email': 'Please enter a valid email',
@@ -656,7 +679,7 @@ class AppTranslations extends Translations {
       'please_provide_valid_email': 'Please provide the valid email',
       'please_provide_valid_password': 'Please provide the valid password',
       'password_min_8_chars': 'Password cant be lower that 8 characters',
-         // Password Management
+      // Password Management
       'change_password': 'Change Password',
       'current_password': 'Current Password',
       'new_password': 'New Password',
@@ -667,10 +690,14 @@ class AppTranslations extends Translations {
       'please_provide_password': 'Please provide a password',
       'please_confirm_password': 'Please confirm your password',
       'password_min_6_chars': 'Password must be at least 6 characters',
-      'new_password_must_be_different': 'New password must be different from current password',
-      'enter_current_and_new_password': 'Enter your current password and choose a new one',
-      'enter_verification_code_to_confirm': 'Enter the verification code sent to your email to confirm the password change',
-      'verification_code_sent_to_email': 'A verification code has been sent to your registered email address',
+      'new_password_must_be_different':
+          'New password must be different from current password',
+      'enter_current_and_new_password':
+          'Enter your current password and choose a new one',
+      'enter_verification_code_to_confirm':
+          'Enter the verification code sent to your email to confirm the password change',
+      'verification_code_sent_to_email':
+          'A verification code has been sent to your registered email address',
       'send_password_verification_code': 'Send Verification Code',
       'password_changed_successfully': 'Password changed successfully',
       'failed_to_change_password': 'Failed to change password',
@@ -679,44 +706,60 @@ class AppTranslations extends Translations {
       'changing': 'Changing...',
       'resetting': 'Resetting...',
       'back': 'Back',
-      
+
       // Forgot Password
-      'enter_email_for_reset': 'Enter your email address to receive a password reset code',
+      'enter_email_for_reset':
+          'Enter your email address to receive a password reset code',
       'send_reset_code': 'Send Reset Code',
       'reset_code_sent': 'Reset code sent to your email',
       'failed_to_send_reset_code': 'Failed to send reset code',
-      'enter_verification_code_and_new_password': 'Enter the verification code from your email and choose a new password',
+      'enter_verification_code_and_new_password':
+          'Enter the verification code from your email and choose a new password',
       'verification_code': 'Verification Code',
       'reset_password': 'Reset Password',
       'password_reset_successful': 'Password reset successful',
       'failed_to_reset_password': 'Failed to reset password',
       'please_enter_valid_code': 'Please enter a valid 6-digit code',
       'unexpected_error': 'An unexpected error occurred',
-      
+
       // User-friendly error messages
-      'invalid_credentials_message': 'Invalid email or password. Please check your credentials and try again.',
+      'invalid_credentials_message':
+          'Invalid email or password. Please check your credentials and try again.',
       'user_not_found_message': 'No account found with this email address.',
       'unauthorized_message': 'You must be logged in to perform this action.',
       'token_expired_message': 'Your session has expired. Please log in again.',
-      'invalid_token_message': 'Invalid authentication token. Please log in again.',
+      'invalid_token_message':
+          'Invalid authentication token. Please log in again.',
       'validation_error_message': 'Please check your input and try again.',
       'invalid_input_message': 'Please provide valid information.',
       'invalid_password_message': 'Current password is incorrect.',
-      'weak_password_message': 'Password is too weak. Please use a stronger password.',
-      'email_already_exists_message': 'This email is already registered. Please use a different email or try logging in.',
-      'username_taken_message': 'This username is already taken. Please choose a different one.',
-      'already_verified_message': 'Your email is already verified. You can log in now.',
-      'invalid_code_message': 'Invalid verification code. Please check the code and try again.',
-      'code_expired_message': 'Verification code has expired. Please request a new one.',
-      'email_send_failed_message': 'Failed to send email. Please check your internet connection and try again.',
-      'server_error_message': 'Server error occurred. Please try again in a moment.',
-      'auth_error_message': 'Authentication failed. Please try logging in again.',
-      'rate_limit_exceeded_message': 'Too many requests. Please wait before trying again.',
-      'rate_limit_exceeded_with_time': 'Too many requests. Please wait @time before trying again.', 
-      
+      'weak_password_message':
+          'Password is too weak. Please use a stronger password.',
+      'email_already_exists_message':
+          'This email is already registered. Please use a different email or try logging in.',
+      'username_taken_message':
+          'This username is already taken. Please choose a different one.',
+      'already_verified_message':
+          'Your email is already verified. You can log in now.',
+      'invalid_code_message':
+          'Invalid verification code. Please check the code and try again.',
+      'code_expired_message':
+          'Verification code has expired. Please request a new one.',
+      'email_send_failed_message':
+          'Failed to send email. Please check your internet connection and try again.',
+      'server_error_message':
+          'Server error occurred. Please try again in a moment.',
+      'auth_error_message':
+          'Authentication failed. Please try logging in again.',
+      'rate_limit_exceeded_message':
+          'Too many requests. Please wait before trying again.',
+      'rate_limit_exceeded_with_time':
+          'Too many requests. Please wait @time before trying again.',
+
       // Email Change
       'change_email': 'Change Email',
-      'change_email_description': 'Change your email address. You\'ll need to verify the new email before the change takes effect.',
+      'change_email_description':
+          'Change your email address. You\'ll need to verify the new email before the change takes effect.',
       'current_email': 'Current Email',
       'new_email': 'New Email Address',
       'enter_new_email': 'Enter your new email address',
@@ -736,8 +779,42 @@ class AppTranslations extends Translations {
       'no_pending_email_change': 'No pending email change found',
       'email_change_failed': 'Failed to change email',
       'security_notice': 'Security Notice',
-      'email_change_security_notice': 'Changing your email will require verification. You will receive a 6-digit code at your new email address to confirm the change.',
+      'email_change_security_notice':
+          'Changing your email will require verification. You will receive a 6-digit code at your new email address to confirm the change.',
       'verification_send_failed': 'Failed to send verification code',
+
+      // Auth Controller Messages
+      'authenticating': 'Authenticating...',
+      'verifying_code': 'Verifying Code...',
+      'user_session_invalid': 'User session is invalid. Please log in again.',
+      'auth_token_not_found':
+          'Authentication token not found. Please log in again.',
+      'profile_update_failed': 'Failed to update profile',
+      'profile_updated_successfully': 'Profile updated successfully!',
+      'profile_update_error': 'Error updating profile: @error',
+      'something_went_wrong': 'Something went wrong. Try again later.',
+      'account_does_not_exist':
+          'Your account no longer exists. Please contact support if this is unexpected.',
+      'account_inactive': 'Your account is not active. Please contact support.',
+      'email_not_verified_login': 'Please verify your email before logging in.',
+      'validation_error': 'Validation error',
+      'user_not_present': 'User is not present',
+      'login_successful': 'Login successful',
+      'registering': 'Registering...',
+      'registration_failed': 'Registration failed: @error',
+      'verification_failed': 'Verification failed: @error',
+      'sending_verification_code': 'Sending verification code...',
+      'resend_failed': 'Failed to resend verification code: @error',
+      'logout_successful': 'Logged out successfully',
+      'updating_profile': 'Updating profile...',
+      'no_response_data': 'No response data received',
+      'fetch_profile_failed': 'Failed to fetch updated user profile',
+      'failed_to_refresh_token': 'Failed to refresh token',
+      'refresh_token_invalid':
+          'Refresh token is invalid or expired. Please log in again.',
+      'failed_to_upload_profile_picture': 'Failed to upload profile picture',
+      'failed_to_delete_account': 'Failed to delete user account',
+      're_authentication_failed': 'Re-authentication failed',
 
       // Property Details - Real Estate
       'property_details': 'Property Details',
@@ -772,23 +849,22 @@ class AppTranslations extends Translations {
       'enter_plot_size': 'Enter plot size in square meters',
       'property_area_description': 'area description',
 
- 
       'pool': 'Pool',
       'enter_pool_details': 'Enter Pool Details',
       'office_type': 'Office Type',
       'shared': 'Shared',
+
       'coworking': 'Coworking',
       'total_area': 'Total Area',
       'total_area_sqm': 'Total Area (sqm)',
       'enter_total_area': 'Enter total area in square meters',
- 
+
       'number_meeting_rooms': 'Number of meeting rooms',
       'zoning': 'Zoning',
       'residential': 'Residential',
       'commercial': 'Commercial',
       'agricultural': 'Agricultural',
       'industrial': 'Industrial',
- 
 
       // Bedrooms & Bathrooms - using existing keys
       'number_of_bedrooms': 'Number of bedrooms',
@@ -797,8 +873,12 @@ class AppTranslations extends Translations {
 
       // Motorcycle Features
       'stability_control': 'Stability Control',
-      'wheelie_control': 'Wheelie Control',
-      'launch_control': 'Launch Control',
+      'tire_pressure_monitor' : 'Tire Pressure Monitor',
+      'heated_grips': 'Heated Grips',
+      'keyless_ignition':'Keyless Ignition',
+      'cornering_lights':'Cornering Lights',
+      'led_headlight' :'Led Headlight',
+
       'quick_shifter': 'Quick Shifter',
       'slipper_clutch': 'Slipper Clutch',
       'riding_modes': 'Riding Modes',
@@ -823,14 +903,11 @@ class AppTranslations extends Translations {
       'side_boxes': 'Side Boxes',
       'top_box': 'Top Box',
       'tank_bag': 'Tank Bag',
-      'crash_bars': 'Crash Bars',
-      'engine_guard': 'Engine Guard',
       'skid_plate': 'Skid Plate',
       'chain_guard': 'Chain Guard',
       'disc_lock': 'Disc Lock',
       'chain_lock': 'Chain Lock',
       'kick_starter': 'Kick Starter',
-      'electric_starter': 'Electric Starter',
       'center_stand': 'Center Stand',
       'side_stand': 'Side Stand',
       'maintenance_stand': 'Maintenance Stand',
@@ -839,23 +916,17 @@ class AppTranslations extends Translations {
       'first_aid_kit': 'First Aid Kit',
 
       // Real Estate Features
-      'landline_available': 'Landline Available',
       'storage_room': 'Storage Room',
-      'laundry_room': 'Laundry Room',
-
-     
 
       // Construction Vehicle Fields - using existing keys where available
-      'construction_vehicle_specifications': 'Construction Vehicle Specifications',
-      'construction_vehicle_specifications_info': 'Specialized construction equipment details are crucial for commercial buyers',
+      'construction_vehicle_specifications':
+          'Construction Vehicle Specifications',
+      'construction_vehicle_specifications_info':
+          'Specialized construction equipment details are crucial for commercial buyers',
       'operating_weight': 'Operating Weight',
-      'bucket_capacity': 'Bucket Capacity',
-      'lifting_capacity': 'Lifting Capacity',
       'reach': 'Reach',
       'working_hours': 'Working Hours',
       'enter_operating_weight_kg': 'Enter Operating Weight (kg)',
-      'enter_bucket_capacity_m3': 'Enter Bucket Capacity (m³)',
-      'enter_lifting_capacity_kg': 'Enter Lifting Capacity (kg)',
       'enter_reach_m': 'Enter Reach (m)',
       'enter_working_hours': 'Enter Working Hours',
       'construction_specifications': 'Construction Specifications',
@@ -864,16 +935,15 @@ class AppTranslations extends Translations {
       'drill_rig': 'Drill Rig',
       'forklift': 'Forklift',
 
-
       // Passenger Vehicle Fields
       'passenger_vehicle_details': 'Passenger Vehicle Details',
       'seating_capacity': 'Seating Capacity',
-      'doors': 'Doors',
       'air_conditioning': 'Air Conditioning',
       'entertainment_system': 'Entertainment System',
       'passenger_specifications': 'Passenger Specifications',
       'passenger_vehicle_specifications': 'Passenger Vehicle Specifications',
-      'passenger_vehicle_specifications_info': 'Passenger capacity and comfort features are important for buyers',
+      'passenger_vehicle_specifications_info':
+          'Passenger capacity and comfort features are important for buyers',
       'shuttle': 'Shuttle',
       'no_ac': 'No AC',
 
@@ -884,7 +954,8 @@ class AppTranslations extends Translations {
       'gvwr': 'GVWR',
       'commercial_specifications': 'Commercial Specifications',
       'commercial_vehicle_specifications': 'Commercial Vehicle Specifications',
-      'commercial_vehicle_specifications_info': 'Commercial vehicle specifications for business use',
+      'commercial_vehicle_specifications_info':
+          'Commercial vehicle specifications for business use',
       'payload_capacity': 'Payload Capacity',
       'towing_capacity': 'Towing Capacity',
       'enter_payload_capacity_kg': 'Enter Payload Capacity (kg)',
@@ -907,12 +978,8 @@ class AppTranslations extends Translations {
       'store_specifications_info': 'Commercial store details and features',
       'store_type': 'Store Type',
       'land_essentials': 'Land Essentials',
-      'building_age': 'Building Age',
-      'enter_building_age_years': 'Enter Building Age (years)',
       'building_info': 'Building Information',
       'building_information': 'Building Information',
-      'ceiling_height': 'Ceiling Height',
-      'enter_ceiling_height_meters': 'Enter Ceiling Height (meters)',
       'floor_area': 'Floor Area',
       'enter_floor_area_sqm': 'Enter Floor Area (sqm)',
       'frontage': 'Frontage',
@@ -940,19 +1007,19 @@ class AppTranslations extends Translations {
       'continue': 'Continue',
       'submit': 'Submit',
       'go_back': 'Go Back',
-      
+
       // Dialog Messages
-      'validation_error': 'Validation Error',
       'data_missing': 'Data Missing',
-      'no_listing_data_message': 'No listing data found. Please go back and fill in the required information.',
-      
+      'no_listing_data_message':
+          'No listing data found. Please go back and fill in the required information.',
+
       // Image Messages
       'maximum_20_images_allowed': 'Maximum 20 images allowed',
       'select_from_gallery': 'Select from Gallery',
       'take_a_photo': 'Take a Photo',
       'no_images_selected': 'No images selected.',
       'image_not_found': 'Image not found',
-      
+
       // Advanced Options
       'advanced_options': 'Advanced Options',
       'climate_and_energy': 'Climate and Energy',
@@ -961,37 +1028,37 @@ class AppTranslations extends Translations {
       'living_space': 'Living Space',
       'parking_and_roof': 'Parking and Roof',
       'community_and_extras': 'Community and Extras',
-      
+
       // Color Picker
       'select_a_color': 'Select a color',
-      
+
       // Image Picker
       'select_image': 'Select Image',
       'take_a_picture': 'Take a Picture',
       'pick_from_gallery': 'Pick from Gallery',
-      
+
       // Listings
       'no_data_for_listing': 'No data for listing is available',
-      
+
       // Connection & Auth
       'no_internet_connection': 'No internet connection',
       'checking_authentication': 'Checking authentication...',
       'login_required_dialog': 'Login Required',
       'maybe_later': 'Maybe Later',
       'sign_in': 'Sign In',
-      
+
       // Filters & Search
       'advanced_filters': 'Advanced Filters',
       'available_filters_for': 'Available filters for',
       'filter_selected': 'filter selected',
       'close': 'Close',
-      
+
       // Vehicle Advanced Options
       'engine_performance': 'Engine & Performance',
       'condition_history': 'Condition & History',
       'legal_documents': 'Legal & Documents',
       'color_appearance': 'Color & Appearance',
-      
+
       // Debug
       'debug_data_summary': '🔧 DEBUG: Data Summary',
       'controller_state': '📊 Controller State:',
@@ -999,16 +1066,20 @@ class AppTranslations extends Translations {
       'sub_category': '🚗 Sub Category:',
       'images_count': '🖼️ Images:',
       'title_field': '📋 Title:',
-      
+
       // Validation
       'please_enter_valid_otp': 'Please enter a valid 6-digit OTP',
-      
+
       // Error Messages
       'unknown_category_message': 'Unknown category',
-      'favourites_desc': 'Save and organize your favorite listings for quick access.',
-      'create_listing_desc': 'List your items and reach thousands of potential buyers.',
-      'messages_desc': 'Connect directly with buyers and sellers through secure messaging.',
-      'profile_desc': 'Manage your account, listings, and preferences in one place.',
+      'favourites_desc':
+          'Save and organize your favorite listings for quick access.',
+      'create_listing_desc':
+          'List your items and reach thousands of potential buyers.',
+      'messages_desc':
+          'Connect directly with buyers and sellers through secure messaging.',
+      'profile_desc':
+          'Manage your account, listings, and preferences in one place.',
       'benefits_title': 'What you\'ll get:',
       'save_unlimited': 'Save unlimited listings',
       'organize_categories': 'Organize with custom categories',
@@ -1031,6 +1102,40 @@ class AppTranslations extends Translations {
       'maybe_later_button': 'Maybe Later',
       'continue_browsing': 'Continue browsing as guest',
 
+      // Listing Details
+      'listing_id': 'ID: ',
+      'kmpl': 'KMPL',
+      'hp': 'HP',
+      'condition_and_ownership': 'Condition and Ownership',
+      'imported_status': 'Imported: ',
+      'seller_information': 'Seller Information',
+      'contact_seller': 'Contact Seller',
+      'seller_not_found': 'Seller not found',
+      'error_starting_chat': 'Error starting chat',
+      'could_not_launch_whatsapp': 'Could not launch WhatsApp',
+      'could_not_launch_phone_dialer': 'Could not launch phone dialer',
+      'colors': 'Colors',
+      'months': ' Months',
+      'custom': 'Custom: ',
+      'airbags_and_breaking': 'Airbags & Breaking',
+      'front_airbags': 'Front airbags: ',
+      'side_airbags': 'Side airbags: ',
+      'curtain_airbags': 'Curtain airbags: ',
+      'knee_airbags': 'Knee airbags: ',
+      'automatic_emergency_breaking': 'Automatic Emergency breaking: ',
+      'present': 'Present',
+      'not_present': 'Not present',
+      'assist_and_controls': 'Assist & Controls',
+      'adaptive_cruise_control': 'AdaptiveCruise control: ',
+      'lane_departure_warning': 'Lane departure warning: ',
+      'lane_keep_assist': 'Lane keep assist: ',
+      'navigation_system': 'Navigation system: ',
+      'additional_info': 'Additional Info',
+      'service_history_notes': 'Service history notes: ',
+      'additional_notes': 'Additional notes: ',
+      'failed_to_start_chat_with_seller': 'Failed to start chat with seller',
+      'listing_posted_on': 'Listing posted on ',
+       'warranty': 'Warranty',
     },
     'ar_SA': {
       // General
@@ -1049,6 +1154,13 @@ class AppTranslations extends Translations {
       'refresh': 'تحديث',
       'email': 'البريد الإلكتروني',
       'title': 'عنوان',
+      // Login Prompt (Arabic)
+      'login_prompt': 'للوصول إلى @tabName، يرجى تسجيل الدخول إلى حسابك.',
+      'login_prompt_benefits_title': 'مميزات تسجيل الدخول:',
+      'login_benefit_save_favorites': '• حفظ الإعلانات المفضلة',
+      'login_benefit_manage_listings': '• إنشاء وإدارة إعلاناتك',
+      'login_benefit_chat': '• الدردشة مع المستخدمين الآخرين',
+      'login_benefit_recommendations': '• توصيات مخصصة',
 
       // Location translations
       'select_location': 'اختر الموقع',
@@ -1090,7 +1202,7 @@ class AppTranslations extends Translations {
       'settings_saved': 'تم حفظ الإعدادات بنجاح',
       'settings_error': 'فشل في حفظ الإعدادات',
       'loading_settings': 'جاري تحميل الإعدادات...',
-      
+
       // Notifications Settings
       'inbox_messages': 'رسائل الواردة',
       'inbox_messages_desc': 'احصل على إشعارات حول الرسائل الجديدة',
@@ -1100,7 +1212,7 @@ class AppTranslations extends Translations {
       'new_login_alerts_desc': 'احصل على إشعار عند تسجيل دخول جديد',
       'samsar_weekly': 'نشرة سمسار الأسبوعية',
       'samsar_weekly_desc': 'اشترك في النصائح والتحديثات والعروض',
-      
+
       // Privacy Settings
       'show_online': 'إظهار الاتصال',
       'show_online_desc': 'السماح للآخرين برؤية حالة اتصالك',
@@ -1110,12 +1222,12 @@ class AppTranslations extends Translations {
       'email_visibility_desc': 'عرض عنوان بريدك الإلكتروني للآخرين',
       'allow_direct_messaging': 'السماح بالرسائل المباشرة',
       'enable_dms_title': 'تفعيل الرسائل المباشرة',
-      
+
       // Language
       'english': 'English',
       'arabic': 'العربية',
       'language_changed': 'تم تغيير اللغة بنجاح',
-      
+
       // Notifications
       'listing_updates': 'تحديثات الإعلانات',
       'listing_updates_desc': 'احصل على إشعارات عند تحديث إعلاناتك',
@@ -1126,7 +1238,7 @@ class AppTranslations extends Translations {
       'newsletter': 'النشرة الإخبارية',
       'newsletter_desc': 'اشترك في نشرتنا الإخبارية للحصول على التحديثات',
 
-       // Password Management
+      // Password Management
       'change_password': 'تغيير كلمة المرور',
       'current_password': 'كلمة المرور الحالية',
       'new_password': 'كلمة المرور الجديدة',
@@ -1137,10 +1249,14 @@ class AppTranslations extends Translations {
       'please_provide_password': 'يرجى توفير كلمة المرور',
       'please_confirm_password': 'يرجى تأكيد كلمة المرور',
       'password_min_6_chars': 'يجب أن تكون كلمة المرور 6 أحرف على الأقل',
-      'new_password_must_be_different': 'يجب أن تكون كلمة المرور الجديدة مختلفة عن الحالية',
-      'enter_current_and_new_password': 'أدخل كلمة المرور الحالية واختر كلمة مرور جديدة',
-      'enter_verification_code_to_confirm': 'أدخل رمز التحقق المرسل إلى بريدك الإلكتروني لتأكيد تغيير كلمة المرور',
-      'verification_code_sent_to_email': 'تم إرسال رمز التحقق إلى عنوان بريدك الإلكتروني المسجل',
+      'new_password_must_be_different':
+          'يجب أن تكون كلمة المرور الجديدة مختلفة عن الحالية',
+      'enter_current_and_new_password':
+          'أدخل كلمة المرور الحالية واختر كلمة مرور جديدة',
+      'enter_verification_code_to_confirm':
+          'أدخل رمز التحقق المرسل إلى بريدك الإلكتروني لتأكيد تغيير كلمة المرور',
+      'verification_code_sent_to_email':
+          'تم إرسال رمز التحقق إلى عنوان بريدك الإلكتروني المسجل',
       'send_password_verification_code': 'إرسال رمز التحقق',
       'password_changed_successfully': 'تم تغيير كلمة المرور بنجاح',
       'failed_to_change_password': 'فشل في تغيير كلمة المرور',
@@ -1149,20 +1265,22 @@ class AppTranslations extends Translations {
       'changing': 'جاري التغيير...',
       'resetting': 'جاري إعادة التعيين...',
       'back': 'رجوع',
-      
+
       // Forgot Password
-      'enter_email_for_reset': 'أدخل عنوان بريدك الإلكتروني لاستلام رمز إعادة تعيين كلمة المرور',
+      'enter_email_for_reset':
+          'أدخل عنوان بريدك الإلكتروني لاستلام رمز إعادة تعيين كلمة المرور',
       'send_reset_code': 'إرسال رمز إعادة التعيين',
       'reset_code_sent': 'تم إرسال رمز إعادة التعيين إلى بريدك الإلكتروني',
       'failed_to_send_reset_code': 'فشل في إرسال رمز إعادة التعيين',
-      'enter_verification_code_and_new_password': 'أدخل رمز التحقق من بريدك الإلكتروني واختر كلمة مرور جديدة',
+      'enter_verification_code_and_new_password':
+          'أدخل رمز التحقق من بريدك الإلكتروني واختر كلمة مرور جديدة',
       'verification_code': 'رمز التحقق',
       'reset_password': 'إعادة تعيين كلمة المرور',
       'password_reset_successful': 'تم إعادة تعيين كلمة المرور بنجاح',
       'failed_to_reset_password': 'فشل في إعادة تعيين كلمة المرور',
       'please_enter_valid_code': 'يرجى إدخال رمز صحيح مكون من 6 أرقام',
       'unexpected_error': 'حدث خطأ غير متوقع',
-      
+
       // Privacy
       'profile_visibility': 'رؤية الملف الشخصي',
       'profile_visibility_desc': 'تحكم في من يمكنه رؤية ملفك الشخصي',
@@ -1174,10 +1292,10 @@ class AppTranslations extends Translations {
       'show_phone_desc': 'عرض رقم هاتفك في ملفك الشخصي',
       'enable_dms': 'تفعيل الرسائل المباشرة',
       'enable_dms_desc': 'السماح للآخرين بإرسال رسائل مباشرة لك',
-      
+
       // Listings
       'my_listings': 'إعلاناتي',
-      
+
       // Chat
       'chats': 'المحادثات',
       'type_a_message': 'اكتب رسالة...',
@@ -1187,7 +1305,8 @@ class AppTranslations extends Translations {
       'vehicles': 'مركبات',
       'real_estate': 'عقارات',
       'search_listings': 'ابحث في الإعلانات...',
-      'search_listings_enhanced': 'ابحث عن السيارات والمنازل والعلامات التجارية...',
+      'search_listings_enhanced':
+          'ابحث عن السيارات والمنازل والعلامات التجارية...',
       'search_for_listing': 'ابحث عن إعلان...',
       'filters_coming_soon': 'قريباً الفلاتر',
       'quick_filters': 'فلاتر سريعة',
@@ -1233,7 +1352,8 @@ class AppTranslations extends Translations {
       'fuzzy_search_tip': 'البحث الذكي يتعامل مع الأخطاء الإملائية تلقائياً',
       'no_search_results': 'لا توجد نتائج بحث',
       'try_different_keywords': 'جرب كلمات مفتاحية مختلفة',
-      'fuzzy_search_enabled': 'البحث الضبابي مفعل - يتم التعامل مع الأخطاء الإملائية تلقائياً',
+      'fuzzy_search_enabled':
+          'البحث الضبابي مفعل - يتم التعامل مع الأخطاء الإملائية تلقائياً',
       'search_suggestions': 'اقتراحات البحث',
       'search_history': 'تاريخ البحث',
       'clear_history': 'مسح التاريخ',
@@ -1249,8 +1369,10 @@ class AppTranslations extends Translations {
 
       // Property Condition (Arabic)
       'property_condition_new': 'جديد',
+      'property_condition': 'الحالة',
       'property_condition_renovated': 'تم تجديده',
       'property_condition_needs_renovation': 'بحاجة لتجديد',
+      'needs_renovation': 'بحاجة لتجديد',
 
       // Real Estate Essential Details (Arabic)
       'essential_details': 'التفاصيل الأساسية',
@@ -1258,6 +1380,7 @@ class AppTranslations extends Translations {
       'title_required': 'العنوان مطلوب.',
       'select_listing_action': 'يرجى تحديد إجراء القائمة.',
       'select_seller_type': 'اختر نوع البائع',
+      'seller_type': 'نوع البائع',
       'price_required': 'السعر مطلوب.',
       'location_required': 'الموقع مطلوب.',
       'select_property_type': 'الرجاء تحديد نوع العقار',
@@ -1308,12 +1431,10 @@ class AppTranslations extends Translations {
       'enterValidPriceValidation': 'يرجى إدخال سعر صالح',
       'enterDescriptionValidation': 'يرجى إدخال الوصف',
       'selectVehicleTypeHeader': 'اختر نوع المركبة',
-       'no_listings': 'لم تقم بإنشاء أي إعلانات بعد.',
+      'no_listings': 'لم تقم بإنشاء أي إعلانات بعد.',
       'login_to_view': 'يرجى تسجيل الدخول لعرض إعلاناتك',
       'go_to_login': 'تسجيل الدخول',
-            'engine_size' : ' حجم المحرك',
-      'enter_engine_size' : ' أدخل حجم المحرك',
-      
+
       // Profile
       'my_profile': 'ملفي الشخصي',
       'username': 'اسم المستخدم',
@@ -1321,13 +1442,13 @@ class AppTranslations extends Translations {
       'bio': 'السيرة الذاتية',
       'street': 'الشارع',
       'city': 'المدينة',
-      
+
       // Profile & Settings Screen
       'view_edit_profile': 'عرض / تعديل الملف الشخصي',
       'logout': 'تسجيل خروج',
       'logout_confirmation': 'هل أنت متأكد من أنك تريد تسجيل الخروج؟',
       'ok': 'موافق',
-      
+
       // Default values
       'no_name_available': 'لا يوجد اسم متاح',
       'no_username_available': 'لا يوجد اسم مستخدم متاح',
@@ -1337,70 +1458,63 @@ class AppTranslations extends Translations {
       'no_street_available': 'لا يوجد شارع متاح',
       'no_city_available': 'لا توجد مدينة متاحة',
       'no_notifications_available': 'لا توجد إشعارات متاحة',
-      
-      //saved 
+
+      //saved
       'no_favourites_yet': 'لا توجد مفضلات بعد',
- 
 
       // Status
       'enabled': 'مفعل',
       'disabled': 'معطل',
       'public': 'عام',
       'private': 'خاص',
-      
+
       // Navigation
       'home': 'الرئيسية',
       'favourites': 'المفضلة',
       'listing': 'إعلان',
-      'person': 'الشخص',
-      
+      'profile': 'ملفها الشخصي',
+
       // Location
-      'open_settings': 'فتح الإعدادات',
+      'open_settings': 'ملف الشخصي',
       'retry': 'إعادة المحاولة',
-      
+
       // Filter
       'filter': 'تصفية',
- 
+
       'subcategory': 'الفئة الفرعية',
       'listing_type': 'نوع الإعلان',
       'year': 'السنة',
       'reset': 'إعادة تعيين',
- 
-      
- 
-      
+
       // Dropdown Hints
       'selectCategory': 'اختر الفئة',
       'selectSubCategory': 'اختر الفئة الفرعية',
       'selectBrand': 'اختر الماركة',
-        'max_20_images_allowed': 'الحد الأقصى 20 صورة مسموح بها',
-        'fill_all_fields_prompt': 'يرجى ملء جميع الحقول المطلوبة',
-        'select_vehicle_type_prompt': 'يرجى اختيار نوع المركبة',
-        'add_at_least_one_image_prompt': 'يرجى إضافة صورة واحدة على الأقل',
+      'max_20_images_allowed': 'الحد الأقصى 20 صورة مسموح بها',
+      'fill_all_fields_prompt': 'يرجى ملء جميع الحقول المطلوبة',
+      'select_vehicle_type_prompt': 'يرجى اختيار نوع المركبة',
+      'add_at_least_one_image_prompt': 'يرجى إضافة صورة واحدة على الأقل',
 
-        'vehicle_type': 'نوع المركبة',
+      'vehicle_type': 'نوع المركبة',
 
       'title_is_required': 'العنوان مطلوب',
       'select_make_first': 'اختر الصانع أولاً',
       'price_is_required': 'السعر مطلوب',
       'description_is_required': 'الوصف مطلوب',
       'add_pictures': 'إضافة صور',
-        'tap_to_add_images': 'انقر لإضافة الصور',
-        'max_20_images': '(الحد الأقصى 20 صورة)',
+      'tap_to_add_images': 'انقر لإضافة الصور',
+      'max_20_images': '(الحد الأقصى 20 صورة)',
       'select_year': 'اختر السنة',
-      
+
       // Vehicle Subcategories
       'car_type': 'سيارات',
       'motorcycle_type': 'دراجات نارية',
-      
-      // Listing Types
- 
 
-   'listing_action': 'أرغب في...',
+      // Listing Types
+      'listing_action': 'أرغب في...',
       'to_sale': 'بيع',
       'to_rent': 'تأجير',
       'to_search': 'بحث',
-
 
       // Cities
       'damascus': 'دمشق',
@@ -1416,8 +1530,49 @@ class AppTranslations extends Translations {
       'idlib': 'إدلب',
       'dara': 'درعا',
       'sweden': 'السويد',
+
+      // Listing Details
+      'listing_id': 'المعرف: ',
+      'kmpl': 'كم/لتر',
+      'hp': 'حصان',
+      'condition_and_ownership': 'الحالة والملكية',
+      'imported_status': 'مستورد: ',
+      'seller_information': 'معلومات البائع',
+      'contact_seller': 'اتصل بالبائع',
+      'seller_not_found': 'لم يتم العثور على البائع',
+      'error_starting_chat': 'خطأ في بدء المحادثة',
+      'could_not_launch_whatsapp': 'لا يمكن تشغيل واتساب',
+      'could_not_launch_phone_dialer': 'لا يمكن تشغيل طالب الهاتف',
+      'colors': 'الألوان',
+      'exterior_color': 'اللون الخارجي',
+      'performance': 'الأداء',
+      'condition': 'الحالة: ',
+      'previous_owners': 'الملاك السابقون: ',
+      'warranty': 'الضمان: ',
+      'months': ' أشهر',
+      'custom': 'مخصص: ',
+      'airbags_and_breaking': 'الوسائد الهوائية والمكابح',
+      'front_airbags': 'وسائد هوائية أمامية: ',
+      'side_airbags': 'وسائد هوائية جانبية: ',
+      'curtain_airbags': 'وسائد هوائية ستارية: ',
+      'knee_airbags': 'وسائد هوائية للركبة: ',
+      'automatic_emergency_breaking': 'الكبح التلقائي في حالات الطوارئ: ',
+      'present': 'موجود',
+      'not_present': 'غير موجود',
+      'assist_and_controls': 'المساعدة والتحكم',
+      'adaptive_cruise_control': 'مثبت السرعة التكيفي: ',
+      'lane_departure_warning': 'تحذير مغادرة المسار: ',
+      'lane_keep_assist': 'مساعد الحفاظ على المسار: ',
+      'navigation_system': 'نظام الملاحة: ',
+      'additional_info': 'معلومات إضافية',
+      'service_history': 'سجل الخدمة: ',
+      'service_history_notes': 'ملاحظات سجل الخدمة: ',
+      'additional_notes': 'ملاحظات إضافية: ',
+      'registration_expiry': 'انتهاء التسجيل: ',
+      'failed_to_start_chat_with_seller': 'فشل بدء المحادثة مع البائع',
+      'listing_posted_on': 'تم نشر الإعلان في ',
       'quneitra': 'القنيطرة',
-      
+
       // Location Picker (Arabic translations)
       'select_location_ar': 'اختر الموقع',
       'search_location_ar': 'ابحث عن موقع...',
@@ -1430,20 +1585,31 @@ class AppTranslations extends Translations {
       'neighborhoods_ar': 'أحياء',
       'city_ar': 'مدينة',
       'no_cities_found_ar': 'لم يتم العثور على مدن',
-      
+
       // Auth & Registration
-      'registration_successful': 'تم التسجيل بنجاح! يرجى التحقق من بريدك الإلكتروني للحصول على رمز التحقق.',
-      'user_already_verified': 'هذا البريد الإلكتروني مسجل ومُفعّل بالفعل. يرجى تسجيل الدخول بدلاً من ذلك.',
-      'registration_rate_limited': 'يرجى الانتظار @seconds ثانية قبل المحاولة مرة أخرى.',
-      'email_send_failed': 'فشل في إرسال بريد التحقق. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.',
+      'registration_successful':
+          'تم التسجيل بنجاح! يرجى التحقق من بريدك الإلكتروني للحصول على رمز التحقق.',
+      'user_already_verified':
+          'هذا البريد الإلكتروني مسجل ومُفعّل بالفعل. يرجى تسجيل الدخول بدلاً من ذلك.',
+      'registration_rate_limited':
+          'يرجى الانتظار @seconds ثانية قبل المحاولة مرة أخرى.',
+      'فشل_جلب_الملف_الشخصي': 'فشل في جلب ملف المستخدم المحدث',
+      'failed_to_refresh_token': 'فشل في تحديث الرمز المميز',
+      'refresh_token_invalid':
+          'الرمز المميز للتحديث غير صالح أو منتهي الصلاحية. يرجى تسجيل الدخول مرة أخرى.',
+      'failed_to_upload_profile_picture': 'فشل في تحميل صورة الملف الشخصي',
+      'failed_to_delete_account': 'فشل في حذف حساب المستخدم',
+      're_authentication_failed': 'فشلت إعادة المصادقة',
       'database_error': 'حدث خطأ في الخادم. يرجى المحاولة مرة أخرى بعد قليل.',
       'invalid_code': 'رمز التحقق غير صحيح. يرجى التحقق والمحاولة مرة أخرى.',
       'code_expired': 'انتهت صلاحية رمز التحقق. يرجى طلب رمز جديد.',
-      'already_verified': 'البريد الإلكتروني مُفعّل بالفعل. يمكنك الآن تسجيل الدخول.',
+      'already_verified':
+          'البريد الإلكتروني مُفعّل بالفعل. يمكنك الآن تسجيل الدخول.',
       'resend_rate_limited': 'يرجى الانتظار @seconds ثانية قبل طلب رمز آخر.',
       'code_sent_again': 'تم إرسال الرمز مرة أخرى إلى بريدك الإلكتروني',
-      'email_missing': 'معلومات البريد الإلكتروني مفقودة. يرجى المحاولة مرة أخرى.',
-      
+      'email_missing':
+          'معلومات البريد الإلكتروني مفقودة. يرجى المحاولة مرة أخرى.',
+
       // Auth Forms
       'signup': 'التسجيل',
       'login': 'تسجيل الدخول',
@@ -1464,14 +1630,17 @@ class AppTranslations extends Translations {
       'dont_have_account': 'ليس لديك حساب؟ سجل الآن',
       'forgot_password': 'نسيت كلمة المرور؟',
       'verify_your_email': 'تحقق من بريدك الإلكتروني 📧',
-      'verification_code_sent': 'تم إرسال رمز التحقق المكون من 6 أرقام إلى بريدك الإلكتروني',
-      'verification_code_sent_to': 'تم إرسال رمز التحقق المكون من 6 أرقام إلى @email',
+      'verification_code_sent':
+          'تم إرسال رمز التحقق المكون من 6 أرقام إلى بريدك الإلكتروني',
+      'verification_code_sent_to':
+          'تم إرسال رمز التحقق المكون من 6 أرقام إلى @email',
       'Resend code': 'إعادة إرسال رمز التحقق',
       'Verify': 'تحقق',
       'Enter 6-digit OTP': 'أدخل رمز التحقق المكون من 6 أرقام',
-       'password_change_security_notice': 'لأمانك، ستتلقى رمز تحقق مكون من 6 أرقام عبر البريد الإلكتروني لتأكيد تغيير كلمة المرور.',
-       'verify_password_change': 'التحقق من تغيير كلمة المرور',
-      
+      'password_change_security_notice':
+          'لأمانك، ستتلقى رمز تحقق مكون من 6 أرقام عبر البريد الإلكتروني لتأكيد تغيير كلمة المرور.',
+      'verify_password_change': 'التحقق من تغيير كلمة المرور',
+
       // Validation Messages
       'please_enter_field': 'يرجى إدخال @field',
       'please_enter_valid_email': 'يرجى إدخال بريد إلكتروني صحيح',
@@ -1480,10 +1649,11 @@ class AppTranslations extends Translations {
       'please_provide_valid_email': 'يرجى توفير بريد إلكتروني صحيح',
       'please_provide_valid_password': 'يرجى توفير كلمة مرور صحيحة',
       'password_min_8_chars': 'لا يمكن أن تكون كلمة المرور أقل من 8 أحرف',
-      
+
       // Email Change
       'change_email': 'تغيير البريد الإلكتروني',
-      'change_email_description': 'غيّر عنوان بريدك الإلكتروني. ستحتاج إلى تأكيد البريد الجديد قبل تفعيل التغيير.',
+      'change_email_description':
+          'غيّر عنوان بريدك الإلكتروني. ستحتاج إلى تأكيد البريد الجديد قبل تفعيل التغيير.',
       'current_email': 'البريد الإلكتروني الحالي',
       'new_email': 'عنوان البريد الجديد',
       'enter_new_email': 'أدخل عنوان بريدك الجديد',
@@ -1503,8 +1673,37 @@ class AppTranslations extends Translations {
       'no_pending_email_change': 'لا يوجد تغيير بريد معلق',
       'email_change_failed': 'فشل في تغيير البريد',
       'security_notice': 'ملاحظة أمنية',
-      'email_change_security_notice': 'لأمانك، سيتم إرسال رمز تحقق مكون من 6 أرقام إلى عنوان بريدك الإلكتروني الجديد لتأكيد التغيير.',
+      'email_change_security_notice':
+          'لأمانك، سيتم إرسال رمز تحقق مكون من 6 أرقام إلى عنوان بريدك الإلكتروني الجديد لتأكيد التغيير.',
       'verification_send_failed': 'فشل في إرسال رمز التحقق',
+
+      // Auth Controller Messages
+      "authenticating": "جاري تسجيل الدخول...",
+      "verifying_code": "جاري التحقق من الرمز...",
+      "user_session_invalid":
+          "جلسة المستخدم غير صالحة. يرجى تسجيل الدخول مرة أخرى.",
+      "auth_token_not_found":
+          "لم يتم العثور على رمز المصادقة. يرجى تسجيل الدخول مرة أخرى.",
+      "profile_update_failed": "فشل في تحديث الملف الشخصي",
+      "profile_updated_successfully": "تم تحديث الملف الشخصي بنجاح!",
+      "profile_update_error": "حدث خطأ أثناء تحديث الملف الشخصي: @error",
+      "something_went_wrong": "حدث خطأ ما. حاول مرة أخرى لاحقًا.",
+      "account_does_not_exist":
+          "حسابك لم يعد موجودًا. يرجى التواصل مع الدعم إذا كان هذا غير متوقع.",
+      "account_inactive": "حسابك غير مفعل. يرجى التواصل مع الدعم.",
+      "email_not_verified_login":
+          "يرجى تأكيد بريدك الإلكتروني قبل تسجيل الدخول.",
+      "validation_error": "خطأ في التحقق من البيانات",
+      "user_not_present": "المستخدم غير موجود",
+      "login_successful": "تم تسجيل الدخول بنجاح",
+      "registration_failed": "فشل في التسجيل: @error",
+      "verification_failed": "فشل في التحقق: @error",
+      "sending_verification_code": "جاري إرسال رمز التحقق...",
+      "resend_failed": "فشل في إعادة إرسال رمز التحقق: @error",
+      "logout_successful": "تم تسجيل الخروج بنجاح",
+      "updating_profile": "جاري تحديث الملف الشخصي...",
+      "no_response_data": "لم يتم استلام أي بيانات",
+      "fetch_profile_failed": "فشل في جلب الملف الشخصي المحدث",
 
       // Car Details
       'car_details': 'تفاصيل السيارة',
@@ -1514,27 +1713,29 @@ class AppTranslations extends Translations {
       'select_drive_type': 'اختر نوع الدفع',
       'fuel_type': 'نوع الوقود',
       'select_fuel_type': 'اختر نوع الوقود',
+      'benzin': 'بنزين',
+      'diesel': 'مازوت',
+      'hybrid': 'هايبرد',
+      'electric': 'كهرباء',
+      'gasoline': 'غاز',
       'transmission': 'ناقل الحركة',
       'select_transmission': 'اختر ناقل الحركة',
       'mileage': 'المسافة المقطوعة',
       'enter_mileage': 'أدخل المسافة المقطوعة',
       'color': 'اللون',
-      'condition': 'الحالة',
       'select_condition': 'اختر الحالة',
-      'previous_owners': 'الملاك السابقون',
       'enter_previous_owners': 'أدخل عدد الملاك',
-      'warranty': 'الضمان',
-      'select_warranty': 'اختر الضمان',
+       'number_of_owners': 'عدد الملاك',
+      'full_service_history': 'سجل الخدمة الكامل',
+      'partial_service_history': 'سجل الخدمة الجزئي',
       'accidental': 'حوادث',
       'select_accident_history': 'اختر سجل الحوادث',
-      'service_history': 'سجل الخدمة',
       'select_service_history': 'اختر سجل الخدمة',
       'import_status': 'حالة الاستيراد',
       'select_import_status': 'اختر حالة الاستيراد',
-      'registration_expiry': 'انتهاء التسجيل',
-      'select_registration_expiry': 'اختر تاريخ الانتهاء',
       'car_specifications': 'مواصفات السيارة',
-      'car_specifications_info': 'تساعد هذه التفاصيل المشترين على فهم سيارتك بشكل أفضل ويمكن أن تزيد من ظهور إعلانك.',
+      'car_specifications_info':
+          'تساعد هذه التفاصيل المشترين على فهم سيارتك بشكل أفضل ويمكن أن تزيد من ظهور إعلانك.',
 
       // Car Dropdown Options
       'sedan': 'سيدان',
@@ -1542,25 +1743,21 @@ class AppTranslations extends Translations {
       'hatchback': 'هاتشباك',
       'coupe': 'كوبيه',
       'convertible': 'كشف',
-      'wagon': 'واجن',
-      'minivan': 'ميني فان',
+
+      // Drive Types
       'front_wheel_drive': 'دفع أمامي',
       'rear_wheel_drive': 'دفع خلفي',
-      'all_wheel_drive': 'دفع كلي',
-      'four_wheel_drive': 'دفع رباعي',
-      'petrol': 'بنزين',
-      'diesel': 'ديزل',
-      'electric': 'كهرباء',
-      'hybrid': 'هجين',
-      'cng': 'غاز طبيعي مضغوط',
-      'lpg': 'غاز بترولي مسال',
+      'all_wheel_drive': 'دفع رباعي',
+      'four_wheel_drive': 'دفع رباعي كامل',
+      'wagon': 'واجن',
+      'minivan': 'ميني فان',
       'manual': 'يدوي',
       'automatic': 'أوتوماتيك',
-      'continuously_variable': 'متغير باستمرار (CVT)',
       'semi_automatic': 'شبه أوتوماتيك',
       'new': 'جديد',
       'used': 'مستعمل',
-      'reconditioned': 'مجدد',
+      'damaged': 'بحالة عطل / بحاجة تصليح',
+      'not_working': 'لا يعمل / لقطع التبديل',
       'yes': 'نعم',
       'no': 'لا',
       'available': 'متوفر',
@@ -1571,105 +1768,96 @@ class AppTranslations extends Translations {
       'japanese_specs': 'مواصفات يابانية',
       'canadian_specs': 'مواصفات كندية',
       'korean_specs': 'مواصفات كورية',
-    // Feature translations
-'features_extras': 'المميزات الإضافية',
-'vehicle_features_extras': 'مميزات المركبة',
-'real_estate_features_extras': 'مميزات العقار',
-'unknown_category': 'فئة غير معروفة',
-'select_vehicle_type_step1': 'يرجى اختيار نوع المركبة في الخطوة الأولى',
-'commercial_vehicle_features': 'مميزات المركبة التجارية',
-'construction_vehicle_features': 'مميزات مركبة البناء',
-'apartment_features': 'مميزات الشقة',
-'house_features': 'مميزات المنزل',
-'car_features_title': 'مميزات السيارة',
-'motorcycle_features_title': 'مميزات الدراجة النارية',
-'land_features': 'مميزات الأرض',
-'select_available_features': 'اختر المميزات المتاحة',
+      // Feature translations
+      'features_extras': 'المميزات الإضافية',
+      'vehicle_features_extras': 'مميزات المركبة',
+      'real_estate_features_extras': 'مميزات العقار',
+      'unknown_category': 'فئة غير معروفة',
+      'select_vehicle_type_step1': 'يرجى اختيار نوع المركبة في الخطوة الأولى',
+      'commercial_vehicle_features': 'مميزات المركبة التجارية',
+      'construction_vehicle_features': 'مميزات مركبة البناء',
+      'apartment_features': 'مميزات الشقة',
+      'house_features': 'مميزات المنزل',
+      'car_features_title': 'مميزات السيارة',
+      'motorcycle_features_title': 'مميزات الدراجة النارية',
+      'land_features': 'مميزات الأرض',
+      'select_available_features': 'اختر المميزات المتاحة',
 
-// Vehicle features
-'abs': 'نظام منع انغلاق المكابح (ABS)',
-'traction_control': 'نظام التحكم في الجر',
-'lane_assist': 'مساعد الحفاظ على المسار',
-'blind_spot_monitor': 'مراقبة النقطة العمياء',
-'parking_sensor': 'حساسات الركن',
-'rear_camera': 'كاميرا خلفية',
-'360_camera': 'كاميرا 360°',
-'cruise_control': 'مثبت السرعة',
-'led_headlights': 'مصابيح أمامية LED',
-'fog_lights': 'أضواء الضباب',
-'bluetooth': 'بلوتوث',
-'apple_carplay': 'Apple CarPlay',
-'android_auto': 'Android Auto',
-'wireless_charging': 'شحن لاسلكي',
-'usb_ports': 'منافذ USB',
-'sunroof': 'فتحة سقف',
-'panoramic_roof': 'سقف بانورامي',
-'heated_seats': 'مقاعد مدفأة',
-'cooled_seats': 'مقاعد مبردة',
-'electric_seats': 'مقاعد كهربائية',
-'immobilizer': 'مانع تشغيل السيارة',
-'alarm_system': 'نظام إنذار',
-'number_of_airbags': 'عدد الوسائد الهوائية',
-'enter_number_of_airbags': 'أدخل عدد الوسائد الهوائية',
-'gps_navigation': 'نظام ملاحة GPS',
-'usb_charging': 'شحن USB',
-'backup_camera': 'كاميرا خلفية للرجوع',
-'leather_seats': 'مقاعد جلدية',
+      // Vehicle features
+      'abs': 'نظام منع انغلاق المكابح (ABS)',
+      'traction_control': 'نظام التحكم في الجر',
+      'lane_assist': 'مساعد الحفاظ على المسار',
+      'blind_spot_monitor': 'مراقبة النقطة العمياء',
+      'parking_sensor': 'حساسات الركن',
+      'rear_camera': 'كاميرا خلفية',
+      '360_camera': 'كاميرا 360°',
+      'cruise_control': 'مثبت السرعة',
+      'sunroof': 'فتحة سقف',
+      'panoramic_roof': 'سقف بانورامي',
+      'heated_seats': 'مقاعد مدفأة',
+      'cooled_seats': 'مقاعد مبردة',
+      'electric_seats': 'مقاعد كهربائية',
+      'number_of_airbags': 'عدد الوسائد الهوائية',
+      'enter_number_of_airbags': 'أدخل عدد الوسائد الهوائية',
+      'gps_navigation': 'نظام ملاحة GPS',
+      'usb_charging': 'شحن USB',
+      'backup_camera': 'كاميرا خلفية للرجوع',
+      'leather_seats': 'مقاعد جلدية',
 
-// Commercial vehicle features
-'hydraulic_lift': 'رافعة هيدروليكية',
-'cargo_cover': 'غطاء الحمولة',
-'tie_down_points': 'نقاط تثبيت الحمولة',
-'loading_ramp': 'منحدر تحميل',
-'refrigeration': 'تبريد',
-'gps_tracking': 'تتبع GPS',
-'commercial_license': 'رخصة تجارية',
-'cargo_barrier': 'حاجز حمولة',
+      // Commercial vehicle features
+      'hydraulic_lift': 'رافعة هيدروليكية',
+      'cargo_cover': 'غطاء الحمولة',
+      'tie_down_points': 'نقاط تثبيت الحمولة',
+      'loading_ramp': 'منحدر تحميل',
+      'refrigeration': 'تبريد',
+      'gps_tracking': 'تتبع GPS',
+      'commercial_license': 'رخصة تجارية',
+      'cargo_barrier': 'حاجز حمولة',
 
-// Construction vehicle features
-'hydraulic_system': 'نظام هيدروليكي',
-'work_lights': 'أضواء العمل',
-'quick_attach': 'توصيل سريع',
-'rubber_tracks': 'سلاسل مطاطية',
-'enclosed_cab': 'كابينة مغلقة',
-'emergency_stop': 'زر التوقف الطارئ',
-'rollover_protection': 'حماية من الانقلاب',
-'service_records': 'سجلات الصيانة',
-'operator_manual': 'دليل التشغيل',
-'attachments': 'الإرفاقات',
-'cab_type': 'نوع الكابينة',
-'track_type': 'نوع السلاسل',
+      // Construction vehicle features
+      'hydraulic_system': 'نظام هيدروليكي',
+      'work_lights': 'أضواء العمل',
+      'quick_attach': 'توصيل سريع',
+      'rubber_tracks': 'سلاسل مطاطية',
+      'enclosed_cab': 'كابينة مغلقة',
+      'emergency_stop': 'زر التوقف الطارئ',
+      'rollover_protection': 'حماية من الانقلاب',
+      'service_records': 'سجلات الصيانة',
+      'operator_manual': 'دليل التشغيل',
+      'attachments': 'الإرفاقات',
+      'cab_type': 'نوع الكابينة',
+      'track_type': 'نوع السلاسل',
 
-// Real estate features
-'elevator': 'مصعد',
-'balcony': 'شرفة',
-'furnished': 'مفروشة',
-'concierge': 'خدمة بواب',
-'water_heater': 'سخان ماء',
-'garden': 'حديقة',
-'garage': 'كراج',
-'terrace': 'تراس',
-'basement': 'قبو',
-'fireplace': 'مدفأة',
-'swimming_pool': 'مسبح',
-'solar_panels': 'ألواح شمسية',
-'water_well': 'بئر ماء',
+      // Real estate features
+      'elevator': 'مصعد',
+      'balcony': 'شرفة',
+      'furnished': 'مفروشة',
+      'concierge': 'خدمة بواب',
+      'water_heater': 'سخان ماء',
+      'garden': 'حديقة',
+      'garage': 'كراج',
+      'terrace': 'تراس',
+      'basement': 'قبو',
+      'fireplace': 'مدفأة',
+      'swimming_pool': 'مسبح',
+      'solar_panels': 'ألواح شمسية',
+      'water_well': 'بئر ماء',
 
-'meeting_rooms': 'غرف اجتماعات',
+      'meeting_rooms': 'غرف اجتماعات',
 
-'water_access': 'وصول إلى المياه',
-'electricity_access': 'وصول إلى الكهرباء',
-'road_access': 'وصول إلى الطريق',
-'agricultural_use': 'الاستخدام الزراعي',
-'residential_zoning': 'منطقة سكنية',
-'commercial_zoning': 'منطقة تجارية',
-'flat_terrain': 'أرض مستوية',
-'fenced': 'مسورة',
-'fruit_trees': 'أشجار فاكهة',
-'building_permit': 'تصريح بناء',
-'corner_lot': 'قطعة أرض على الزاوية',
-
-  
+      'water_access': 'وصول إلى المياه',
+      'electricity_access': 'وصول إلى الكهرباء',
+      'road_access': 'وصول إلى الطريق',
+      'agricultural_use': 'الاستخدام الزراعي',
+      'residential_zoning': 'منطقة سكنية',
+      'commercial_zoning': 'منطقة تجارية',
+      'flat_terrain': 'أرض مستوية',
+      'fenced': 'مسورة',
+      'fruit_trees': 'أشجار فاكهة',
+      'security_system': 'نظام امن',
+      'well_water': 'بئر ماء',
+      'building_permit': 'تصريح بناء',
+      'corner_lot': 'قطعة أرض على الزاوية',
 
       // Truck Details
       'truck_advanced_details': 'تفاصيل الشاحنة المتقدمة',
@@ -1680,7 +1868,8 @@ class AppTranslations extends Translations {
       'towing_capacity_kg': 'سعة القطر (كجم)',
       'max_towing_capacity': 'أقصى سعة للقطر',
       'truck_specifications': 'مواصفات الشاحنة',
-      'truck_specifications_info': 'تعتبر سعة الحمولة والقطر حاسمة للمشترين التجاريين. المواصفات الدقيقة تساعد في مطابقة شاحنتك مع المشتري المناسب.',
+      'truck_specifications_info':
+          'تعتبر سعة الحمولة والقطر حاسمة للمشترين التجاريين. المواصفات الدقيقة تساعد في مطابقة شاحنتك مع المشتري المناسب.',
       'pickup_truck': 'شاحنة بيك أب',
       'box_truck': 'شاحنة صندوق',
       'flatbed': 'شاحنة مسطحة',
@@ -1693,7 +1882,8 @@ class AppTranslations extends Translations {
       // Motorcycle Details
       'motorcycle_advanced_details': 'تفاصيل الدراجة النارية المتقدمة',
       'motorcycle_specifications': 'مواصفات الدراجة النارية',
-      'motorcycle_specifications_info': 'حجم المحرك (CC) ونوع الهيكل هما عاملان رئيسيان لمشتري الدراجات النارية. هذه التفاصيل تساعد في مطابقة دراجتك مع الراكب المناسب.',
+      'motorcycle_specifications_info':
+          'حجم المحرك (CC) ونوع الهيكل هما عاملان رئيسيان لمشتري الدراجات النارية. هذه التفاصيل تساعد في مطابقة دراجتك مع الراكب المناسب.',
       'sport': 'رياضية',
       'cruiser': 'كروزر',
       'touring': 'سياحية',
@@ -1710,25 +1900,18 @@ class AppTranslations extends Translations {
       'model': 'الموديل',
       'description': 'الوصف',
       'engine_and_performance': 'المحرك والأداء',
-      'horsepower': 'القوة الحصانية',
-      'enter_horsepower': 'أدخل القوة الحصانية',
-      ' horsepower_hp' : 'قوة حصانية',
+      
       'vehicle_specifications': 'مواصفات المركبة',
       'drivetrain': 'نظام الدفع',
       'transmissionType': 'نوع ناقل الحركة',
       'bodyType': 'نوع الهيكل',
       'driveType': 'نوع الدفع',
       'fuelType': 'نوع الوقود',
-      'condition_and_history': 'الحالة والتاريخ', 
+      'condition_and_history': 'الحالة والتاريخ',
       'legal_and_documentation': 'الشؤون القانونية والوثائق',
-      'registration_expiry_date': 'تاريخ انتهاء التسجيل',
       'color_and_appearance': 'اللون والمظهر',
-      'exterior_color': 'اللون الخارجي',
-      'documentation' : 'التوثيق',
-       'performance' : 'الأداء',
-      ' number_of_owners' : 'عدد المالكين',
-      
-     
+      'documentation': 'التوثيق',
+      ' number_of_owners': 'عدد المالكين',
 
       // Property Details - Real Estate
       'property_details': 'تفاصيل العقار',
@@ -1763,9 +1946,10 @@ class AppTranslations extends Translations {
       'enter_plot_size': 'أدخل مساحة الأرض بالمتر المربع',
       'area_sqft': 'مساحة الأرض (قدم مربع)',
       'property_area_description': 'مساحة العقار (قدم مربع)',
-       'select_property_location': 'موقع العقار',
-       'select_property_condition': 'الحالة العقارية', 
- 
+      'select_property_location': 'موقع العقار',
+      'select_property_condition': 'الحالة العقارية',
+      'central_heating': 'الهواء المركزي',
+
       'pool': 'مسبح',
       'office_type': 'نوع المكتب',
       'shared': 'مشترك',
@@ -1773,7 +1957,7 @@ class AppTranslations extends Translations {
       'total_area': 'المساحة الإجمالية',
       'total_area_sqm': 'المساحة الإجمالية (متر مربع)',
       'enter_total_area': 'أدخل المساحة الإجمالية بالمتر المربع',
- 
+
       'number_meeting_rooms': 'عدد غرف الاجتماعات',
       'zoning': 'التقسيم',
       'residential': 'سكني',
@@ -1782,64 +1966,56 @@ class AppTranslations extends Translations {
       'industrial': 'صناعي',
 
       // Bedrooms & Bathrooms - using existing keys
-'number_of_bedrooms': 'عدد غرف النوم',
-'number_of_bathrooms': 'عدد الحمامات',
-'year_property_built': 'سنة بناء العقار',
+      'number_of_bedrooms': 'عدد غرف النوم',
+      'number_of_bathrooms': 'عدد الحمامات',
+      'year_property_built': 'سنة بناء العقار',
 
-// Motorcycle Features
-'stability_control': 'نظام الثبات',
-'wheelie_control': 'نظام التحكم في التوازن الأمامي',
-'launch_control': 'نظام الانطلاق السريع',
-'quick_shifter': 'ناقل حركة سريع',
-'slipper_clutch': 'قابض مانع للانزلاق',
-'riding_modes': 'أنماط القيادة',
-'suspension_adjustment': 'تعديل التعليق',
-'electronic_suspension': 'نظام تعليق إلكتروني',
-'adaptive_headlights': 'مصابيح أمامية متكيفة',
-'daytime_running_lights': 'أضواء القيادة النهارية',
-'hazard_lights': 'أضواء الطوارئ',
-'turn_signals': 'إشارات الانعطاف',
-'brake_light': 'ضوء المكابح',
-'digital_display': 'شاشة رقمية',
-'analog_gauges': 'عدادات تماثلية',
-'12v_socket': 'مقبس 12 فولت',
-'phone_mount': 'حامل الهاتف',
-'windscreen': 'زجاج أمامي',
-'adjustable_windscreen': 'زجاج أمامي قابل للتعديل',
-'hand_guards': 'واقيات يد',
-'knee_grips': 'مسكات الركبة',
-'seat_heating': 'تدفئة المقعد',
-'grip_heating': 'تدفئة المقابض',
-'storage_compartment': 'حجرة تخزين',
-'side_boxes': 'صناديق جانبية',
-'top_box': 'صندوق علوي',
-'tank_bag': 'حقيبة الخزان',
-'crash_bars': 'قضبان حماية من السقوط',
-'engine_guard': 'حماية المحرك',
-'skid_plate': 'لوح حماية سفلي',
-'chain_guard': 'حماية السلسلة',
-'disc_lock': 'قفل قرصي',
-'chain_lock': 'قفل السلسلة',
-'kick_starter': 'بدّال تشغيل يدوي',
-'electric_starter': 'تشغيل كهربائي',
-'center_stand': 'موقف مركزي',
-'side_stand': 'موقف جانبي',
-'maintenance_stand': 'موقف صيانة',
-'tool_kit': 'عدة أدوات',
-'puncture_kit': 'عدة إصلاح الإطارات',
-'first_aid_kit': 'عدة إسعافات أولية',
-
-  
+      // Motorcycle Features
+      'stability_control': 'نظام الثبات',
+      'quick_shifter': 'ناقل حركة سريع',
+      'slipper_clutch': 'قابض مانع للانزلاق',
+      'riding_modes': 'أنماط القيادة',
+      'suspension_adjustment': 'تعديل التعليق',
+      'electronic_suspension': 'نظام تعليق إلكتروني',
+      'adaptive_headlights': 'مصابيح أمامية متكيفة',
+      'daytime_running_lights': 'أضواء القيادة النهارية',
+      'hazard_lights': 'أضواء الطوارئ',
+      'turn_signals': 'إشارات الانعطاف',
+      'brake_light': 'ضوء المكابح',
+      'digital_display': 'شاشة رقمية',
+      'analog_gauges': 'عدادات تماثلية',
+      '12v_socket': 'مقبس 12 فولت',
+      'phone_mount': 'حامل الهاتف',
+      'windscreen': 'زجاج أمامي',
+      'adjustable_windscreen': 'زجاج أمامي قابل للتعديل',
+      'hand_guards': 'واقيات يد',
+      'knee_grips': 'مسكات الركبة',
+      'seat_heating': 'تدفئة المقعد',
+      'grip_heating': 'تدفئة المقابض',
+      'storage_compartment': 'حجرة تخزين',
+      'side_boxes': 'صناديق جانبية',
+      'top_box': 'صندوق علوي',
+      'tank_bag': 'حقيبة الخزان',
+      'skid_plate': 'لوح حماية سفلي',
+      'chain_guard': 'حماية السلسلة',
+      'disc_lock': 'قفل قرصي',
+      'chain_lock': 'قفل السلسلة',
+      'kick_starter': 'بدّال تشغيل يدوي',
+      'center_stand': 'موقف مركزي',
+      'side_stand': 'موقف جانبي',
+      'maintenance_stand': 'موقف صيانة',
+      'tool_kit': 'عدة أدوات',
+      'puncture_kit': 'عدة إصلاح الإطارات',
+      'first_aid_kit': 'عدة إسعافات أولية',
 
       // Construction Vehicle Fields
       'construction_vehicle_specifications': 'مواصفات معدات البناء',
-      'construction_vehicle_specifications_info': 'تفاصيل المعدات المتخصصة مهمة للمشترين التجاريين',
+      'construction_vehicle_specifications_info':
+          'تفاصيل المعدات المتخصصة مهمة للمشترين التجاريين',
       'operating_weight': 'الوزن التشغيلي',
-      'bucket_capacity': 'سعة الجرافة',
       'lifting_capacity': 'قدرة الرفع',
       'reach': 'المدى',
       'working_hours': 'ساعات العمل',
-
 
       // Passenger Vehicle Fields
       'passenger_vehicle_details': 'تفاصيل مركبة الركاب',
@@ -1857,10 +2033,12 @@ class AppTranslations extends Translations {
       // Seller Options
       'sellerTypeLabel': 'نوع البائع',
       'sellerTypeHint': 'اختر نوع البائع',
-      'owner': 'مالك',
       'broker': 'وسيط',
+      'owner': 'مالك',
       'business_firm': 'شركة تجارية',
       'ad_owner': 'صاحب الإعلان',
+      'features_and_extras': 'المميزات والإضافات',
+      'listing_action_type': 'نوع الإعلان',
 
       // Widgets
       'select_an_option': 'اختر خيارًا',
@@ -1885,19 +2063,19 @@ class AppTranslations extends Translations {
       'continue': 'متابعة',
       'submit': 'إرسال',
       'go_back': 'العودة',
-      
+
       // Dialog Messages
-      'validation_error': 'خطأ في التحقق',
       'data_missing': 'بيانات مفقودة',
-      'no_listing_data_message': 'لم يتم العثور على بيانات الإعلان. يرجى العودة وملء المعلومات المطلوبة.',
-      
+      'no_listing_data_message':
+          'لم يتم العثور على بيانات الإعلان. يرجى العودة وملء المعلومات المطلوبة.',
+
       // Image Messages
       'maximum_20_images_allowed': 'الحد الأقصى 20 صورة مسموح',
       'select_from_gallery': 'اختر من المعرض',
       'take_a_photo': 'التقط صورة',
       'no_images_selected': 'لم يتم اختيار صور.',
       'image_not_found': 'لم يتم العثور على الصورة',
-      
+
       // Advanced Options
       'advanced_options': 'خيارات متقدمة',
       'climate_and_energy': 'المناخ والطاقة',
@@ -1906,37 +2084,37 @@ class AppTranslations extends Translations {
       'living_space': 'مساحة المعيشة',
       'parking_and_roof': 'الموقف والسقف',
       'community_and_extras': 'المجتمع والإضافات',
-      
+
       // Color Picker
       'select_a_color': 'اختر لوناً',
-      
+
       // Image Picker
       'select_image': 'اختر صورة',
       'take_a_picture': 'التقط صورة',
       'pick_from_gallery': 'اختر من المعرض',
-      
+
       // Listings
       'no_data_for_listing': 'لا توجد بيانات متاحة للإعلان',
-      
+
       // Connection & Auth
       'no_internet_connection': 'لا يوجد اتصال بالإنترنت',
       'checking_authentication': 'جاري التحقق من المصادقة...',
       'login_required_dialog': 'تسجيل الدخول مطلوب',
       'maybe_later': 'ربما لاحقاً',
       'sign_in': 'تسجيل الدخول',
-      
+
       // Filters & Search
       'advanced_filters': 'المرشحات المتقدمة',
       'available_filters_for': 'المرشحات المتاحة لـ',
       'filter_selected': 'تم اختيار المرشح',
       'close': 'إغلاق',
-      
+
       // Vehicle Advanced Options
       'engine_performance': 'المحرك والأداء',
       'condition_history': 'الحالة والتاريخ',
       'legal_documents': 'الوثائق القانونية',
       'color_appearance': 'اللون والمظهر',
-      
+
       // Debug
       'debug_data_summary': '🔧 ملخص البيانات التشخيصي',
       'controller_state': '📊 حالة وحدة التحكم:',
@@ -1944,19 +2122,19 @@ class AppTranslations extends Translations {
       'sub_category': '🚗 الفئة الفرعية:',
       'images_count': '🖼️ الصور:',
       'title_field': '📋 العنوان:',
-      
+
       // Validation
       'please_enter_valid_otp': 'يرجى إدخال رمز OTP صحيح مكون من 6 أرقام',
-      
+
       // Error Messages
       'unknown_category_message': 'فئة غير معروفة',
-      
+
       // Auth Required Placeholder
       'login_required': 'تسجيل الدخول مطلوب',
       'favourites_feature': 'المفضلة',
       'create_listing_feature': 'إنشاء إعلان',
       'messages': 'الرسائل',
-      'profile': 'الملف الشخصي',
+      'profile_feature': 'الملف الشخصي',
       'favourites_desc': 'احفظ ونظم إعلاناتك المفضلة للوصول السريع.',
       'create_listing_desc': 'اعرض منتجاتك واوصل إلى آلاف المشترين المحتملين.',
       'messages_desc': 'تواصل مباشرة مع المشترين والبائعين عبر الرسائل الآمنة.',
@@ -1982,8 +2160,6 @@ class AppTranslations extends Translations {
       'continue_browsing': 'متابعة التصفح كضيف',
 
       // Passenger Vehicle Features
-      'power_steering': 'مقود مرن',
-      'central_locking': 'قفل مركزي',
       'electric_windows': 'نوافذ كهربائية',
       'abs_brakes': 'فرامل ABS',
       'airbags': 'وسائد هوائية',

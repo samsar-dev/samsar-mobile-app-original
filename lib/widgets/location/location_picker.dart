@@ -34,7 +34,7 @@ class _LocationPickerState extends State<LocationPicker>
       length: widget.showCitiesTab ? 2 : 1,
       vsync: this,
     );
-    
+
     if (widget.initialLocation != null) {
       _searchController.text = widget.initialLocation!;
     }
@@ -61,7 +61,9 @@ class _LocationPickerState extends State<LocationPicker>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.grey, width: 0.5)),
+              border: Border(
+                bottom: BorderSide(color: Colors.grey, width: 0.5),
+              ),
             ),
             child: Row(
               children: [
@@ -115,38 +117,47 @@ class _LocationPickerState extends State<LocationPicker>
                     }
                   },
                 ),
-                
+
                 // Current Location Button
                 if (widget.showCurrentLocationButton)
                   Padding(
                     padding: const EdgeInsets.only(top: 12),
-                    child: Obx(() => ElevatedButton.icon(
-                      onPressed: _locationController.isLoading.value
-                          ? null
-                          : () async {
-                              await _locationController.getCurrentLocation();
-                              if (_locationController.selectedLocation.value != null) {
-                                widget.onLocationSelected(_locationController.selectedLocation.value!);
-                                Navigator.pop(context);
-                              }
-                            },
-                      icon: _locationController.isLoading.value
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.my_location),
-                      label: Text('use_current_location'.tr),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 48),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    child: Obx(
+                      () => ElevatedButton.icon(
+                        onPressed: _locationController.isLoading.value
+                            ? null
+                            : () async {
+                                await _locationController.getCurrentLocation();
+                                if (_locationController
+                                        .selectedLocation
+                                        .value !=
+                                    null) {
+                                  widget.onLocationSelected(
+                                    _locationController.selectedLocation.value!,
+                                  );
+                                  Navigator.pop(context);
+                                }
+                              },
+                        icon: _locationController.isLoading.value
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.my_location),
+                        label: Text('use_current_location'.tr),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(double.infinity, 48),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
-                    )),
+                    ),
                   ),
               ],
             ),
@@ -167,10 +178,7 @@ class _LocationPickerState extends State<LocationPicker>
             child: widget.showCitiesTab
                 ? TabBarView(
                     controller: _tabController,
-                    children: [
-                      _buildSearchResults(),
-                      _buildCitiesList(),
-                    ],
+                    children: [_buildSearchResults(), _buildCitiesList()],
                   )
                 : _buildSearchResults(),
           ),
@@ -185,7 +193,8 @@ class _LocationPickerState extends State<LocationPicker>
         return const Center(child: CircularProgressIndicator());
       }
 
-      if (_locationController.searchResults.isEmpty && _searchController.text.isEmpty) {
+      if (_locationController.searchResults.isEmpty &&
+          _searchController.text.isEmpty) {
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -198,33 +207,24 @@ class _LocationPickerState extends State<LocationPicker>
               const SizedBox(height: 16),
               Text(
                 'start_typing_to_search'.tr,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
             ],
           ),
         );
       }
 
-      if (_locationController.searchResults.isEmpty && _searchController.text.isNotEmpty) {
+      if (_locationController.searchResults.isEmpty &&
+          _searchController.text.isNotEmpty) {
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.location_off,
-                size: 64,
-                color: Colors.grey[400],
-              ),
+              Icon(Icons.location_off, size: 64, color: Colors.grey[400]),
               const SizedBox(height: 16),
               Text(
                 'no_search_results_found'.tr,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
             ],
           ),
@@ -242,7 +242,9 @@ class _LocationPickerState extends State<LocationPicker>
               style: const TextStyle(fontWeight: FontWeight.w500),
             ),
             subtitle: result.address?.city != null
-                ? Text('${result.address!.city}, ${result.address!.country ?? 'Syria'}')
+                ? Text(
+                    '${result.address!.city}, ${result.address!.country ?? 'Syria'}',
+                  )
                 : null,
             onTap: () {
               widget.onLocationSelected(result);
@@ -265,18 +267,11 @@ class _LocationPickerState extends State<LocationPicker>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.location_city,
-                size: 64,
-                color: Colors.grey[400],
-              ),
+              Icon(Icons.location_city, size: 64, color: Colors.grey[400]),
               const SizedBox(height: 16),
               Text(
                 'no_cities_found'.tr,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
             ],
           ),
@@ -355,7 +350,9 @@ class _LocationPickerState extends State<LocationPicker>
           ),
           onTap: () {
             _locationController.selectCity(selectedCity);
-            widget.onLocationSelected(_locationController.selectedLocation.value!);
+            widget.onLocationSelected(
+              _locationController.selectedLocation.value!,
+            );
             Navigator.pop(context); // Close location picker
           },
         ),
@@ -373,7 +370,9 @@ class _LocationPickerState extends State<LocationPicker>
                 title: Text(neighbor.name),
                 onTap: () {
                   _locationController.selectCity(neighbor);
-                  widget.onLocationSelected(_locationController.selectedLocation.value!);
+                  widget.onLocationSelected(
+                    _locationController.selectedLocation.value!,
+                  );
                   Navigator.pop(context); // Close location picker
                 },
               );
@@ -383,5 +382,4 @@ class _LocationPickerState extends State<LocationPicker>
       ],
     );
   }
-
 }

@@ -14,18 +14,15 @@ class HousesAdvancedDetails extends StatefulWidget {
 class _HousesAdvancedDetailsState extends State<HousesAdvancedDetails> {
   late final ListingInputController _listingInputController;
 
-
   final TextEditingController furnishingController = TextEditingController();
   final TextEditingController totalFloorsController = TextEditingController();
   final TextEditingController parkingController = TextEditingController();
   final TextEditingController yearBuiltController = TextEditingController();
-  final TextEditingController gardenController = TextEditingController();
-  final TextEditingController poolController = TextEditingController();
 
   final List<String> furnishingTypes = [
     'Fully Furnished',
     'Semi Furnished',
-    'Unfurnished'
+    'Unfurnished',
   ];
   final List<String> parkingOptions = [
     'No Parking',
@@ -33,7 +30,7 @@ class _HousesAdvancedDetailsState extends State<HousesAdvancedDetails> {
     '2 Cars',
     '3+ Cars',
     'Covered Parking',
-    'Open Parking'
+    'Open Parking',
   ];
   final List<String> gardenOptions = ['Yes', 'No'];
   final List<String> poolOptions = ['Yes', 'No'];
@@ -48,44 +45,38 @@ class _HousesAdvancedDetailsState extends State<HousesAdvancedDetails> {
       _listingInputController = Get.put(ListingInputController());
     }
 
-
     furnishingController.text = _listingInputController.furnishing.value;
-    totalFloorsController.text = _listingInputController.totalFloors.value.toString();
+    totalFloorsController.text = _listingInputController.totalFloors.value > 0
+        ? _listingInputController.totalFloors.value.toString()
+        : '';
     parkingController.text = _listingInputController.parking.value;
-    yearBuiltController.text = _listingInputController.yearBuilt.value.toString();
-    gardenController.text = _listingInputController.garden.value;
-    poolController.text = _listingInputController.pool.value;
-
+    yearBuiltController.text = _listingInputController.yearBuilt.value > 0
+        ? _listingInputController.yearBuilt.value.toString()
+        : '';
 
     furnishingController.addListener(() {
       _listingInputController.furnishing.value = furnishingController.text;
     });
     totalFloorsController.addListener(() {
-      _listingInputController.totalFloors.value = int.tryParse(totalFloorsController.text) ?? 0;
+      _listingInputController.totalFloors.value =
+          int.tryParse(totalFloorsController.text) ?? 0;
     });
     parkingController.addListener(() {
       _listingInputController.parking.value = parkingController.text;
     });
     yearBuiltController.addListener(() {
-      _listingInputController.yearBuilt.value = int.tryParse(yearBuiltController.text) ?? 0;
+      _listingInputController.yearBuilt.value =
+          int.tryParse(yearBuiltController.text) ?? 0;
     });
-    gardenController.addListener(() {
-      _listingInputController.garden.value = gardenController.text;
-    });
-    poolController.addListener(() {
-      _listingInputController.pool.value = poolController.text;
-    });
+
   }
 
   @override
   void dispose() {
-
     furnishingController.dispose();
     totalFloorsController.dispose();
     parkingController.dispose();
     yearBuiltController.dispose();
-    gardenController.dispose();
-    poolController.dispose();
     super.dispose();
   }
 
@@ -99,9 +90,9 @@ class _HousesAdvancedDetailsState extends State<HousesAdvancedDetails> {
           // MOST ESSENTIAL - House Basics (Syrian families check first)
           Text(
             'house_essentials'.tr,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const Divider(),
           const SizedBox(height: 8),
@@ -113,7 +104,7 @@ class _HousesAdvancedDetailsState extends State<HousesAdvancedDetails> {
             options: parkingOptions,
           ),
           const SizedBox(height: 16),
-          
+
           // 2. Total Floors - Important for family size planning
           BuildInput(
             title: 'Total Floors',
@@ -122,53 +113,38 @@ class _HousesAdvancedDetailsState extends State<HousesAdvancedDetails> {
             keyboardType: TextInputType.number,
           ),
           const SizedBox(height: 16),
-          
+
           // 3. Furnishing - HIGH priority for Syrian renters
           BuildInputWithOptions(
             title: 'Furnishing',
             controller: furnishingController,
             options: furnishingTypes,
           ),
-          
+
           const SizedBox(height: 24),
 
           // HIGH PRIORITY - Outdoor Features (Important for Syrian lifestyle)
           Text(
             'outdoor_features'.tr,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const Divider(),
           const SizedBox(height: 8),
-          
-          // 4. Garden - Very important for Syrian families
-          BuildInputWithOptions(
-            title: 'Garden',
-            controller: gardenController,
-            options: gardenOptions,
-          ),
-          const SizedBox(height: 16),
-          
-          // 5. Pool - Desirable but not essential
-          BuildInputWithOptions(
-            title: 'Pool',
-            controller: poolController,
-            options: poolOptions,
-          ),
-          
-          const SizedBox(height: 24),
+
+  
 
           // LOWER PRIORITY - Building Information
           Text(
             'building_info'.tr,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const Divider(),
           const SizedBox(height: 8),
-          
+
           // 6. Year Built - Moderate importance for building quality
           BuildInput(
             title: 'Year Built',

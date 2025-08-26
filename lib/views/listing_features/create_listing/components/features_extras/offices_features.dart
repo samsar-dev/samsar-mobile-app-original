@@ -10,7 +10,7 @@ class OfficesFeatures extends StatefulWidget {
 
 class _OfficesFeaturesState extends State<OfficesFeatures> {
   late final ListingInputController _listingInputController;
-  
+
   // Essential features for offices in Syrian market
   final Map<String, bool> _features = {
     'elevator': false,
@@ -54,7 +54,7 @@ class _OfficesFeaturesState extends State<OfficesFeatures> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -79,7 +79,7 @@ class _OfficesFeaturesState extends State<OfficesFeatures> {
               ),
             ),
             SizedBox(height: 24),
-            
+
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -92,7 +92,7 @@ class _OfficesFeaturesState extends State<OfficesFeatures> {
                 itemBuilder: (context, index) {
                   final feature = _features.keys.elementAt(index);
                   final isSelected = _features[feature]!;
-                  
+
                   return GestureDetector(
                     onTap: () {
                       setState(() {
@@ -101,15 +101,21 @@ class _OfficesFeaturesState extends State<OfficesFeatures> {
                         if (isSelected) {
                           _listingInputController.selectedFeatures.add(feature);
                         } else {
-                          _listingInputController.selectedFeatures.remove(feature);
+                          _listingInputController.selectedFeatures.remove(
+                            feature,
+                          );
                         }
                       });
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: isSelected ? Theme.of(context).primaryColor : Colors.white,
+                        color: isSelected
+                            ? Theme.of(context).primaryColor
+                            : Colors.white,
                         border: Border.all(
-                          color: isSelected ? Theme.of(context).primaryColor : Colors.grey[300]!,
+                          color: isSelected
+                              ? Theme.of(context).primaryColor
+                              : Colors.grey[300]!,
                           width: 1.5,
                         ),
                         borderRadius: BorderRadius.circular(8),

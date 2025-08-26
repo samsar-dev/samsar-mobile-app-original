@@ -16,13 +16,18 @@ class PasswordChangeView extends StatefulWidget {
 
 class _PasswordChangeViewState extends State<PasswordChangeView> {
   final AuthApiServices _authApiServices = AuthApiServices();
-  
+
   // Controllers
-  final TextEditingController _currentPasswordController = TextEditingController();
+  final TextEditingController _currentPasswordController =
+      TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  final List<TextEditingController> _otpControllers = List.generate(6, (index) => TextEditingController());
-  
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final List<TextEditingController> _otpControllers = List.generate(
+    6,
+    (index) => TextEditingController(),
+  );
+
   // State
   bool isStep1 = true;
   bool _isLoading = false;
@@ -51,10 +56,7 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
         foregroundColor: blueColor,
         title: Text(
           'change_password'.tr,
-          style: TextStyle(
-            color: blackColor,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: blackColor, fontWeight: FontWeight.bold),
         ),
       ),
       body: SafeArea(
@@ -65,30 +67,32 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: screenHeight * 0.02),
-                
+
                 // Title
                 Text(
-                  isStep1 ? 'enter_current_and_new_password'.tr : 'verify_password_change'.tr,
+                  isStep1
+                      ? 'enter_current_and_new_password'.tr
+                      : 'verify_password_change'.tr,
                   style: TextStyle(
                     color: blackColor,
                     fontWeight: FontWeight.bold,
                     fontSize: screenWidth * 0.08,
                   ),
                 ),
-                
+
                 SizedBox(height: screenHeight * 0.01),
-                
+
                 // Description
                 Text(
-                  isStep1 
-                    ? 'password_change_description'.tr
-                    : 'verification_code_sent_to_email'.tr,
+                  isStep1
+                      ? 'password_change_description'.tr
+                      : 'verification_code_sent_to_email'.tr,
                   style: TextStyle(
                     color: blackColor,
                     fontSize: screenWidth * 0.04,
                   ),
                 ),
-                
+
                 SizedBox(height: screenHeight * 0.04),
 
                 if (isStep1) ...[
@@ -104,9 +108,9 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
                       return null;
                     },
                   ),
-                  
+
                   SizedBox(height: screenHeight * 0.03),
-                  
+
                   _buildPasswordField(
                     'new_password'.tr,
                     'enter_new_password'.tr,
@@ -124,9 +128,9 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
                       return null;
                     },
                   ),
-                  
+
                   SizedBox(height: screenHeight * 0.03),
-                  
+
                   _buildPasswordField(
                     'confirm_password'.tr,
                     'confirm_new_password'.tr,
@@ -146,16 +150,13 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
                   Text(
                     'enter_6_digit_otp'.tr,
                     style: TextStyle(
-                      fontSize: 18, 
-                      fontWeight: FontWeight.bold, 
-                      color: blackColor
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: blackColor,
                     ),
                   ),
                   const SizedBox(height: 20),
-                  OtpField(
-                    widthMultiplier: 0.9,
-                    controllers: _otpControllers,
-                  ),
+                  OtpField(widthMultiplier: 0.9, controllers: _otpControllers),
                 ],
 
                 SizedBox(height: screenHeight * 0.04),
@@ -172,7 +173,11 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.error_outline, color: Colors.red[600], size: 20),
+                        Icon(
+                          Icons.error_outline,
+                          color: Colors.red[600],
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -194,7 +199,9 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
                   AppButton(
                     widthSize: 1.0,
                     heightSize: 0.07,
-                    text: _isLoading ? 'sending'.tr : 'send_verification_code'.tr,
+                    text: _isLoading
+                        ? 'sending'.tr
+                        : 'send_verification_code'.tr,
                     textColor: whiteColor,
                     buttonColor: blueColor,
                     onPressed: _isLoading ? null : _sendVerificationCode,
@@ -209,12 +216,14 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
                           text: 'back'.tr,
                           textColor: whiteColor,
                           buttonColor: Colors.grey,
-                          onPressed: _isLoading ? null : () {
-                            setState(() {
-                              isStep1 = true;
-                              errorMessage = null;
-                            });
-                          },
+                          onPressed: _isLoading
+                              ? null
+                              : () {
+                                  setState(() {
+                                    isStep1 = true;
+                                    errorMessage = null;
+                                  });
+                                },
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -222,7 +231,9 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
                         child: AppButton(
                           widthSize: 1.0,
                           heightSize: 0.07,
-                          text: _isLoading ? 'changing'.tr : 'change_password'.tr,
+                          text: _isLoading
+                              ? 'changing'.tr
+                              : 'change_password'.tr,
                           textColor: whiteColor,
                           buttonColor: blueColor,
                           onPressed: _isLoading ? null : _changePassword,
@@ -230,12 +241,10 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
                       ),
                     ],
                   ),
-                  
+
                   SizedBox(height: screenHeight * 0.03),
-                  
-                  ResendCodeSection(
-                    onResend: _sendVerificationCode,
-                  ),
+
+                  ResendCodeSection(onResend: _sendVerificationCode),
                 ],
 
                 SizedBox(height: screenHeight * 0.03),
@@ -256,10 +265,7 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
                       Expanded(
                         child: Text(
                           'password_change_security_notice'.tr,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: blueColor,
-                          ),
+                          style: TextStyle(fontSize: 12, color: blueColor),
                         ),
                       ),
                     ],
@@ -305,7 +311,10 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: blueColor, width: 2),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
           ),
           validator: validator,
         ),
@@ -356,16 +365,17 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
     });
 
     try {
-      final response = await _authApiServices.sendPasswordChangeVerificationService(
-        currentPassword: _currentPasswordController.text,
-      );
-      
+      final response = await _authApiServices
+          .sendPasswordChangeVerificationService(
+            currentPassword: _currentPasswordController.text,
+          );
+
       if (response.isSuccess) {
         setState(() {
           isStep1 = false;
           _isLoading = false;
         });
-        
+
         Get.snackbar(
           'success'.tr,
           'verification_code_sent'.tr,
@@ -375,14 +385,19 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
         );
       } else {
         String errorMsg = 'failed_to_send_verification_code'.tr;
-        
+
         if (response.apiError?.message != null) {
           final message = response.apiError!.message;
-          
-          if (message.contains("Rate limit exceeded") || message.contains("Too many requests")) {
+
+          if (message.contains("Rate limit exceeded") ||
+              message.contains("Too many requests")) {
             final retryTime = ErrorMessageMapper.extractRetryTime(message);
-            errorMsg = ErrorMessageMapper.getErrorMessage('RATE_LIMIT_EXCEEDED', retryAfter: retryTime);
-          } else if (message.contains("Invalid password") || message.contains("Current password is incorrect")) {
+            errorMsg = ErrorMessageMapper.getErrorMessage(
+              'RATE_LIMIT_EXCEEDED',
+              retryAfter: retryTime,
+            );
+          } else if (message.contains("Invalid password") ||
+              message.contains("Current password is incorrect")) {
             errorMsg = ErrorMessageMapper.getErrorMessage('INVALID_PASSWORD');
           } else if (message.contains("User email not found")) {
             errorMsg = ErrorMessageMapper.getErrorMessage('USER_NOT_FOUND');
@@ -390,7 +405,7 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
             errorMsg = ErrorMessageMapper.getErrorMessage(null) + ": $message";
           }
         }
-        
+
         setState(() {
           errorMessage = errorMsg;
           _isLoading = false;
@@ -405,7 +420,9 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
   }
 
   Future<void> _changePassword() async {
-    String otpCode = _otpControllers.map((controller) => controller.text).join();
+    String otpCode = _otpControllers
+        .map((controller) => controller.text)
+        .join();
     if (otpCode.length != 6) {
       setState(() {
         errorMessage = 'please_enter_valid_code'.tr;
@@ -424,10 +441,10 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
         newPassword: _newPasswordController.text,
         verificationCode: otpCode,
       );
-      
+
       if (response.isSuccess) {
         Get.back();
-        
+
         Get.snackbar(
           'success'.tr,
           'password_changed_successfully'.tr,
@@ -437,13 +454,16 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
         );
       } else {
         String errorMsg = 'failed_to_change_password'.tr;
-        
+
         if (response.apiError?.message != null) {
           final message = response.apiError!.message;
-          
+
           if (message.contains("Rate limit exceeded")) {
             final retryTime = ErrorMessageMapper.extractRetryTime(message);
-            errorMsg = ErrorMessageMapper.getErrorMessage('RATE_LIMIT_EXCEEDED', retryAfter: retryTime);
+            errorMsg = ErrorMessageMapper.getErrorMessage(
+              'RATE_LIMIT_EXCEEDED',
+              retryAfter: retryTime,
+            );
           } else if (message.contains("Invalid verification code")) {
             errorMsg = ErrorMessageMapper.getErrorMessage('INVALID_CODE');
           } else if (message.contains("Current password is incorrect")) {
@@ -454,7 +474,7 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
             errorMsg = ErrorMessageMapper.getErrorMessage(null) + ": $message";
           }
         }
-        
+
         setState(() {
           errorMessage = errorMsg;
           _isLoading = false;
@@ -471,7 +491,7 @@ class _PasswordChangeViewState extends State<PasswordChangeView> {
 
 class ResendCodeSection extends StatefulWidget {
   final VoidCallback onResend;
-  
+
   const ResendCodeSection({super.key, required this.onResend});
 
   @override
@@ -495,7 +515,7 @@ class _ResendCodeSectionState extends State<ResendCodeSection> {
     _remainingSeconds = _initialSeconds;
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if(_remainingSeconds > 0) {
+      if (_remainingSeconds > 0) {
         setState(() {
           _remainingSeconds--;
         });

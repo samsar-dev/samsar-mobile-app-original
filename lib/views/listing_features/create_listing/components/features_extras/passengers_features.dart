@@ -14,14 +14,11 @@ class _PassengersFeaturesState extends State<PassengersFeatures> {
   late final ListingInputController _listingInputController;
 
   final Map<String, bool> _features = {
-    'power_steering': false,
-    'central_locking': false,
-    'electric_windows': false,
+    // Safety features (actually matter for buying decisions)
     'abs_brakes': false,
     'airbags': false,
-    'gps_navigation': false,
-    'bluetooth': false,
-    'usb_charging': false,
+    
+    // Comfort features (factory-installed, hard to retrofit)
     'backup_camera': false,
     'sunroof': false,
     'leather_seats': false,
@@ -55,7 +52,7 @@ class _PassengersFeaturesState extends State<PassengersFeatures> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -74,13 +71,10 @@ class _PassengersFeaturesState extends State<PassengersFeatures> {
             SizedBox(height: 8),
             Text(
               'select_available_features'.tr,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
             SizedBox(height: 24),
-            
+
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -93,7 +87,7 @@ class _PassengersFeaturesState extends State<PassengersFeatures> {
                 itemBuilder: (context, index) {
                   final feature = _features.keys.elementAt(index);
                   final isSelected = _features[feature]!;
-                  
+
                   return GestureDetector(
                     onTap: () {
                       setState(() {
@@ -102,15 +96,21 @@ class _PassengersFeaturesState extends State<PassengersFeatures> {
                         if (isSelected) {
                           _listingInputController.selectedFeatures.add(feature);
                         } else {
-                          _listingInputController.selectedFeatures.remove(feature);
+                          _listingInputController.selectedFeatures.remove(
+                            feature,
+                          );
                         }
                       });
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: isSelected ? Theme.of(context).primaryColor : Colors.white,
+                        color: isSelected
+                            ? Theme.of(context).primaryColor
+                            : Colors.white,
                         border: Border.all(
-                          color: isSelected ? Theme.of(context).primaryColor : Colors.grey[300]!,
+                          color: isSelected
+                              ? Theme.of(context).primaryColor
+                              : Colors.grey[300]!,
                           width: 1.5,
                         ),
                         borderRadius: BorderRadius.circular(8),

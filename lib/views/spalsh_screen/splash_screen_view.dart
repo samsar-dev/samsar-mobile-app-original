@@ -4,7 +4,6 @@ import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/controllers/connectivity/connectivity_controller.dart';
 import 'package:samsar/views/home/home_view.dart';
 
-
 class SplashScreenView extends StatefulWidget {
   const SplashScreenView({super.key});
 
@@ -13,9 +12,9 @@ class SplashScreenView extends StatefulWidget {
 }
 
 class _SplashScreenViewState extends State<SplashScreenView> {
-
-
-  final ConnectivityController _connectivityController = Get.put(ConnectivityController());
+  final ConnectivityController _connectivityController = Get.put(
+    ConnectivityController(),
+  );
 
   @override
   void initState() {
@@ -28,26 +27,21 @@ class _SplashScreenViewState extends State<SplashScreenView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
-
         if (_connectivityController.isChecking.value) {
           return const Center(child: CircularProgressIndicator());
         }
-        
-        if(_connectivityController.isConnected.value) {
 
+        if (_connectivityController.isConnected.value) {
           Future.delayed(Duration(seconds: 1), () {
             // Always go to HomeView first - authentication will be handled per feature
             Get.offAll(HomeView());
           });
-
-
 
           return Center(
             child: CircularProgressIndicator(
               // backgroundColor: blueColor,
             ),
           );
-
         } else {
           return Center(
             child: Column(
@@ -56,22 +50,23 @@ class _SplashScreenViewState extends State<SplashScreenView> {
                 Text('no_internet_connection'.tr),
                 ElevatedButton(
                   onPressed: () {
-                    _connectivityController.checkConnectivity(); 
+                    _connectivityController.checkConnectivity();
                   },
 
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: blueColor
+                  style: ElevatedButton.styleFrom(backgroundColor: blueColor),
+                  child: Text(
+                    'retry'.tr,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                  child: Text('retry'.tr, style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white
-                  )),
                 ),
               ],
             ),
           );
         }
-      })
+      }),
     );
   }
 }

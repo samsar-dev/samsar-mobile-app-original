@@ -16,7 +16,12 @@ class _LandAdvancedDetailsState extends State<LandAdvancedDetails> {
   final TextEditingController zoningController = TextEditingController();
   final TextEditingController roadAccessController = TextEditingController();
 
-  final List<String> zoningOptions = ['Residential', 'Commercial', 'Agricultural', 'Industrial'];
+  final List<String> zoningOptions = [
+    'Residential',
+    'Commercial',
+    'Agricultural',
+    'Industrial',
+  ];
   final List<String> roadAccessOptions = ['Yes', 'No'];
 
   @override
@@ -57,9 +62,9 @@ class _LandAdvancedDetailsState extends State<LandAdvancedDetails> {
           // MOST ESSENTIAL - Land Basics (Syrian investors check first)
           Text(
             'land_essentials'.tr,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const Divider(),
           const SizedBox(height: 8),
@@ -71,7 +76,7 @@ class _LandAdvancedDetailsState extends State<LandAdvancedDetails> {
             options: roadAccessOptions,
           ),
           const SizedBox(height: 16),
-          
+
           // 2. Zoning - Important for development potential
           BuildInputWithOptions(
             title: 'Zoning',

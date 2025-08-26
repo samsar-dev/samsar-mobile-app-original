@@ -15,9 +15,8 @@ class VillaAdvancedDetails extends StatefulWidget {
 class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
   // Get the ListingInputController instance
   late final ListingInputController _listingInputController;
-  
+
   // Controllers for villa-specific fields
-  final TextEditingController floorController = TextEditingController();
   final TextEditingController parkingController = TextEditingController();
   final TextEditingController poolController = TextEditingController();
   final TextEditingController balconyController = TextEditingController();
@@ -28,14 +27,15 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
   final TextEditingController viewController = TextEditingController();
   final TextEditingController orientationController = TextEditingController();
   final TextEditingController buildingAgeController = TextEditingController();
-  final TextEditingController maintenanceFeeController = TextEditingController();
-  final TextEditingController energyRatingController = TextEditingController();
+  final TextEditingController maintenanceFeeController =
+      TextEditingController();
+
 
   // Dropdown options
   final List<String> furnishingTypes = [
     'Fully Furnished',
     'Semi Furnished',
-    'Unfurnished'
+    'Unfurnished',
   ];
 
   final List<String> heatingTypes = [
@@ -44,7 +44,7 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
     'Fireplace',
     'Electric Heating',
     'Gas Heating',
-    'None'
+    'None',
   ];
 
   final List<String> coolingTypes = [
@@ -52,7 +52,7 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
     'Split AC',
     'Window AC',
     'Ceiling Fans',
-    'None'
+    'None',
   ];
 
   final List<String> securityTypes = [
@@ -60,7 +60,7 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
     'Security Guard',
     'CCTV',
     'Alarm System',
-    'None'
+    'None',
   ];
 
   final List<String> viewTypes = [
@@ -68,7 +68,7 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
     'Mountain View',
     'City View',
     'Garden View',
-    'Street View'
+    'Street View',
   ];
 
   final List<String> orientationTypes = [
@@ -79,7 +79,7 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
     'North-East',
     'North-West',
     'South-East',
-    'South-West'
+    'South-West',
   ];
 
   final List<String> energyRatings = [
@@ -91,7 +91,7 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
     'D',
     'E',
     'F',
-    'G'
+    'G',
   ];
 
   @override
@@ -103,26 +103,22 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
     } else {
       _listingInputController = Get.put(ListingInputController());
     }
-    
+
     // Initialize controllers with existing data
-    floorController.text = _listingInputController.floor.value.toString();
     parkingController.text = _listingInputController.parking.value;
     poolController.text = _listingInputController.pool.value;
-    balconyController.text = _listingInputController.balcony.value.toString();
+    balconyController.text = _listingInputController.balcony.value > 0
+        ? _listingInputController.balcony.value.toString()
+        : '';
     furnishingController.text = _listingInputController.furnishing.value;
     heatingController.text = _listingInputController.heating.value;
     coolingController.text = _listingInputController.cooling.value;
-    securityController.text = _listingInputController.security.value;
     viewController.text = _listingInputController.view.value;
     orientationController.text = _listingInputController.orientation.value;
-    buildingAgeController.text = _listingInputController.buildingAge.value.toString();
-    maintenanceFeeController.text = _listingInputController.maintenanceFee.value;
-    energyRatingController.text = _listingInputController.energyRating.value;
+    buildingAgeController.text = _listingInputController.buildingAge.value > 0
+        ? _listingInputController.buildingAge.value.toString()
+        : '';
 
-    // Add listeners to update the main controller when text changes
-    floorController.addListener(() {
-      _listingInputController.floor.value = int.tryParse(floorController.text) ?? 0;
-    });
     parkingController.addListener(() {
       _listingInputController.parking.value = parkingController.text;
     });
@@ -130,7 +126,8 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
       _listingInputController.pool.value = poolController.text;
     });
     balconyController.addListener(() {
-      _listingInputController.balcony.value = int.tryParse(balconyController.text) ?? 0;
+      _listingInputController.balcony.value =
+          int.tryParse(balconyController.text) ?? 0;
     });
     furnishingController.addListener(() {
       _listingInputController.furnishing.value = furnishingController.text;
@@ -151,20 +148,18 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
       _listingInputController.orientation.value = orientationController.text;
     });
     buildingAgeController.addListener(() {
-      _listingInputController.buildingAge.value = int.tryParse(buildingAgeController.text) ?? 0;
+      _listingInputController.buildingAge.value =
+          int.tryParse(buildingAgeController.text) ?? 0;
     });
     maintenanceFeeController.addListener(() {
-      _listingInputController.maintenanceFee.value = maintenanceFeeController.text;
-    });
-    energyRatingController.addListener(() {
-      _listingInputController.energyRating.value = energyRatingController.text;
+      _listingInputController.maintenanceFee.value =
+          maintenanceFeeController.text;
     });
   }
 
   @override
   void dispose() {
     // Dispose all controllers
-    floorController.dispose();
     parkingController.dispose();
     poolController.dispose();
     balconyController.dispose();
@@ -176,14 +171,13 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
     orientationController.dispose();
     buildingAgeController.dispose();
     maintenanceFeeController.dispose();
-    energyRatingController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -285,22 +279,19 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
           const Divider(),
           const SizedBox(height: 8),
 
-          // 7. Energy Rating - Least important for Syrian market
-          BuildInputWithOptions(
-            title: 'energy_rating'.tr,
-            controller: energyRatingController,
-            options: energyRatings,
-          ),
-
-          const SizedBox(height: 20),
+    
 
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Get.isDarkMode ? subDarkColor.withOpacity(0.3) : Colors.green[50],
+              color: Get.isDarkMode
+                  ? subDarkColor.withOpacity(0.3)
+                  : Colors.green[50],
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Get.isDarkMode ? Colors.green[800]! : Colors.green[200]!),
+              border: Border.all(
+                color: Get.isDarkMode ? Colors.green[800]! : Colors.green[200]!,
+              ),
             ),
             child: Column(
               children: [

@@ -4,7 +4,6 @@ import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/controllers/chat/chat_controller.dart';
 import 'package:samsar/models/chat/conversation_model.dart';
 
-
 class ChatView extends StatefulWidget {
   final Conversation conversation;
 
@@ -82,26 +81,28 @@ class _ChatViewState extends State<ChatView> {
                       ),
                     ),
                   ),
-                  Obx(() => chatController.isSending.value
-                      ? const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : IconButton(
-                          icon: const Icon(Icons.send),
-                          onPressed: () async {
-                            final content = messageController.text.trim();
-                            if (content.isNotEmpty) {
-                              await chatController.sendMessage(
-                                recipientId: widget.conversation.participants
-                                    .firstWhere((u) => u.id != userId)
-                                    .id,
-                                content: content,
-                              );
-                              messageController.clear();
-                            }
-                          },
-                        )),
+                  Obx(
+                    () => chatController.isSending.value
+                        ? const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : IconButton(
+                            icon: const Icon(Icons.send),
+                            onPressed: () async {
+                              final content = messageController.text.trim();
+                              if (content.isNotEmpty) {
+                                await chatController.sendMessage(
+                                  recipientId: widget.conversation.participants
+                                      .firstWhere((u) => u.id != userId)
+                                      .id,
+                                  content: content,
+                                );
+                                messageController.clear();
+                              }
+                            },
+                          ),
+                  ),
                 ],
               ),
             ),
@@ -111,7 +112,6 @@ class _ChatViewState extends State<ChatView> {
     );
   }
 }
-
 
 class MessageBubble extends StatelessWidget {
   final String text;
@@ -134,8 +134,9 @@ class MessageBubble extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
-          mainAxisAlignment:
-              isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
+          mainAxisAlignment: isMine
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             if (!isMine && avatarUrl != null)
@@ -146,24 +147,26 @@ class MessageBubble extends StatelessWidget {
             const SizedBox(width: 6),
             Flexible(
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 14,
+                ),
                 decoration: BoxDecoration(
                   color: isMine ? Colors.blue : Colors.grey[300],
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(12),
                     topRight: const Radius.circular(12),
-                    bottomLeft:
-                        isMine ? const Radius.circular(12) : Radius.zero,
-                    bottomRight:
-                        isMine ? Radius.zero : const Radius.circular(12),
+                    bottomLeft: isMine
+                        ? const Radius.circular(12)
+                        : Radius.zero,
+                    bottomRight: isMine
+                        ? Radius.zero
+                        : const Radius.circular(12),
                   ),
                 ),
                 child: Text(
                   text,
-                  style: TextStyle(
-                    color: isMine ? Colors.white : Colors.black,
-                  ),
+                  style: TextStyle(color: isMine ? Colors.white : Colors.black),
                 ),
               ),
             ),
@@ -173,4 +176,3 @@ class MessageBubble extends StatelessWidget {
     );
   }
 }
-

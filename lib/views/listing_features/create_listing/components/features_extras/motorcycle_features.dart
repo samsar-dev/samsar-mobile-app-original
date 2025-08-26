@@ -14,57 +14,30 @@ class _MotorcycleFeaturesState extends State<MotorcycleFeatures> {
   late final ListingInputController _listingInputController;
 
   final Map<String, bool> _features = {
+    // Safety & Performance (factory features that matter)
     'abs': false,
     'traction_control': false,
-    'stability_control': false,
-    'wheelie_control': false,
-    'launch_control': false,
-    'cruise_control': false,
+    'riding_modes': false,
     'quick_shifter': false,
     'slipper_clutch': false,
-    'riding_modes': false,
-    'suspension_adjustment': false,
-    'electronic_suspension': false,
-    'led_headlights': false,
-    'adaptive_headlights': false,
-    'daytime_running_lights': false,
-    'hazard_lights': false,
-    'turn_signals': false,
-    'brake_light': false,
-    'digital_display': false,
-    'analog_gauges': false,
-    'gps_navigation': false,
-    'bluetooth': false,
-    'usb_charging': false,
-    '12v_socket': false,
-    'phone_mount': false,
-    'windscreen': false,
-    'adjustable_windscreen': false,
-    'hand_guards': false,
-    'knee_grips': false,
-    'seat_heating': false,
-    'grip_heating': false,
+    'cruise_control': false,
+    
+    // Comfort (factory-installed, hard to retrofit)
+    'heated_grips': false,
+    'heated_seat': false,
+    'keyless_ignition': false,
+    'tire_pressure_monitoring': false,
+    
+    // Lighting (factory LED systems)
+    'led_headlight': false,
+    'adaptive_headlight': false,
+    'cornering_lights': false,
+    
+    // Storage (factory compartments)
     'storage_compartment': false,
-    'side_boxes': false,
-    'top_box': false,
-    'tank_bag': false,
-    'crash_bars': false,
-    'engine_guard': false,
-    'skid_plate': false,
-    'chain_guard': false,
-    'immobilizer': false,
-    'alarm_system': false,
-    'disc_lock': false,
-    'chain_lock': false,
-    'gps_tracker': false,
+    
+    // Starting system (important for reliability)
     'kick_starter': false,
-    'electric_starter': false,
-    'center_stand': false,
-    'side_stand': false,
-    'maintenance_stand': false,
-    'tool_kit': false,
-    'puncture_kit': false,
-    'first_aid_kit': false,
   };
 
   @override
@@ -96,11 +69,9 @@ class _MotorcycleFeaturesState extends State<MotorcycleFeatures> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -120,59 +91,64 @@ class _MotorcycleFeaturesState extends State<MotorcycleFeatures> {
               ),
             ),
             SizedBox(height: 24),
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 3.5,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                ),
-                itemCount: _features.length,
-                itemBuilder: (context, index) {
-                  final feature = _features.keys.elementAt(index);
-                  final isSelected = _features[feature]!;
+            GridView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 3.5,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+              ),
+              itemCount: _features.length,
+              itemBuilder: (context, index) {
+                final feature = _features.keys.elementAt(index);
+                final isSelected = _features[feature]!;
 
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        final isSelected = !_features[feature]!;
-                        _features[feature] = isSelected;
-                        if (isSelected) {
-                          _listingInputController.selectedFeatures.add(feature);
-                        } else {
-                          _listingInputController.selectedFeatures.remove(feature);
-                        }
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isSelected ? Theme.of(context).primaryColor : Colors.white,
-                        border: Border.all(
-                          color: isSelected ? Theme.of(context).primaryColor : Colors.grey[300]!,
-                          width: 1.5,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      final isSelected = !_features[feature]!;
+                      _features[feature] = isSelected;
+                      if (isSelected) {
+                        _listingInputController.selectedFeatures.add(feature);
+                      } else {
+                        _listingInputController.selectedFeatures.remove(
+                          feature,
+                        );
+                      }
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? Theme.of(context).primaryColor
+                          : Colors.white,
+                      border: Border.all(
+                        color: isSelected
+                            ? Theme.of(context).primaryColor
+                            : Colors.grey[300]!,
+                        width: 1.5,
                       ),
-                      child: Center(
-                        child: Text(
-                          feature.tr, // Use translation key
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : blackColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: screenWidth * 0.035,
-                          ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        feature.tr, // Use translation key
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : blackColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: screenWidth * 0.035,
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }

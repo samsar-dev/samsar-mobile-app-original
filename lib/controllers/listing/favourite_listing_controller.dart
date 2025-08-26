@@ -9,23 +9,23 @@ import 'package:samsar/services/listing/favourite_listing_service.dart';
 class FavouriteListingController extends GetxController {
   final FavouriteListingService _service = FavouriteListingService();
   final AuthController _authController = Get.put(AuthController());
-  
 
   var isLoading = false.obs;
   var favouriteListings = <FavoriteModel>[].obs;
   var errorMessage = ''.obs;
-
 
   Future<void> fetchFavourites() async {
     isLoading.value = true;
     errorMessage.value = '';
 
     final token = await _authController.getAccessToken();
-    
+
     final response = await _service.getFavouriteListingService(token!);
 
     if (response.successResponse != null) {
-      final data = GetFavouriteListingSuccessResponse.fromJson(response.successResponse!);
+      final data = GetFavouriteListingSuccessResponse.fromJson(
+        response.successResponse!,
+      );
       favouriteListings.value = data.data?.favorites ?? [];
     } else {
       errorMessage.value = response.apiError?.message ?? 'Something went wrong';
@@ -40,17 +40,19 @@ class FavouriteListingController extends GetxController {
 
     final token = await _authController.getAccessToken();
 
-
-    final response = await _service.addFavouriteListingService(token: token!, listingId: listingId);
-
+    final response = await _service.addFavouriteListingService(
+      token: token!,
+      listingId: listingId,
+    );
 
     if (response.successResponse != null) {
       final added = AddFavouriteListing.fromJson(response.successResponse!);
       if (added.data != null) {
-        await fetchFavourites(); 
+        await fetchFavourites();
       }
     } else {
-      errorMessage.value = response.apiError?.message ?? 'Failed to add to favourites';
+      errorMessage.value =
+          response.apiError?.message ?? 'Failed to add to favourites';
     }
 
     isLoading.value = false;
@@ -62,15 +64,21 @@ class FavouriteListingController extends GetxController {
 
     final token = await _authController.getAccessToken();
 
-    final response = await _service.removeFavouriteListingService(token: token!, listingId: listingId);
+    final response = await _service.removeFavouriteListingService(
+      token: token!,
+      listingId: listingId,
+    );
 
     if (response.successResponse != null) {
-      final removed = RemoveFavouriteListing.fromJson(response.successResponse!);
+      final removed = RemoveFavouriteListing.fromJson(
+        response.successResponse!,
+      );
       if (removed.success == true) {
         favouriteListings.removeWhere((item) => item.id == listingId);
       }
     } else {
-      errorMessage.value = response.apiError?.message ?? 'Failed to remove from favourites';
+      errorMessage.value =
+          response.apiError?.message ?? 'Failed to remove from favourites';
     }
 
     isLoading.value = false;

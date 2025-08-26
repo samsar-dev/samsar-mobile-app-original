@@ -8,10 +8,12 @@ class ConnectivityController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    
+
     checkConnectivity(); // Sets isChecking to false once done
 
-    Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
+    Connectivity().onConnectivityChanged.listen((
+      List<ConnectivityResult> result,
+    ) {
       _updateConnectivity(result.first);
     });
   }
@@ -20,8 +22,11 @@ class ConnectivityController extends GetxController {
     isChecking.value = true;
 
     try {
-      List<ConnectivityResult> result = await Connectivity().checkConnectivity();
-      _updateConnectivity(result.isNotEmpty ? result.first : ConnectivityResult.none);
+      List<ConnectivityResult> result = await Connectivity()
+          .checkConnectivity();
+      _updateConnectivity(
+        result.isNotEmpty ? result.first : ConnectivityResult.none,
+      );
     } finally {
       isChecking.value = false;
     }

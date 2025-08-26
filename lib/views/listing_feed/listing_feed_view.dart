@@ -21,12 +21,14 @@ class ListingFeedView extends StatefulWidget {
 class _ListingFeedViewState extends State<ListingFeedView> {
   final ListingController controller = Get.put(ListingController());
   final TextEditingController _searchController = TextEditingController();
-  final SearchModuleController _searchModuleController = Get.put(SearchModuleController());
+  final SearchModuleController _searchModuleController = Get.put(
+    SearchModuleController(),
+  );
 
   int selectedIndex = 0;
   bool isSearching = false;
   final List<String> tabs = ['vehicles'.tr, 'real_estate'.tr];
-  
+
   // Add debounce timer for search
   Timer? _debounceTimer;
 
@@ -38,7 +40,8 @@ class _ListingFeedViewState extends State<ListingFeedView> {
 
   void loadData() {
     // Use the original keys for comparison, not the translated values
-    final isVehiclesTab = selectedIndex == 0; // First tab is vehicles, second is real estate
+    final isVehiclesTab =
+        selectedIndex == 0; // First tab is vehicles, second is real estate
     if (isVehiclesTab) {
       controller.setCategory("vehicles");
     } else {
@@ -56,15 +59,17 @@ class _ListingFeedViewState extends State<ListingFeedView> {
       // Clear search results
       _searchModuleController.searchResults.clear();
     });
-    
+
     print('  Search mode exited, isSearching: $isSearching');
-    print('  Note: Filters are not reset as they only affect home page listings');
+    print(
+      '  Note: Filters are not reset as they only affect home page listings',
+    );
   }
-  
+
   void _performSearch(String query) {
     // Cancel previous timer
     _debounceTimer?.cancel();
-    
+
     // Set up new timer for debounced search
     _debounceTimer = Timer(const Duration(milliseconds: 300), () {
       if (query.trim().isEmpty) {
@@ -72,7 +77,7 @@ class _ListingFeedViewState extends State<ListingFeedView> {
         _searchModuleController.allResults.clear();
         return;
       }
-      
+
       // Get current category for search
       String? category;
       if (selectedIndex == 0) {
@@ -80,21 +85,18 @@ class _ListingFeedViewState extends State<ListingFeedView> {
       } else {
         category = 'real_estate';
       }
-      
-      final searchQuery = SearchQuery(
-        query: query.trim(),
-        category: category,
-      );
-      
+
+      final searchQuery = SearchQuery(query: query.trim(), category: category);
+
       _searchModuleController.searchController(searchQuery, reset: true);
     });
   }
-  
+
   void _performLocalSearch(String query) {
     // For real-time fuzzy search on existing results
     _searchModuleController.performLocalSearch(query);
   }
-  
+
   void _onSearchSubmitted(String query) {
     if (query.trim().isNotEmpty) {
       _performSearch(query);
@@ -105,20 +107,20 @@ class _ListingFeedViewState extends State<ListingFeedView> {
   String _getCurrentCategory() {
     return selectedIndex == 0 ? 'vehicles' : 'real_estate';
   }
-  
+
   @override
   void dispose() {
     _debounceTimer?.cancel();
     _searchController.dispose();
     super.dispose();
   }
-  
+
   Widget _buildSearchResults() {
     return Obx(() {
       if (_searchModuleController.isLoading.value) {
         return const Center(child: CircularProgressIndicator());
       }
-      
+
       if (_searchController.text.trim().isEmpty) {
         return Center(
           child: Column(
@@ -140,8 +142,9 @@ class _ListingFeedViewState extends State<ListingFeedView> {
           ),
         );
       }
-      
-      if (_searchModuleController.searchResults.isEmpty && !_searchModuleController.isLoading.value) {
+
+      if (_searchModuleController.searchResults.isEmpty &&
+          !_searchModuleController.isLoading.value) {
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -168,26 +171,41 @@ class _ListingFeedViewState extends State<ListingFeedView> {
           ),
         );
       }
-      
+
       return NotificationListener<ScrollNotification>(
         onNotification: (scrollInfo) {
           if (!_searchModuleController.isLoading.value &&
               _searchModuleController.hasMore.value &&
               scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
             // Load more search results
-            _searchModuleController.searchController(_searchModuleController.lastQuery);
+            _searchModuleController.searchController(
+              _searchModuleController.lastQuery,
+            );
           }
           return false;
         },
         child: ListView.builder(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          itemCount: _searchModuleController.searchResults.length + 
-                    (_searchModuleController.isLoading.value ? 1 : 0),
+          itemCount:
+              _searchModuleController.searchResults.length +
+              (_searchModuleController.isLoading.value ? 1 : 0),
           itemBuilder: (context, index) {
             if (index < _searchModuleController.searchResults.length) {
               final item = _searchModuleController.searchResults[index];
               final hasValidImage = item.images.isNotEmpty;
-              
+
+              // 🔍 COMPREHENSIVE DEBUGGING FOR SEARCH RESULTS
+              print('🔍 [SEARCH RESULTS DEBUG] Item ${index}: ${item.title}');
+              print('🔍 [SEARCH RESULTS DEBUG] Raw item details: ${item.details?.json}');
+              print('🔍 [SEARCH RESULTS DEBUG] Extracted vehicle data:');
+              print('  - FuelType getter: ${item.fuelType}');
+              print('  - Year getter: ${item.year}');
+              print('  - Transmission getter: ${item.transmission}');
+              print('  - Mileage getter: ${item.mileage}');
+              print('  - Make getter: ${item.make}');
+              print('  - Model getter: ${item.model}');
+              print('🔍 [SEARCH RESULTS DEBUG] ================');
+
               return GestureDetector(
                 onTap: () => Get.to(() => ListingDetail(listingId: item.id!)),
                 child: ListingCard(
@@ -200,11 +218,11 @@ class _ListingFeedViewState extends State<ListingFeedView> {
                   subCategory: item.category?.subCategory ?? '',
                   listingId: item.id ?? 'NA',
                   price: item.price ?? 0,
-                  // Search results don't have detailed vehicle info, so use defaults
-                  fuelType: null,
-                  year: null,
-                  transmission: null,
-                  mileage: null,
+                  // Use model getters to extract vehicle details from nested data
+                  fuelType: item.fuelType,
+                  year: item.year,
+                  transmission: item.transmission,
+                  mileage: item.mileage?.toString(),
                 ),
               );
             } else {
@@ -218,7 +236,7 @@ class _ListingFeedViewState extends State<ListingFeedView> {
       );
     });
   }
-  
+
   Widget _buildRegularListings() {
     return Obx(() {
       if (controller.isLoading.value) {
@@ -243,11 +261,26 @@ class _ListingFeedViewState extends State<ListingFeedView> {
           },
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            itemCount: controller.listings.length + (controller.isMoreLoading.value ? 1 : 0),
+            itemCount:
+                controller.listings.length +
+                (controller.isMoreLoading.value ? 1 : 0),
             itemBuilder: (context, index) {
               if (index < controller.listings.length) {
                 final item = controller.listings[index];
-                final hasValidImage = item.images.isNotEmpty && item.images[0].isNotEmpty;
+                final hasValidImage =
+                    item.images.isNotEmpty && item.images[0].isNotEmpty;
+
+                // 🔍 COMPREHENSIVE DEBUGGING FOR REGULAR LISTINGS
+                print('🔍 [REGULAR LISTINGS DEBUG] Item ${index}: ${item.title}');
+                print('🔍 [REGULAR LISTINGS DEBUG] Item type: ${item.runtimeType}');
+                print('🔍 [REGULAR LISTINGS DEBUG] Vehicle data:');
+                print('  - FuelType: ${item.fuelType}');
+                print('  - Year: ${item.year}');
+                print('  - Transmission: ${item.transmission}');
+                print('  - Mileage: ${item.mileage}');
+                print('  - Make: ${item.make}');
+                print('  - Model: ${item.model}');
+                print('🔍 [REGULAR LISTINGS DEBUG] ================');
 
                 return GestureDetector(
                   onTap: () => Get.to(() => ListingDetail(listingId: item.id!)),
@@ -322,7 +355,10 @@ class _ListingFeedViewState extends State<ListingFeedView> {
                   backgroundColor: whiteColor,
                   title: Text(
                     "app_name".tr,
-                    style: TextStyle(fontWeight: FontWeight.bold, color: blueColor),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: blueColor,
+                    ),
                   ),
                   centerTitle: false,
                   actions: [
@@ -363,7 +399,8 @@ class _ListingFeedViewState extends State<ListingFeedView> {
                             selectedIndex = index;
                             controller.setCategory(tabs[index].toLowerCase());
                             // Clear search results when switching tabs
-                            if (isSearching && _searchController.text.trim().isNotEmpty) {
+                            if (isSearching &&
+                                _searchController.text.trim().isNotEmpty) {
                               _performSearch(_searchController.text);
                             }
                           });
@@ -372,25 +409,33 @@ class _ListingFeedViewState extends State<ListingFeedView> {
                       selectedColor: blueColor,
                       backgroundColor: Colors.grey[300],
                       labelStyle: TextStyle(
-                        color: selectedIndex == index ? Colors.white : Colors.black,
+                        color: selectedIndex == index
+                            ? Colors.white
+                            : Colors.black,
                       ),
                     );
                   }),
                 ),
                 FillterButton(
                   currentCategory: _getCurrentCategory(),
-                  currentQuery: _searchController.text.trim().isEmpty ? null : _searchController.text.trim(),
+                  currentQuery: _searchController.text.trim().isEmpty
+                      ? null
+                      : _searchController.text.trim(),
                   onFiltersApplied: (filterSummary) {
                     print('🏠 FILTERS APPLIED TO TRENDING LISTINGS');
                     print('  filterSummary: "$filterSummary"');
-                    print('  Filters only affect home page listings, not search mode');
-                    
+                    print(
+                      '  Filters only affect home page listings, not search mode',
+                    );
+
                     // Show feedback when filters are applied
                     if (filterSummary != null && filterSummary.isNotEmpty) {
                       print('  Showing snackbar with summary: $filterSummary');
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('${'filters_applied'.tr}: $filterSummary'),
+                          content: Text(
+                            '${'filters_applied'.tr}: $filterSummary',
+                          ),
                           duration: const Duration(seconds: 2),
                         ),
                       );
@@ -403,7 +448,7 @@ class _ListingFeedViewState extends State<ListingFeedView> {
                         ),
                       );
                     }
-                    
+
                     print('✅ FILTERS APPLIED - Home page listings updated');
                   },
                 ),
@@ -411,7 +456,9 @@ class _ListingFeedViewState extends State<ListingFeedView> {
             ),
             const SizedBox(height: 8),
             Expanded(
-              child: isSearching ? _buildSearchResults() : _buildRegularListings(),
+              child: isSearching
+                  ? _buildSearchResults()
+                  : _buildRegularListings(),
             ),
           ],
         ),

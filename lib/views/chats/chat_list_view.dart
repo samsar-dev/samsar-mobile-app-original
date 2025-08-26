@@ -56,7 +56,13 @@ class ChatListView extends StatelessWidget {
                     final conv = conversations[index];
 
                     final otherUser = conv.participants.firstWhere(
-                      (user) => user.id != chatController.chatService.dio.options.headers['userId'], // adjust if needed
+                      (user) =>
+                          user.id !=
+                          chatController
+                              .chatService
+                              .dio
+                              .options
+                              .headers['userId'], // adjust if needed
                       orElse: () => conv.participants.first,
                     );
 

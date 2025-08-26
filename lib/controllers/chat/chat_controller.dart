@@ -3,7 +3,6 @@ import 'package:samsar/models/chat/conversation_model.dart';
 import 'package:samsar/models/chat/message.dart';
 import 'package:samsar/services/chat/chat_service.dart';
 
-
 class ChatController extends GetxController {
   final ChatService chatService;
 
@@ -116,26 +115,25 @@ class ChatController extends GetxController {
   }
 
   Future<Conversation?> getOrCreateConversationWithUser(String userId) async {
-  try {
-    // Check if conversation already exists
-    final existing = conversations.firstWhereOrNull(
-      (conv) => conv.participants.any((user) => user.id == userId),
-    );
+    try {
+      // Check if conversation already exists
+      final existing = conversations.firstWhereOrNull(
+        (conv) => conv.participants.any((user) => user.id == userId),
+      );
 
-    if (existing != null) return existing;
+      if (existing != null) return existing;
 
-    // If not, create one
-    final newConversation = await chatService.createConversationWithUser(userId);
-    if (newConversation != null) {
-      conversations.insert(0, newConversation);
+      // If not, create one
+      final newConversation = await chatService.createConversationWithUser(
+        userId,
+      );
+      if (newConversation != null) {
+        conversations.insert(0, newConversation);
+      }
+      return newConversation;
+    } catch (e) {
+      print("Error getting or creating conversation: $e");
+      return null;
     }
-    return newConversation;
-  } catch (e) {
-    print("Error getting or creating conversation: $e");
-    return null;
   }
-}
-
-
-
 }

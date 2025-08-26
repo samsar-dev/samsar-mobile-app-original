@@ -51,7 +51,9 @@ class _BuildInputWithOptionsState extends State<BuildInputWithOptions> {
             Expanded(
               child: ListView.builder(
                 controller: scrollController,
-                itemCount: widget.options is Map ? (widget.options as Map).length : (widget.options as List).length,
+                itemCount: widget.options is Map
+                    ? (widget.options as Map).length
+                    : (widget.options as List).length,
                 itemBuilder: (_, index) {
                   if (widget.options is Map) {
                     final key = widget.options.keys.elementAt(index);
@@ -111,7 +113,9 @@ class _BuildInputWithOptionsState extends State<BuildInputWithOptions> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: widget.hasError ? Colors.red.withOpacity(0.1) : Colors.grey.shade200,
+                    color: widget.hasError
+                        ? Colors.red.withOpacity(0.1)
+                        : Colors.grey.shade200,
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -141,10 +145,7 @@ class _BuildInputWithOptionsState extends State<BuildInputWithOptions> {
             padding: const EdgeInsets.only(left: 20, top: 4),
             child: Text(
               'field_is_required'.tr,
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: Colors.red, fontSize: 12),
             ),
           ),
       ],

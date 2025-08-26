@@ -56,25 +56,28 @@ class FuzzySearch {
     if (textLower.contains(queryLower)) return true;
 
     // Check if query words match text words
-    final queryWords = queryLower.split(' ').where((w) => w.isNotEmpty).toList();
+    final queryWords = queryLower
+        .split(' ')
+        .where((w) => w.isNotEmpty)
+        .toList();
     final textWords = textLower.split(' ').where((w) => w.isNotEmpty).toList();
 
     for (final queryWord in queryWords) {
       bool wordMatched = false;
-      
+
       for (final textWord in textWords) {
         // Direct substring match
         if (textWord.contains(queryWord)) {
           wordMatched = true;
           break;
         }
-        
+
         // Fuzzy match for individual words
         if (similarity(queryWord, textWord) >= threshold) {
           wordMatched = true;
           break;
         }
-        
+
         // Check if query word is a substring of text word with typos
         if (queryWord.length >= 3 && textWord.length >= 3) {
           final sim = similarity(queryWord, textWord);
@@ -84,7 +87,7 @@ class FuzzySearch {
           }
         }
       }
-      
+
       if (!wordMatched) return false;
     }
 
@@ -92,7 +95,11 @@ class FuzzySearch {
   }
 
   /// Get similarity score for ranking search results
-  static double getRelevanceScore(String query, String title, String description) {
+  static double getRelevanceScore(
+    String query,
+    String title,
+    String description,
+  ) {
     if (query.isEmpty) return 0.0;
 
     final queryLower = query.toLowerCase();
@@ -109,8 +116,14 @@ class FuzzySearch {
     }
 
     // Fuzzy matching for individual words
-    final queryWords = queryLower.split(' ').where((w) => w.isNotEmpty).toList();
-    final titleWords = titleLower.split(' ').where((w) => w.isNotEmpty).toList();
+    final queryWords = queryLower
+        .split(' ')
+        .where((w) => w.isNotEmpty)
+        .toList();
+    final titleWords = titleLower
+        .split(' ')
+        .where((w) => w.isNotEmpty)
+        .toList();
     final descWords = descLower.split(' ').where((w) => w.isNotEmpty).toList();
 
     for (final queryWord in queryWords) {
@@ -151,13 +164,13 @@ class FuzzySearch {
 
     for (final text in allTexts) {
       final textLower = text.toLowerCase();
-      
+
       // Skip if already exact match
       if (textLower == queryLower) continue;
 
       // Check for partial matches and fuzzy matches
       final words = textLower.split(' ').where((w) => w.isNotEmpty).toList();
-      
+
       for (final word in words) {
         if (word.startsWith(queryLower)) {
           suggestions[word] = 1.0;
@@ -176,9 +189,6 @@ class FuzzySearch {
     final sortedSuggestions = suggestions.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    return sortedSuggestions
-        .take(maxSuggestions)
-        .map((e) => e.key)
-        .toList();
+    return sortedSuggestions.take(maxSuggestions).map((e) => e.key).toList();
   }
 }
