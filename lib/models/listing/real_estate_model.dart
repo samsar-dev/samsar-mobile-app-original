@@ -34,6 +34,7 @@ class RealEstateDetails {
   final String propertyType;
   final int? bedrooms;
   final int? bathrooms;
+  final int? totalRooms;
   final String? furnishing;
   final int? floor;
   final int? totalFloors;
@@ -51,11 +52,13 @@ class RealEstateDetails {
   final int? buildingAge;
   final String? orientation;
   final String? view;
+  final List<String>? features;
 
   RealEstateDetails({
     required this.propertyType,
     this.bedrooms,
     this.bathrooms,
+    this.totalRooms,
     this.furnishing,
     this.floor,
     this.totalFloors,
@@ -73,12 +76,14 @@ class RealEstateDetails {
     this.buildingAge,
     this.orientation,
     this.view,
+    this.features,
   });
 
   Map<String, dynamic> toJson() => {
     'propertyType': propertyType,
     if (bedrooms != null) 'bedrooms': bedrooms,
     if (bathrooms != null) 'bathrooms': bathrooms,
+    if (totalRooms != null) 'totalRooms': totalRooms,
     if (furnishing != null) 'furnishing': furnishing,
     if (floor != null) 'floor': floor,
     if (totalFloors != null) 'totalFloors': totalFloors,
@@ -96,5 +101,6 @@ class RealEstateDetails {
     if (buildingAge != null) 'buildingAge': buildingAge,
     if (orientation != null) 'orientation': orientation,
     if (view != null) 'view': view,
+    if (features != null) 'features': features,
   };
 }

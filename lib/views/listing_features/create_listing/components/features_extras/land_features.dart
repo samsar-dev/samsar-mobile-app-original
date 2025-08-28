@@ -16,13 +16,8 @@ class _LandFeaturesState extends State<LandFeatures> {
   final Map<String, bool> _features = {
     'water_access': false,
     'electricity_access': false,
-    'road_access': false,
-    'agricultural_use': false,
-    'residential_zoning': false,
-    'commercial_zoning': false,
     'flat_terrain': false,
     'fenced': false,
-    'well_water': false,
     'fruit_trees': false,
     'building_permit': false,
     'corner_lot': false,

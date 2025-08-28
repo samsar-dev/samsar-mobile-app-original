@@ -23,7 +23,6 @@ class _VillasFeaturesState extends State<VillasFeatures> {
     'central_heating': false,
     'air_conditioning': false,
     'fireplace': false,
-    'generator': false,
     'solar_panels': false,
     'water_well': false,
   };

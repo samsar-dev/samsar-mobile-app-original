@@ -15,6 +15,8 @@ class AppTranslations extends Translations {
       'confirm': 'Confirm',
       'save': 'Save',
       'delete': 'Delete',
+      'delete_listing': 'Delete Listing',
+      'are_you_sure_delete': 'Are you sure you want to delete this listing?',
       'edit': 'Edit',
       'search': 'Search',
       'sort': 'Sort',
@@ -187,7 +189,6 @@ class AppTranslations extends Translations {
       'reception_area': 'Reception Area',
       'internet_ready': 'Internet Ready',
       'kitchen_area': 'Kitchen Area',
-      'disabled_access': 'Disabled Access',
       'office_features': 'Office Features',
 
       // Passenger Vehicle Features
@@ -793,6 +794,17 @@ class AppTranslations extends Translations {
       'profile_updated_successfully': 'Profile updated successfully!',
       'profile_update_error': 'Error updating profile: @error',
       'something_went_wrong': 'Something went wrong. Try again later.',
+
+      // Smart Date Display
+      'just_now': 'Just now',
+      'minute_ago': '1 minute ago',
+      'minutes_ago': '@minutes minutes ago',
+      'hour_ago': '1 hour ago',
+      'hours_ago': '@hours hours ago',
+      'today': 'Today',
+      'yesterday': 'Yesterday',
+      'days_ago': '@days days ago',
+      'posted': 'Posted',
       'account_does_not_exist':
           'Your account no longer exists. Please contact support if this is unexpected.',
       'account_inactive': 'Your account is not active. Please contact support.',
@@ -1148,6 +1160,8 @@ class AppTranslations extends Translations {
       'confirm': 'تأكيد',
       'save': 'حفظ',
       'delete': 'حذف',
+      'delete_listing': 'حذف الإعلان',
+      'are_you_sure_delete': 'هل أنت متأكد من رغبتك في حذف هذا الإعلان؟ لا يمكن التراجع عن هذا الإجراء.',
       'edit': 'تعديل',
       'search': 'بحث',
       'sort': 'ترتيب',
@@ -1278,6 +1292,17 @@ class AppTranslations extends Translations {
       'reset_password': 'إعادة تعيين كلمة المرور',
       'password_reset_successful': 'تم إعادة تعيين كلمة المرور بنجاح',
       'failed_to_reset_password': 'فشل في إعادة تعيين كلمة المرور',
+
+      // Smart Date Display (Arabic)
+      'just_now': 'الآن',
+      'minute_ago': 'منذ دقيقة',
+      'minutes_ago': 'منذ @minutes دقائق',
+      'hour_ago': 'منذ ساعة',
+      'hours_ago': 'منذ @hours ساعات',
+      'today': 'اليوم',
+      'yesterday': 'أمس',
+      'days_ago': 'منذ @days أيام',
+      'posted': 'نُشر',
       'please_enter_valid_code': 'يرجى إدخال رمز صحيح مكون من 6 أرقام',
       'unexpected_error': 'حدث خطأ غير متوقع',
 
@@ -2049,12 +2074,10 @@ class AppTranslations extends Translations {
       'reception_area': 'منطقة الاستقبال',
       'internet_ready': 'جاهز للإنترنت',
       'kitchen_area': 'منطقة المطبخ',
-      'disabled_access': 'وصول للمعاقين',
       'office_features': 'ميزات المكتب',
       'reception_area_description': 'منطقة استقبال مخصصة',
       'internet_ready_description': 'مجهزة للإنترنت',
       'kitchen_area_description': 'مجهزة بمطبخ',
-      'disabled_access_description': 'مجهزة لذوي الاحتياجات الخاصة',
 
       // Navigation Buttons
       'next': 'التالي',
@@ -2169,7 +2192,6 @@ class AppTranslations extends Translations {
       'street_front': 'واجهة على الشارع',
       'display_windows': 'نوافذ عرض',
       'customer_parking': 'موقف سيارات للعملاء',
-      'loading_dock': 'رصيف تحميل',
       'office_space': 'مساحة مكتبية',
       'restroom': 'دورة مياه',
       'store_features': 'ميزات المتجر',

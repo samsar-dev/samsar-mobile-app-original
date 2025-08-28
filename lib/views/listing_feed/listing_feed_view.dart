@@ -218,11 +218,16 @@ class _ListingFeedViewState extends State<ListingFeedView> {
                   subCategory: item.category?.subCategory ?? '',
                   listingId: item.id ?? 'NA',
                   price: item.price ?? 0,
-                  // Use model getters to extract vehicle details from nested data
+                  // Vehicle details
                   fuelType: item.fuelType,
                   year: item.year,
                   transmission: item.transmission,
                   mileage: item.mileage?.toString(),
+                  // Real estate details
+                  bedrooms: item.bedrooms,
+                  bathrooms: item.bathrooms,
+                  yearBuilt: item.yearBuilt,
+                  totalArea: item.totalArea,
                 ),
               );
             } else {
@@ -294,10 +299,16 @@ class _ListingFeedViewState extends State<ListingFeedView> {
                     subCategory: item.subCategory ?? '',
                     listingId: item.id ?? 'NA',
                     price: item.price ?? 0,
+                    // Vehicle details
                     fuelType: item.fuelType?.toString(),
                     year: item.year,
                     transmission: item.transmission?.toString(),
                     mileage: item.mileage?.toString(),
+                    // Real estate details
+                    bedrooms: item.bedrooms,
+                    bathrooms: item.bathrooms,
+                    yearBuilt: item.yearBuilt,
+                    totalArea: item.totalArea,
                   ),
                 );
               } else {

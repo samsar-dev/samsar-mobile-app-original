@@ -20,11 +20,8 @@ class _OfficesFeaturesState extends State<OfficesFeatures> {
     'air_conditioning': false,
     'central_heating': false,
     'internet_ready': false,
-    'security_system': false,
-    'generator': false,
     'kitchen_area': false,
     'storage_room': false,
-    'disabled_access': false,
   };
 
   @override

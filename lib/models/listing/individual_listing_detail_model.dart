@@ -122,6 +122,13 @@ class Data {
     print('  - listingAction: ${json["listingAction"]} (backend field name)');
     print('  - sellerType: ${json["sellerType"]} (backend field name)');
     
+    print('🔍 [DATA MODEL DEBUG] Parsing root level real estate fields:');
+    print('  - totalArea: ${json["totalArea"]}');
+    print('  - yearBuilt: ${json["yearBuilt"]}');
+    print('  - furnishing: ${json["furnishing"]}');
+    print('  - floor: ${json["floor"]}');
+    print('  - totalFloors: ${json["totalFloors"]}');
+    
     return Data(
       id: json["id"],
       displayId: json["displayId"],
@@ -718,8 +725,8 @@ class RealEstate {
     required this.view,
     required this.orientation,
     required this.buildingAge,
-    required this.maintenanceFee,
     required this.energyRating,
+    required this.features,
   });
 
   final String? propertyType;
@@ -759,8 +766,8 @@ class RealEstate {
   final String? view;
   final String? orientation;
   final int? buildingAge;
-  final String? maintenanceFee;
   final String? energyRating;
+  final List<String>? features;
 
   factory RealEstate.fromJson(Map<String, dynamic> json) {
     return RealEstate(
@@ -801,8 +808,8 @@ class RealEstate {
       view: json["view"],
       orientation: json["orientation"],
       buildingAge: json["buildingAge"],
-      maintenanceFee: json["maintenanceFee"],
       energyRating: json["energyRating"],
+      features: json["features"] != null ? List<String>.from(json["features"]) : null,
     );
   }
 
@@ -844,8 +851,8 @@ class RealEstate {
     "view": view,
     "orientation": orientation,
     "buildingAge": buildingAge,
-    "maintenanceFee": maintenanceFee,
     "energyRating": energyRating,
+    "features": features,
   };
 
   @override

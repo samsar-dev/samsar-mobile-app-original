@@ -35,37 +35,52 @@ class FavouriteListingController extends GetxController {
   }
 
   Future<void> addToFavourites(String listingId) async {
-    isLoading.value = true;
+    print('🔄 Adding to favourites: $listingId');
+    
     errorMessage.value = '';
 
     final token = await _authController.getAccessToken();
+    if (token == null) {
+      errorMessage.value = 'Authentication required';
+      print('❌ No auth token available');
+      return;
+    }
 
     final response = await _service.addFavouriteListingService(
-      token: token!,
+      token: token,
       listingId: listingId,
     );
 
     if (response.successResponse != null) {
       final added = AddFavouriteListing.fromJson(response.successResponse!);
       if (added.data != null) {
-        await fetchFavourites();
+        print('✅ Successfully added to favourites');
+        await fetchFavourites(); // Refresh the list
       }
     } else {
       errorMessage.value =
           response.apiError?.message ?? 'Failed to add to favourites';
+      print('❌ Failed to add to favourites: ${errorMessage.value}');
     }
-
-    isLoading.value = false;
   }
 
   Future<void> removeFromFavourites(String listingId) async {
-    isLoading.value = true;
+    print('🔄 Removing from favourites: $listingId');
+    
+    // Optimistically remove from UI first
+    favouriteListings.removeWhere((item) => item.id == listingId);
+    
     errorMessage.value = '';
 
     final token = await _authController.getAccessToken();
+    if (token == null) {
+      errorMessage.value = 'Authentication required';
+      print('❌ No auth token available');
+      return;
+    }
 
     final response = await _service.removeFavouriteListingService(
-      token: token!,
+      token: token,
       listingId: listingId,
     );
 
@@ -74,14 +89,18 @@ class FavouriteListingController extends GetxController {
         response.successResponse!,
       );
       if (removed.success == true) {
-        favouriteListings.removeWhere((item) => item.id == listingId);
+        print('✅ Successfully removed from favourites');
+        // Already removed optimistically, no need to do anything
+      } else {
+        print('❌ Remove operation failed, refreshing list');
+        await fetchFavourites(); // Restore if failed
       }
     } else {
       errorMessage.value =
           response.apiError?.message ?? 'Failed to remove from favourites';
+      print('❌ Failed to remove from favourites: ${errorMessage.value}');
+      await fetchFavourites(); // Restore if failed
     }
-
-    isLoading.value = false;
   }
 
   bool isFavourite(String listingId) {

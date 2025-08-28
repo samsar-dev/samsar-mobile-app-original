@@ -134,20 +134,19 @@ class ListingController extends GetxController {
   /// Apply filters to current listings without refetching from API
   void applyFilters() {
     print('🔄 APPLYING FILTERS TO EXISTING LISTINGS');
-    // Don't clear listings to prevent duplicates, just re-apply filters
-    if (listings.isNotEmpty) {
-      // Re-apply filters to existing data without clearing
-      final originalItems = List<Item>.from(listings);
-      listings.clear();
-      final filtered = _applyAllFilters(originalItems);
-      listings.addAll(filtered);
-      print(
-        '✅ Re-filtered ${originalItems.length} items to ${filtered.length}',
-      );
-    } else {
-      // If no listings, fetch fresh data
-      fetchListings(isInitial: true, forceRefresh: true);
-    }
+    print('🔧 Current FilterController state:');
+    print('  selectedSubcategory: "${_filterController.selectedSubcategory.value}"');
+    print('  selectedListingType: "${_filterController.selectedListingType.value}"');
+    print('  selectedFuelType: "${_filterController.selectedFuelType.value}"');
+    print('  selectedTransmission: "${_filterController.selectedTransmission.value}"');
+    print('  selectedMake: "${_filterController.selectedMake.value}"');
+    print('  selectedModel: "${_filterController.selectedModel.value}"');
+    print('  selectedMaxMileage: ${_filterController.selectedMaxMileage.value}');
+    print('  selectedBedrooms: ${_filterController.selectedBedrooms.value}');
+    print('  selectedBathrooms: ${_filterController.selectedBathrooms.value}');
+    
+    // Always fetch fresh data when filters are applied to ensure we have complete data
+    fetchListings(isInitial: true, forceRefresh: true);
   }
 
   /// Force refresh listings from backend (for pull-to-refresh)
@@ -225,24 +224,45 @@ class ListingController extends GetxController {
       print('  After category filter: ${filtered.length} items');
     }
 
-    // Apply subcategory filter
-    if (_filterController.selectedSubcategory.value.isNotEmpty) {
-      // Backend expects subcategory in uppercase (CARS, MOTORCYCLES, etc.)
-      final subcategory = _filterController.selectedSubcategory.value
-          .toUpperCase();
+    // Apply subcategory filter - handle both single and multiple selection
+    if (_filterController.selectedSubcategories.isNotEmpty) {
+      // Multiple subcategory selection (for real estate)
+      final subcategories = _filterController.selectedSubcategories
+          .map((s) => s.toUpperCase())
+          .toList();
+      print('  🏠 [MULTIPLE SUBCATEGORY DEBUG] Filtering with: $subcategories');
+      
       filtered = filtered.where((item) {
-        // Compare both in uppercase to ensure case-insensitive match
         final itemSubcategory = item.subCategory?.toUpperCase() ?? '';
-        final matches = itemSubcategory == subcategory;
+        final matches = subcategories.contains(itemSubcategory);
         if (matches) {
           print(
-            '    ✓ Matches subcategory: ${item.subCategory} == $subcategory',
+            '    ✓ Matches multiple subcategories: ${item.subCategory} in $subcategories',
           );
         }
         return matches;
       }).toList();
       print(
-        '  After subcategory filter ($subcategory): ${filtered.length} items',
+        '  After multiple subcategory filter ($subcategories): ${filtered.length} items',
+      );
+    } else if (_filterController.selectedSubcategory.value.isNotEmpty) {
+      // Single subcategory selection (for vehicles)
+      final subcategory = _filterController.selectedSubcategory.value
+          .toUpperCase();
+      print('  🚗 [SINGLE SUBCATEGORY DEBUG] Filtering with: $subcategory');
+      
+      filtered = filtered.where((item) {
+        final itemSubcategory = item.subCategory?.toUpperCase() ?? '';
+        final matches = itemSubcategory == subcategory;
+        if (matches) {
+          print(
+            '    ✓ Matches single subcategory: ${item.subCategory} == $subcategory',
+          );
+        }
+        return matches;
+      }).toList();
+      print(
+        '  After single subcategory filter ($subcategory): ${filtered.length} items',
       );
     }
 
@@ -274,15 +294,45 @@ class ListingController extends GetxController {
       );
     }
 
-    // Apply city filter
+    // Apply city filter with improved neighborhood support
     if (_filterController.selectedCity.value.isNotEmpty) {
       final city = _filterController.selectedCity.value;
       filtered = filtered.where((item) {
-        final matches =
-            item.location?.toLowerCase().contains(city.toLowerCase()) ?? false;
+        final location = item.location?.toLowerCase() ?? '';
+        final cityLower = city.toLowerCase();
+        
+        // Create mapping for major cities to include their Arabic names and common variations
+        Map<String, List<String>> cityMappings = {
+          'aleppo': ['aleppo', 'حلب', 'halep', 'alep'],
+          'damascus': ['damascus', 'دمشق', 'dimashq', 'damas'],
+          'homs': ['homs', 'حمص', 'hims'],
+          'lattakia': ['lattakia', 'اللاذقية', 'latakia', 'ladhiqiyah'],
+          'hama': ['hama', 'حماة', 'hamah'],
+          'deir_ezzor': ['deir_ezzor', 'دير الزور', 'deir ez-zor', 'deir al-zor'],
+          'hasekeh': ['hasekeh', 'الحسكة', 'al-hasakah', 'hasakah'],
+          'qamishli': ['qamishli', 'القامشلي', 'qamishly'],
+          'raqqa': ['raqqa', 'الرقة', 'ar-raqqah'],
+          'tartous': ['tartous', 'طرطوس', 'tartus'],
+          'ldlib': ['ldlib', 'إدلب', 'idlib'],
+          'dara': ['dara', 'درعا', 'daraa'],
+          'sweden': ['sweden', 'السويد'],
+          'quneitra': ['quneitra', 'القنيطرة'],
+        };
+        
+        // Get all possible names for the selected city
+        List<String> cityVariations = cityMappings[cityLower] ?? [cityLower];
+        
+        // Check if location contains any variation of the city name
+        bool matches = cityVariations.any((variation) => 
+          location.contains(variation.toLowerCase()));
+        
+        if (matches) {
+          print('    ✓ Location match: "${item.location}" contains city "$city"');
+        }
+        
         return matches;
       }).toList();
-      print('  After city filter ($city): ${filtered.length} items');
+      print('  After enhanced city filter ($city): ${filtered.length} items');
     }
 
     // Apply year filter
@@ -333,6 +383,253 @@ class ListingController extends GetxController {
       print(
         '  After price filter ($minPrice-$maxPrice): ${filtered.length} items',
       );
+    }
+
+    // Apply vehicle-specific filters
+    if (selectedCategory.value.toLowerCase() == 'vehicles') {
+      // Fuel Type Filter
+      if (_filterController.selectedFuelType.value.isNotEmpty) {
+        final fuelType = _filterController.selectedFuelType.value;
+        filtered = filtered.where((item) {
+          final itemFuelType = item.fuelTypeRoot?.toUpperCase() ?? '';
+          final matches = itemFuelType == fuelType.toUpperCase();
+          if (matches) {
+            print('    ✓ Matches fuel type: $itemFuelType == ${fuelType.toUpperCase()}');
+          }
+          return matches;
+        }).toList();
+        print('  After fuel type filter ($fuelType): ${filtered.length} items');
+      }
+
+      // Transmission Filter
+      if (_filterController.selectedTransmission.value.isNotEmpty) {
+        final transmission = _filterController.selectedTransmission.value;
+        filtered = filtered.where((item) {
+          final itemTransmission = item.transmissionRoot?.toUpperCase() ?? '';
+          final matches = itemTransmission == transmission.toUpperCase();
+          if (matches) {
+            print('    ✓ Matches transmission: $itemTransmission == ${transmission.toUpperCase()}');
+          }
+          return matches;
+        }).toList();
+        print('  After transmission filter ($transmission): ${filtered.length} items');
+      }
+
+      // Body Type Filter (for cars)
+      if (_filterController.selectedBodyType.value.isNotEmpty) {
+        final bodyType = _filterController.selectedBodyType.value;
+        filtered = filtered.where((item) {
+          // Check body type from flatDetails or vehicleType
+          final itemBodyType = item.details?.flatDetails?['bodyType']?.toString().toUpperCase() ?? 
+                              item.details?.vehicles?.vehicleType?.toUpperCase() ?? '';
+          final matches = itemBodyType == bodyType.toUpperCase();
+          if (matches) {
+            print('    ✓ Matches body type: $itemBodyType == ${bodyType.toUpperCase()}');
+          }
+          return matches;
+        }).toList();
+        print('  After body type filter ($bodyType): ${filtered.length} items');
+      }
+
+      // Condition Filter
+      if (_filterController.selectedCondition.value.isNotEmpty) {
+        final condition = _filterController.selectedCondition.value;
+        filtered = filtered.where((item) {
+          final itemCondition = item.conditionRoot?.toUpperCase() ?? '';
+          final matches = itemCondition == condition.toUpperCase();
+          if (matches) {
+            print('    ✓ Matches condition: $itemCondition == ${condition.toUpperCase()}');
+          }
+          return matches;
+        }).toList();
+        print('  After condition filter ($condition): ${filtered.length} items');
+      }
+
+      // Make Filter
+      if (_filterController.selectedMake.value.isNotEmpty) {
+        final make = _filterController.selectedMake.value;
+        filtered = filtered.where((item) {
+          final itemMake = item.make?.toUpperCase() ?? '';
+          final matches = itemMake == make.toUpperCase();
+          if (matches) {
+            print('    ✓ Matches make: $itemMake == ${make.toUpperCase()}');
+          }
+          return matches;
+        }).toList();
+        print('  After make filter ($make): ${filtered.length} items');
+      }
+
+      // Model Filter
+      if (_filterController.selectedModel.value.isNotEmpty) {
+        final model = _filterController.selectedModel.value;
+        filtered = filtered.where((item) {
+          final itemModel = item.model?.toUpperCase() ?? '';
+          final matches = itemModel.contains(model.toUpperCase());
+          if (matches) {
+            print('    ✓ Matches model: $itemModel contains ${model.toUpperCase()}');
+          }
+          return matches;
+        }).toList();
+        print('  After model filter ($model): ${filtered.length} items');
+      }
+
+      // Mileage Filter
+      if (_filterController.selectedMaxMileage.value != null) {
+        final maxMileage = _filterController.selectedMaxMileage.value!;
+        filtered = filtered.where((item) {
+          final itemMileage = item.mileage ?? 0;
+          final matches = itemMileage <= maxMileage;
+          if (matches) {
+            print('    ✓ Matches mileage: $itemMileage <= $maxMileage');
+          }
+          return matches;
+        }).toList();
+        print('  After mileage filter (≤$maxMileage): ${filtered.length} items');
+      }
+    }
+
+    // Apply real estate-specific filters
+    if (selectedCategory.value.toLowerCase() == 'real_estate') {
+      // Bedrooms Filter
+      if (_filterController.selectedBedrooms.value != null) {
+        final bedrooms = _filterController.selectedBedrooms.value!;
+        filtered = filtered.where((item) {
+          final itemBedrooms = item.bedrooms ?? 0;
+          final matches = itemBedrooms == bedrooms;
+          if (matches) {
+            print('    ✓ Matches bedrooms: $itemBedrooms == $bedrooms');
+          }
+          return matches;
+        }).toList();
+        print('  After bedrooms filter ($bedrooms): ${filtered.length} items');
+      }
+
+      // Bathrooms Filter
+      if (_filterController.selectedBathrooms.value != null) {
+        final bathrooms = _filterController.selectedBathrooms.value!;
+        filtered = filtered.where((item) {
+          final itemBathrooms = item.bathrooms ?? 0;
+          final matches = itemBathrooms == bathrooms;
+          if (matches) {
+            print('    ✓ Matches bathrooms: $itemBathrooms == $bathrooms');
+          }
+          return matches;
+        }).toList();
+        print('  After bathrooms filter ($bathrooms): ${filtered.length} items');
+      }
+
+      // Furnishing Filter
+      if (_filterController.selectedFurnishing.value.isNotEmpty) {
+        final furnishing = _filterController.selectedFurnishing.value;
+        filtered = filtered.where((item) {
+          final itemFurnishing = item.details?.flatDetails?['furnishing']?.toString().toUpperCase() ?? 
+                                item.details?.realEstate?.utilities?.toUpperCase() ?? '';
+          final matches = itemFurnishing == furnishing.toUpperCase();
+          if (matches) {
+            print('    ✓ Matches furnishing: $itemFurnishing == ${furnishing.toUpperCase()}');
+          }
+          return matches;
+        }).toList();
+        print('  After furnishing filter ($furnishing): ${filtered.length} items');
+      }
+
+      // Parking Filter
+      if (_filterController.selectedParking.value.isNotEmpty) {
+        final parking = _filterController.selectedParking.value;
+        filtered = filtered.where((item) {
+          final itemParkingSpaces = item.parkingSpaces ?? 0;
+          // Map parking spaces to parking filter values
+          String itemParking = '';
+          if (itemParkingSpaces == 0) itemParking = 'NO_PARKING';
+          else if (itemParkingSpaces == 1) itemParking = '1_CAR';
+          else if (itemParkingSpaces == 2) itemParking = '2_CARS';
+          else if (itemParkingSpaces >= 3) itemParking = '3_PLUS_CARS';
+          
+          final matches = itemParking == parking.toUpperCase();
+          if (matches) {
+            print('    ✓ Matches parking: $itemParking == ${parking.toUpperCase()}');
+          }
+          return matches;
+        }).toList();
+        print('  After parking filter ($parking): ${filtered.length} items');
+      }
+
+      // Area Filter
+      if (_filterController.selectedMinArea.value != null || _filterController.selectedMaxArea.value != null) {
+        final minArea = _filterController.selectedMinArea.value;
+        final maxArea = _filterController.selectedMaxArea.value;
+        filtered = filtered.where((item) {
+          final itemArea = item.details?.flatDetails?['totalArea']?.toDouble() ?? 
+                          item.details?.flatDetails?['area']?.toDouble() ?? 0.0;
+          bool matches = true;
+          if (minArea != null && itemArea < minArea) matches = false;
+          if (maxArea != null && itemArea > maxArea) matches = false;
+          if (matches) {
+            print('    ✓ Matches area: $itemArea sqft (${minArea ?? 0}-${maxArea ?? "∞"})');
+          }
+          return matches;
+        }).toList();
+        print('  After area filter (${minArea ?? 0}-${maxArea ?? "∞"}): ${filtered.length} items');
+      }
+
+      // Property Condition Filter
+      if (_filterController.selectedCondition.value.isNotEmpty) {
+        final condition = _filterController.selectedCondition.value;
+        filtered = filtered.where((item) {
+          final itemCondition = item.details?.flatDetails?['condition']?.toString().toUpperCase() ?? 
+                               item.condition?.toUpperCase() ?? '';
+          final matches = itemCondition == condition.toUpperCase();
+          if (matches) {
+            print('    ✓ Matches condition: $itemCondition == ${condition.toUpperCase()}');
+          }
+          return matches;
+        }).toList();
+        print('  After condition filter ($condition): ${filtered.length} items');
+      }
+
+      // Year Built Filter
+      if (_filterController.selectedYearBuilt.value != null) {
+        final yearBuilt = _filterController.selectedYearBuilt.value!;
+        filtered = filtered.where((item) {
+          final itemYearBuilt = item.details?.flatDetails?['yearBuilt']?.toInt() ?? 
+                               item.details?.flatDetails?['year_built']?.toInt() ?? 0;
+          final matches = itemYearBuilt == yearBuilt;
+          if (matches) {
+            print('    ✓ Matches year built: $itemYearBuilt == $yearBuilt');
+          }
+          return matches;
+        }).toList();
+        print('  After year built filter ($yearBuilt): ${filtered.length} items');
+      }
+
+      // Floor Filter
+      if (_filterController.selectedFloor.value != null) {
+        final floor = _filterController.selectedFloor.value!;
+        filtered = filtered.where((item) {
+          final itemFloor = item.details?.flatDetails?['floor']?.toInt() ?? 0;
+          final matches = itemFloor == floor;
+          if (matches) {
+            print('    ✓ Matches floor: $itemFloor == $floor');
+          }
+          return matches;
+        }).toList();
+        print('  After floor filter ($floor): ${filtered.length} items');
+      }
+
+      // Seller Type Filter
+      if (_filterController.selectedSellerType.value.isNotEmpty) {
+        final sellerType = _filterController.selectedSellerType.value;
+        filtered = filtered.where((item) {
+          final itemSellerType = item.details?.flatDetails?['sellerType']?.toString().toUpperCase() ?? 
+                                item.details?.flatDetails?['seller_type']?.toString().toUpperCase() ?? '';
+          final matches = itemSellerType == sellerType.toUpperCase();
+          if (matches) {
+            print('    ✓ Matches seller type: $itemSellerType == ${sellerType.toUpperCase()}');
+          }
+          return matches;
+        }).toList();
+        print('  After seller type filter ($sellerType): ${filtered.length} items');
+      }
     }
 
     // Apply sorting

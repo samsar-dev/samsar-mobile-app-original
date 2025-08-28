@@ -85,6 +85,12 @@ class Item {
     required this.transmissionRoot,
     required this.exteriorColorRoot,
     required this.conditionRoot,
+    // Root level real estate fields from backend
+    required this.totalAreaRoot,
+    required this.yearBuiltRoot,
+    required this.furnishingRoot,
+    required this.floorRoot,
+    required this.totalFloorsRoot,
   });
 
   final String? id;
@@ -111,6 +117,12 @@ class Item {
   final String? transmissionRoot;
   final String? exteriorColorRoot;
   final String? conditionRoot;
+  // Root level real estate fields from backend
+  final int? totalAreaRoot;
+  final int? yearBuiltRoot;
+  final String? furnishingRoot;
+  final int? floorRoot;
+  final int? totalFloorsRoot;
 
   // Helper getters for backward compatibility
   String? get mainCategory => category?.mainCategory;
@@ -146,10 +158,37 @@ class Item {
       details?.realEstate?.bedrooms ?? details?.flatDetails?["bedrooms"];
   int? get bathrooms =>
       details?.realEstate?.bathrooms ?? details?.flatDetails?["bathrooms"];
-  int? get yearBuilt =>
-      details?.realEstate?.yearBuilt ?? details?.flatDetails?["yearBuilt"];
+  int? get yearBuilt {
+    // Check root level first (like individual listing detail model), then nested details
+    final yearValue = yearBuiltRoot ?? 
+                     details?.realEstate?.yearBuilt ?? 
+                     details?.flatDetails?["yearBuilt"] ??
+                     details?.flatDetails?["year_built"];
+    
+    print('🔍 [YEAR BUILT DEBUG] yearBuilt getter called for item: $title');
+    print('  - yearBuiltRoot: $yearBuiltRoot');
+    print('  - realEstate yearBuilt: ${details?.realEstate?.yearBuilt}');
+    print('  - flatDetails yearBuilt: ${details?.flatDetails?["yearBuilt"]}');
+    print('  - flatDetails year_built: ${details?.flatDetails?["year_built"]}');
+    print('  - final yearValue: $yearValue');
+    
+    return yearValue;
+  }
   String? get size =>
       details?.realEstate?.size ?? details?.flatDetails?["size"];
+  
+  int? get totalArea {
+    // Check root level first (like individual listing detail model), then nested details
+    final areaValue = totalAreaRoot ?? 
+                     details?.flatDetails?["totalArea"] ?? 
+                     details?.flatDetails?["area"] ??
+                     details?.realEstate?.size;
+    
+    if (areaValue is int) return areaValue;
+    if (areaValue is String) return int.tryParse(areaValue);
+    return null;
+  }
+  
   int? get floors =>
       details?.realEstate?.floors ?? details?.flatDetails?["floors"];
   String? get utilities =>
@@ -168,6 +207,15 @@ class Item {
   }
 
   factory Item.fromJson(Map<String, dynamic> json) {
+    print('🔍 [ITEM JSON DEBUG] Raw JSON for item: ${json["title"]}');
+    print('  - Raw JSON keys: ${json.keys.toList()}');
+    print('  - details keys: ${json["details"]?.keys?.toList()}');
+    if (json["details"]?["realEstate"] != null) {
+      print('  - realEstate keys: ${json["details"]["realEstate"].keys.toList()}');
+    }
+    if (json["details"]?["flatDetails"] != null) {
+      print('  - flatDetails keys: ${json["details"]["flatDetails"].keys.toList()}');
+    }
     
     return Item(
       id: json["id"],
@@ -200,6 +248,12 @@ class Item {
       transmissionRoot: json["transmission"],
       exteriorColorRoot: json["exteriorColor"],
       conditionRoot: json["condition"],
+      // Root level real estate fields from backend
+      totalAreaRoot: json["totalArea"],
+      yearBuiltRoot: json["yearBuilt"],
+      furnishingRoot: json["furnishing"],
+      floorRoot: json["floor"],
+      totalFloorsRoot: json["totalFloors"],
     );
   }
 
