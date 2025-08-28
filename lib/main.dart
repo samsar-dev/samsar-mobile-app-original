@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:samsar/controllers/auth/auth_controller.dart';
 import 'package:samsar/controllers/features/theme_controller.dart';
 import 'package:samsar/controllers/features/language_controller.dart';
 import 'package:samsar/translations/app_translations.dart';
 import 'package:samsar/views/spalsh_screen/splash_screen_view.dart';
 import 'package:samsar/routes/app_routes.dart';
+import 'package:samsar/services/firebase_messaging_service.dart';
 
-void main() {
+void main() async {
   // Performance optimizations for weak devices
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Firebase
+  await Firebase.initializeApp();
+  
+  // Initialize Firebase Messaging
+  await FirebaseMessagingService.initialize();
 
   // Optimize rendering for low-end devices
   WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;

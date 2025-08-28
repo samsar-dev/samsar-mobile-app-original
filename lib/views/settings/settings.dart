@@ -5,6 +5,8 @@ import 'package:samsar/controllers/features/settings_controller.dart';
 import 'package:samsar/controllers/features/theme_controller.dart';
 import 'package:samsar/controllers/features/language_controller.dart';
 import 'package:samsar/widgets/app_button/app_button.dart';
+import 'package:samsar/services/firebase_messaging_service.dart';
+import 'package:flutter/foundation.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -328,6 +330,81 @@ class _SettingsState extends State<Settings> {
                     ),
                   ),
 
+                  // Debug section - only show in debug mode
+                  if (kDebugMode) ...[
+                    SizedBox(height: screenHeight * 0.03),
+                    buildLabel(screenWidth, screenHeight, "Debug & Testing"),
+                    SizedBox(height: screenHeight * 0.01),
+                    
+                    settingCard(
+                      screenWidth,
+                      screenHeight,
+                      title: "Firebase Notifications",
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Test push notifications functionality",
+                            style: TextStyle(
+                              color: Theme.of(context).textTheme.bodyMedium?.color,
+                              fontSize: 14,
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () async {
+                                    await _testNotificationPermission();
+                                  },
+                                  icon: Icon(Icons.security, size: 18),
+                                  label: Text("Test Permission"),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.orange,
+                                    foregroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(vertical: 8),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () async {
+                                    await _showFCMToken();
+                                  },
+                                  icon: Icon(Icons.token, size: 18),
+                                  label: Text("Show Token"),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: blueColor,
+                                    foregroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(vertical: 8),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () async {
+                                await _sendTestNotification();
+                              },
+                              icon: Icon(Icons.notifications_active, size: 18),
+                              label: Text("Send Test Notification"),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
                   SizedBox(height: screenHeight * 0.03),
                 ],
               ),
@@ -567,6 +644,159 @@ class _SettingsState extends State<Settings> {
             );
           }).toList(),
         ),
+      );
+    });
+  }
+
+  // Debug methods for testing Firebase notifications
+  Future<void> _testNotificationPermission() async {
+    try {
+      await FirebaseMessagingService.initialize();
+      Get.snackbar(
+        "Permission Status",
+        "Notification permission requested successfully",
+        duration: const Duration(seconds: 3),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.shade100,
+        colorText: Colors.green.shade800,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 8,
+        icon: Icon(Icons.check_circle, color: Colors.green.shade600),
+      );
+    } catch (e) {
+      Get.snackbar(
+        "Permission Error",
+        "Failed to request permission: $e",
+        duration: const Duration(seconds: 3),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade100,
+        colorText: Colors.red.shade800,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 8,
+        icon: Icon(Icons.error, color: Colors.red.shade600),
+      );
+    }
+  }
+
+  Future<void> _showFCMToken() async {
+    try {
+      final token = await FirebaseMessagingService.getToken();
+      if (token != null) {
+        Get.dialog(
+          AlertDialog(
+            title: Text("FCM Token"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Your Firebase Cloud Messaging token:"),
+                SizedBox(height: 8),
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: SelectableText(
+                    token,
+                    style: TextStyle(fontSize: 12, fontFamily: 'monospace'),
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  "Copy this token to test notifications from Firebase Console",
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: Text("Close"),
+              ),
+            ],
+          ),
+        );
+      } else {
+        Get.snackbar(
+          "Token Error",
+          "Failed to get FCM token",
+          duration: const Duration(seconds: 3),
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.shade100,
+          colorText: Colors.red.shade800,
+          margin: const EdgeInsets.all(16),
+          borderRadius: 8,
+          icon: Icon(Icons.error, color: Colors.red.shade600),
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        "Token Error",
+        "Error getting FCM token: $e",
+        duration: const Duration(seconds: 3),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade100,
+        colorText: Colors.red.shade800,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 8,
+        icon: Icon(Icons.error, color: Colors.red.shade600),
+      );
+    }
+  }
+
+  Future<void> _sendTestNotification() async {
+    // This simulates a local notification since we can't send push notifications from the client
+    Get.dialog(
+      AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.notifications_active, color: blueColor),
+            SizedBox(width: 8),
+            Text("Test Notification"),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("🎉 Firebase notifications are working!"),
+            SizedBox(height: 8),
+            Text(
+              "This simulates how a push notification would appear. To test real push notifications:",
+              style: TextStyle(fontSize: 14),
+            ),
+            SizedBox(height: 8),
+            Text(
+              "1. Get your FCM token using 'Show Token' button\n"
+              "2. Go to Firebase Console > Cloud Messaging\n"
+              "3. Send a test message using your token",
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text("Got it!"),
+          ),
+        ],
+      ),
+    );
+
+    // Also show a snackbar to simulate notification behavior
+    Future.delayed(Duration(milliseconds: 500), () {
+      Get.snackbar(
+        "Samsar Notification",
+        "This is how your push notifications will look!",
+        duration: const Duration(seconds: 4),
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: blueColor,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 8,
+        icon: Icon(Icons.notifications, color: Colors.white),
+        shouldIconPulse: true,
       );
     });
   }
