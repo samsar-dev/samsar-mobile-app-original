@@ -751,4 +751,59 @@ class AuthApiServices {
       );
     }
   }
+
+  // Update FCM Token
+  Future<ApiResponse<Map<String, dynamic>>> updateFCMTokenService(
+    String fcmToken,
+  ) async {
+    try {
+      // Get the access token from storage
+      final token = await _getAccessToken();
+
+      if (token == null) {
+        return ApiResponse.failure(
+          ApiError.fromMessage(('unauthorized_message').tr),
+        );
+      }
+
+      print('🔍 updateFCMToken: Making request to update FCM token');
+      print('🔑 updateFCMToken: Using token ${token.substring(0, 20)}...');
+
+      final response = await _dio.post(
+        '/api/fcm/update-token', // FCM route
+        data: {"fcmToken": fcmToken},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        ),
+      );
+
+      print('📥 updateFCMToken: Response status ${response.statusCode}');
+      print('📥 updateFCMToken: Response data ${response.data}');
+
+      if (response.statusCode == 200) {
+        return ApiResponse.success(response.data as Map<String, dynamic>);
+      } else {
+        return ApiResponse.failure(ApiError.fromJson(response.data));
+      }
+    } on DioException catch (dioError) {
+      print('❌ updateFCMToken: DioException ${dioError.message}');
+      print('❌ updateFCMToken: Status code ${dioError.response?.statusCode}');
+      print('❌ updateFCMToken: Response data ${dioError.response?.data}');
+
+      if (dioError.response != null && dioError.response?.data != null) {
+        return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
+      }
+      return ApiResponse.failure(
+        ApiError.fromMessage(('failed_to_update_fcm_token').tr),
+      );
+    } catch (e) {
+      return ApiResponse.failure(
+        ApiError.fromMessage('${('unexpected_error').tr}: $e'),
+      );
+    }
+  }
 }

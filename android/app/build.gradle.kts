@@ -1,12 +1,13 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("com.google.gms.google-services")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
-    namespace = "com.example.samsar"
+    namespace = "com.samsar.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "29.0.13599879"
     
@@ -79,7 +80,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.samsar"
+        applicationId = "com.samsar.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -137,6 +138,17 @@ android {
             isShrinkResources = false
         }
     }
+}
+
+dependencies {
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
+    
+    // Firebase Analytics
+    implementation("com.google.firebase:firebase-analytics")
+    
+    // Firebase Messaging for push notifications
+    implementation("com.google.firebase:firebase-messaging")
 }
 
 flutter {

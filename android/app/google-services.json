@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "159874537092",
+    "project_id": "samsar-90246",
+    "storage_bucket": "samsar-90246.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:159874537092:android:57be2939b94d11542b14d1",
+        "android_client_info": {
+          "package_name": "com.samsar.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtZkTusQjakyUae4LiWtXQ63ne20fsfHA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

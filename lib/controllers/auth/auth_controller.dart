@@ -11,6 +11,7 @@ import 'package:samsar/widgets/custom_snackbar/custom_snackbar.dart';
 import 'package:samsar/widgets/loading_dialog/loading_dialog.dart';
 import 'package:samsar/utils/error_message_mapper.dart';
 import 'package:samsar/controllers/listing/listing_input_controller.dart';
+import 'package:samsar/services/firebase_messaging_service.dart';
 
 class AuthController extends GetxController {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -248,6 +249,9 @@ class AuthController extends GetxController {
         value: jsonEncode(loginModel.toJson()),
       );
       await _storage.write(key: 'user_email', value: user.value?.email ?? "");
+
+      // Send FCM token to backend after successful login
+      _sendFCMTokenToBackend();
 
       Get.offAll(() => const HomeView());
       showCustomSnackbar('login_successful'.tr, false);
@@ -687,6 +691,21 @@ class AuthController extends GetxController {
       }
     } catch (e) {
       print('Error fetching user profile: $e');
+    }
+  }
+
+  // Send FCM token to backend after login
+  Future<void> _sendFCMTokenToBackend() async {
+    try {
+      print('🔔 Sending FCM token to backend...');
+      final token = await FirebaseMessagingService.getToken();
+      if (token != null) {
+        print('✅ FCM token sent successfully');
+      } else {
+        print('❌ Failed to get FCM token');
+      }
+    } catch (e) {
+      print('❌ Error sending FCM token to backend: $e');
     }
   }
 }
