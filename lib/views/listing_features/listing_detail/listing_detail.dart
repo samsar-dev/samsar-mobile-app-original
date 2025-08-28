@@ -1,13 +1,21 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
+import 'package:dio/dio.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/controllers/listing/individual_listing_detail_controller.dart';
+import 'package:samsar/controllers/chat/chat_controller.dart';
+import 'package:samsar/services/chat/chat_service.dart';
+import 'package:samsar/models/chat/conversation_model.dart';
 import 'package:samsar/utils/location_display_utils.dart';
+import 'package:samsar/utils/date_utils.dart';
 import 'package:samsar/widgets/animated_input_wrapper/animated_input_wrapper.dart';
 import 'package:samsar/widgets/app_button/app_button.dart';
 import 'package:samsar/widgets/custom_snackbar/custom_snackbar.dart';
 import 'package:samsar/widgets/image_slider/image_slider.dart';
+import 'package:samsar/views/chats/chat_view.dart';
 
 class ListingDetail extends StatefulWidget {
   final String listingId;
@@ -67,18 +75,15 @@ class _ListingDetailState extends State<ListingDetail> {
         print('  - BodyType: ${listing?.details?.vehicles?.bodyType} (NESTED)');
         print('🔍 [LISTING DETAIL DEBUG] ================');
 
-        final String createdDate = listing?.createdAt?.toString().split('T')[0] ?? "";
+        final String smartDate = SmartDateUtils.getSmartDateDisplayFromString(listing?.createdAt?.toString());
 
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Hero(
-                tag: "listing_picture_${listing?.id ?? 'NA'}",
-                child: ImageSlider(
-                  imageUrls: listing!.images,
-                  listingId: listing.id ?? "NA",
-                ),
+              ImageSlider(
+                imageUrls: listing!.images,
+                listingId: listing.id ?? "NA",
               ),
               SizedBox(height: screenHeight * 0.01),
               Padding(
@@ -566,6 +571,24 @@ class _ListingDetailState extends State<ListingDetail> {
                         ),
                       ),
 
+                    // Real Estate Features & Extras section
+                    if (listing.details?.realEstate?.features != null && listing.details!.realEstate!.features!.isNotEmpty)
+                      AnimatedInputWrapper(
+                        delayMilliseconds: 850,
+                        child: DetailSectionCard(
+                          title: "Features & Extras",
+                          items: [
+                            // Display all real estate features
+                            ...listing.details!.realEstate!.features!.map((feature) => 
+                              IconLabelPair(
+                                Icons.check_circle,
+                                feature,
+                              )
+                            ).toList(),
+                          ],
+                        ),
+                      ),
+
                     SizedBox(height: 16),
 
                     // Real Estate Additional Details section
@@ -684,7 +707,7 @@ class _ListingDetailState extends State<ListingDetail> {
                         listing.seller?.profilePicture ??
                             "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGDSuK3gg8gojbS1BjnbA4NLTjMg_hELJbpQ&s",
                         listing.seller?.username ?? "",
-                        createdDate,
+                        smartDate,
                       ),
                     ),
 
@@ -705,11 +728,94 @@ class _ListingDetailState extends State<ListingDetail> {
                             return;
                           }
 
-                          // TODO: Implement chat functionality
-                          showCustomSnackbar(
-                            "Chat feature coming soon",
-                            false,
-                          );
+                          // Check if user is trying to message themselves
+                          try {
+                            final storage = FlutterSecureStorage();
+                            final userData = await storage.read(key: "samsar_user_data");
+                            if (userData != null) {
+                              final json = jsonDecode(userData);
+                              final currentUserId = json['data']?['user']?['id'];
+                              if (currentUserId == sellerId) {
+                                showCustomSnackbar("You cannot message yourself", true);
+                                return;
+                              }
+                            }
+                          } catch (e) {
+                            print('Warning: Could not check user ID: $e');
+                          }
+
+                          try {
+                            // Get or create chat controller with proper dependency injection
+                            ChatController chatController;
+                            if (Get.isRegistered<ChatController>()) {
+                              chatController = Get.find<ChatController>();
+                            } else {
+                              // Initialize ChatService if not registered
+                              ChatService chatService;
+                              if (Get.isRegistered<ChatService>()) {
+                                chatService = Get.find<ChatService>();
+                              } else {
+                                // Create properly configured Dio instance with authentication
+                                final dio = Dio(BaseOptions(
+                                  connectTimeout: const Duration(seconds: 10),
+                                  receiveTimeout: const Duration(seconds: 10),
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                    "Accept": "application/json",
+                                  },
+                                ));
+                                
+                                // Add authentication token if available
+                                try {
+                                  final storage = FlutterSecureStorage();
+                                  final userData = await storage.read(key: "samsar_user_data");
+                                  if (userData != null) {
+                                    final json = jsonDecode(userData);
+                                    final token = json['data']?['tokens']?['accessToken'];
+                                    if (token != null) {
+                                      dio.options.headers['Authorization'] = 'Bearer $token';
+                                    }
+                                  }
+                                } catch (e) {
+                                  print('Warning: Could not add auth token to ChatService: $e');
+                                }
+                                
+                                chatService = Get.put(ChatService(dio));
+                              }
+                              chatController = Get.put(ChatController(chatService: chatService));
+                            }
+                            
+                            // Get or create conversation with seller using correct API format
+                            Conversation? conversation;
+                            try {
+                              // Try to find existing conversation first
+                              await chatController.fetchConversations();
+                              conversation = chatController.conversations.firstWhereOrNull(
+                                (conv) => conv.participants.any((user) => user.id == sellerId),
+                              );
+                              
+                              // If no existing conversation, create new one with correct format
+                              if (conversation == null) {
+                                conversation = await chatController.chatService.createConversation(
+                                  participantIds: [sellerId],
+                                );
+                                chatController.conversations.insert(0, conversation);
+                              }
+                            } catch (e) {
+                              print("Error creating/finding conversation: $e");
+                              conversation = null;
+                            }
+                            
+                            if (conversation != null) {
+                              // Navigate to chat screen
+                              Get.to(() => ChatView(conversation: conversation!));
+                            } else {
+                              showCustomSnackbar("Unable to start chat", true);
+                            }
+                          } catch (e) {
+                            print("Error starting chat: $e");
+                            showCustomSnackbar("Unable to start chat", true);
+                          }
                         },
                       ),
                     ),
@@ -771,7 +877,7 @@ class _ListingDetailState extends State<ListingDetail> {
                     ),
                     SizedBox(height: screenHeight * 0.003),
                     Text(
-                      "Listing posted on $listingDate",
+                      "${'posted'.tr} $listingDate",
                       style: TextStyle(fontSize: 14, color: greyColor),
                     ),
                     ],

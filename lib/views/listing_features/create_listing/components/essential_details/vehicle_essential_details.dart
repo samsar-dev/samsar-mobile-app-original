@@ -475,8 +475,12 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
           .replaceAll(' ', '_')
           .toUpperCase();
       
-      // Clear subcategory-specific features before setting new subcategory
-      _listingInputController.clearSubcategorySpecificFeatures(newSubCategory);
+      // Clear subcategory-specific data when switching
+      if (_listingInputController.subCategory.value != newSubCategory) {
+        _listingInputController.clearSubcategorySpecificFeatures(newSubCategory);
+        print('🧹 Cleared data for subcategory switch: ${_listingInputController.subCategory.value} → $newSubCategory');
+      }
+      
       _listingInputController.subCategory.value = newSubCategory;
 
       print('🚗 Vehicle type selected: $selectedVehicleType (Display)');

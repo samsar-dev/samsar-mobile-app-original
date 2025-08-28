@@ -17,8 +17,6 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
   late final ListingInputController _listingInputController;
 
   // Controllers for villa-specific fields
-  final TextEditingController parkingController = TextEditingController();
-  final TextEditingController poolController = TextEditingController();
   final TextEditingController balconyController = TextEditingController();
   final TextEditingController furnishingController = TextEditingController();
   final TextEditingController heatingController = TextEditingController();
@@ -26,9 +24,9 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
   final TextEditingController securityController = TextEditingController();
   final TextEditingController viewController = TextEditingController();
   final TextEditingController orientationController = TextEditingController();
-  final TextEditingController buildingAgeController = TextEditingController();
-  final TextEditingController maintenanceFeeController =
-      TextEditingController();
+  final TextEditingController yearBuiltController = TextEditingController();
+  
+
 
 
   // Dropdown options
@@ -105,8 +103,6 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
     }
 
     // Initialize controllers with existing data
-    parkingController.text = _listingInputController.parking.value;
-    poolController.text = _listingInputController.pool.value;
     balconyController.text = _listingInputController.balcony.value > 0
         ? _listingInputController.balcony.value.toString()
         : '';
@@ -115,16 +111,10 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
     coolingController.text = _listingInputController.cooling.value;
     viewController.text = _listingInputController.view.value;
     orientationController.text = _listingInputController.orientation.value;
-    buildingAgeController.text = _listingInputController.buildingAge.value > 0
-        ? _listingInputController.buildingAge.value.toString()
+    yearBuiltController.text = _listingInputController.yearBuilt.value > 0
+        ? _listingInputController.yearBuilt.value.toString()
         : '';
 
-    parkingController.addListener(() {
-      _listingInputController.parking.value = parkingController.text;
-    });
-    poolController.addListener(() {
-      _listingInputController.pool.value = poolController.text;
-    });
     balconyController.addListener(() {
       _listingInputController.balcony.value =
           int.tryParse(balconyController.text) ?? 0;
@@ -147,21 +137,15 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
     orientationController.addListener(() {
       _listingInputController.orientation.value = orientationController.text;
     });
-    buildingAgeController.addListener(() {
-      _listingInputController.buildingAge.value =
-          int.tryParse(buildingAgeController.text) ?? 0;
-    });
-    maintenanceFeeController.addListener(() {
-      _listingInputController.maintenanceFee.value =
-          maintenanceFeeController.text;
+    yearBuiltController.addListener(() {
+      _listingInputController.yearBuilt.value =
+          int.tryParse(yearBuiltController.text) ?? 0;
     });
   }
 
   @override
   void dispose() {
     // Dispose all controllers
-    parkingController.dispose();
-    poolController.dispose();
     balconyController.dispose();
     furnishingController.dispose();
     heatingController.dispose();
@@ -169,8 +153,7 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
     securityController.dispose();
     viewController.dispose();
     orientationController.dispose();
-    buildingAgeController.dispose();
-    maintenanceFeeController.dispose();
+    yearBuiltController.dispose();
     super.dispose();
   }
 
@@ -193,24 +176,7 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
           const Divider(),
           const SizedBox(height: 8),
 
-          // 1. Parking Spaces - CRITICAL for Syrian villas (multiple cars)
-          BuildInput(
-            title: 'parking_spaces'.tr,
-            label: 'enter_parking_spaces'.tr,
-            textController: parkingController,
-            keyboardType: TextInputType.number,
-          ),
-
-          const SizedBox(height: 16),
-
-          // 2. Pool - HIGH priority for Syrian villa buyers
-          BuildInput(
-            title: 'pool'.tr,
-            label: 'enter_pool_details'.tr,
-            textController: poolController,
-          ),
-
-          const SizedBox(height: 16),
+      
 
           // 3. Furnishing - Important for rental/purchase decisions
           BuildInputWithOptions(
@@ -259,11 +225,11 @@ class _VillaAdvancedDetailsState extends State<VillaAdvancedDetails> {
           const Divider(),
           const SizedBox(height: 8),
 
-          // 6. Building Age - Moderate importance for villa quality
+          // 6. Year Built - Moderate importance for villa quality
           BuildInput(
-            title: 'building_age'.tr,
-            label: 'enter_building_age_years'.tr,
-            textController: buildingAgeController,
+            title: 'Year Built',
+            label: 'Year the property was built',
+            textController: yearBuiltController,
             keyboardType: TextInputType.number,
           ),
 

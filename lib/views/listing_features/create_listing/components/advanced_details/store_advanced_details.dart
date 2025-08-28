@@ -18,13 +18,11 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
 
   // Controllers for store-specific fields
   final TextEditingController storeTypeController = TextEditingController();
-  final TextEditingController floorAreaController = TextEditingController();
-  final TextEditingController frontageController = TextEditingController();
-  final TextEditingController parkingSpacesController = TextEditingController();
-  final TextEditingController securitySystemController =
-      TextEditingController();
-  final TextEditingController zoningController = TextEditingController();
-  final TextEditingController footTrafficController = TextEditingController();
+final TextEditingController floorAreaController = TextEditingController();
+final TextEditingController frontageController = TextEditingController();
+// Optional
+final TextEditingController zoningController = TextEditingController();
+final TextEditingController footTrafficController = TextEditingController();
 
   // Dropdown options
   final List<String> storeTypes = [
@@ -104,9 +102,7 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
     storeTypeController.text = _listingInputController.storeType.value;
     floorAreaController.text = _listingInputController.floorArea.value;
     frontageController.text = _listingInputController.frontage.value;
-    parkingSpacesController.text = _listingInputController.parking.value.toString() != '0'
-        ? _listingInputController.parking.value.toString()
-        : '';
+    
     // securitySystemController.text = '';
     zoningController.text = _listingInputController.zoning.value;
     footTrafficController.text = _listingInputController.footTraffic.value;
@@ -121,10 +117,7 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
     frontageController.addListener(() {
       _listingInputController.frontage.value = frontageController.text;
     });
-    parkingSpacesController.addListener(() {
-      // Convert to string for consistency with other fields
-      _listingInputController.parking.value = parkingSpacesController.text;
-    });
+     
     // Security system listener removed
     zoningController.addListener(() {
       _listingInputController.zoning.value = zoningController.text;
@@ -140,8 +133,6 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
     storeTypeController.dispose();
     floorAreaController.dispose();
     frontageController.dispose();
-    parkingSpacesController.dispose();
-    securitySystemController.dispose();
     zoningController.dispose();
     footTrafficController.dispose();
     super.dispose();
@@ -195,28 +186,7 @@ class _StoreAdvancedDetailsState extends State<StoreAdvancedDetails> {
 
           const SizedBox(height: 16),
 
-          // 4. Parking Spaces - ESSENTIAL for Syrian customers
-          BuildInput(
-            title: 'parking_spaces'.tr,
-            label: 'enter_parking_spaces'.tr,
-            textController: parkingSpacesController,
-            keyboardType: TextInputType.number,
-          ),
-
-          const SizedBox(height: 24),
-
-          // MEDIUM PRIORITY - Physical Features
-          Text(
-            'physical_features'.tr,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const Divider(),
-          const SizedBox(height: 8),
-
-
-          const SizedBox(height: 24),
+         
 
           Container(
             width: double.infinity,

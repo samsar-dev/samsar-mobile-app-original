@@ -213,6 +213,35 @@ class SearchIndividualListingModel {
     return result;
   }
 
+  // Real estate getters
+  int? get bedrooms {
+    return details?.json['real_estate']?['bedrooms'] ?? details?.json['bedrooms'];
+  }
+  
+  int? get bathrooms {
+    return details?.json['real_estate']?['bathrooms'] ?? details?.json['bathrooms'];
+  }
+  
+  int? get yearBuilt {
+    return details?.json['real_estate']?['yearBuilt'] ?? details?.json['yearBuilt'];
+  }
+  
+  String? get size {
+    return details?.json['real_estate']?['size'] ?? details?.json['size'];
+  }
+  
+  int? get totalArea {
+    // Try multiple field names that might contain area data
+    final areaValue = details?.json['real_estate']?['totalArea'] ?? 
+                     details?.json['totalArea'] ?? 
+                     details?.json['real_estate']?['area'] ?? 
+                     details?.json['area'];
+    
+    if (areaValue is int) return areaValue;
+    if (areaValue is String) return int.tryParse(areaValue);
+    return null;
+  }
+
   factory SearchIndividualListingModel.fromJson(Map<String, dynamic> json) {
     print('🔍 [SEARCH MODEL DEBUG] Parsing search result with root vehicle fields:');
     print('  - make: ${json["make"]}');

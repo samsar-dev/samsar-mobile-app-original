@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/views/listing_features/listing_detail/listing_detail.dart';
+import 'package:samsar/controllers/listing/favourite_listing_controller.dart';
 
 // Utility function to shorten long subcategory names for display
 String shortenSubcategory(String subcategory) {
@@ -28,6 +29,10 @@ class ListingCard extends StatelessWidget {
   final String? transmission;
   final String? mileage;
   final String listingId;
+  final int? bedrooms;
+  final int? bathrooms;
+  final int? yearBuilt;
+  final int? totalArea;
   bool isDarkTheme;
   ListingCard({
     super.key,
@@ -42,24 +47,15 @@ class ListingCard extends StatelessWidget {
     this.transmission,
     this.mileage,
     required this.listingId,
+    this.bedrooms,
+    this.bathrooms,
+    this.yearBuilt,
+    this.totalArea,
     this.isDarkTheme = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    // 🔍 COMPREHENSIVE DEBUGGING FOR LISTING CARD
-    print('🔍 [LISTING CARD DEBUG] Building card for: $title');
-    print('🔍 [LISTING CARD DEBUG] ListingId: $listingId');
-    print('🔍 [LISTING CARD DEBUG] Price: $price');
-    print('🔍 [LISTING CARD DEBUG] SubCategory: $subCategory');
-    print('🔍 [LISTING CARD DEBUG] ListingAction: $listingAction');
-    print('🔍 [LISTING CARD DEBUG] Vehicle Details:');
-    print('  - FuelType: $fuelType (type: ${fuelType.runtimeType})');
-    print('  - Year: $year (type: ${year.runtimeType})');
-    print('  - Transmission: $transmission (type: ${transmission.runtimeType})');
-    print('  - Mileage: $mileage (type: ${mileage.runtimeType})');
-    print('🔍 [LISTING CARD DEBUG] ================');
-
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
@@ -122,10 +118,50 @@ class ListingCard extends StatelessWidget {
               color: Colors.red,
               borderRadius: BorderRadius.circular(18.0),
             ),
-
             child: ClipRRect(
               borderRadius: BorderRadiusGeometry.circular(18.0),
               child: Image(image: imageUrl, fit: BoxFit.cover),
+            ),
+          ),
+          
+          // Save/Favorite Button
+          Positioned(
+            top: 8,
+            right: 8,
+            child: GetBuilder<FavouriteListingController>(
+              init: FavouriteListingController(),
+              builder: (favouriteController) => GestureDetector(
+                onTap: () {
+                  if (favouriteController.isFavourite(listingId)) {
+                    favouriteController.removeFromFavourites(listingId);
+                  } else {
+                    favouriteController.addToFavourites(listingId);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    favouriteController.isFavourite(listingId)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color: favouriteController.isFavourite(listingId)
+                        ? Colors.blue
+                        : Colors.grey[600],
+                    size: 20,
+                  ),
+                ),
+              ),
             ),
           ),
 
@@ -238,47 +274,72 @@ class ListingCard extends StatelessWidget {
   }
 
   Widget infoGrid(double screenWidth) {
-    // Extract year from title if not available in year field
-    String getDisplayYear() {
-      if (year != null) return year.toString();
+    // Check if this is a real estate listing
+    bool isRealEstate = subCategory.toLowerCase().contains('apartment') ||
+        subCategory.toLowerCase().contains('house') ||
+        subCategory.toLowerCase().contains('villa') ||
+        subCategory.toLowerCase().contains('office') ||
+        subCategory.toLowerCase().contains('land') ||
+        subCategory.toLowerCase().contains('store') ||
+        subCategory.toLowerCase().contains('commercial');
 
-      // Try to extract year from title
-      final titleText = title;
-      final yearRegex = RegExp(r'\b(19|20)\d{2}\b');
-      final match = yearRegex.firstMatch(titleText);
-      if (match != null) {
-        return match.group(0) ?? 'Unknown';
+    List<Widget> infoItems = [];
+
+    if (isRealEstate) {
+      // Real estate info display
+      print('🏠 [LISTING CARD DEBUG] Real estate detected for: $title');
+      print('  - subCategory: $subCategory');
+      print('  - totalArea: $totalArea');
+      print('  - yearBuilt: $yearBuilt');
+      print('  - bedrooms: $bedrooms');
+      print('  - bathrooms: $bathrooms');
+      
+      if (totalArea != null && totalArea! > 0) {
+        print('  - Adding area tag: ${totalArea} m²');
+        infoItems.add(_infoTag('${totalArea} m²', Icons.square_foot));
       }
-      return 'Unknown';
+      
+      // Only show yearBuilt for apartments, houses, and villas
+      final showYearBuilt = subCategory.toLowerCase().contains('apartment') ||
+                           subCategory.toLowerCase().contains('house') ||
+                           subCategory.toLowerCase().contains('villa');
+      
+      if (showYearBuilt && yearBuilt != null && yearBuilt! > 0) {
+        print('  - Adding year built tag: Built ${yearBuilt}');
+        infoItems.add(_infoTag('Built ${yearBuilt}', Icons.calendar_month));
+      } else if (showYearBuilt) {
+        print('  - yearBuilt is null or 0, not showing year built tag');
+      } else {
+        print('  - Not showing yearBuilt for subcategory: $subCategory');
+      }
+      if (bedrooms != null && bedrooms! > 0) {
+        infoItems.add(_infoTag('${bedrooms} bed', Icons.bed));
+      }
+      if (bathrooms != null && bathrooms! > 0) {
+        infoItems.add(_infoTag('${bathrooms} bath', Icons.bathtub));
+      }
+    } else {
+      // Vehicle info display
+      if (fuelType != null && fuelType!.isNotEmpty) {
+        infoItems.add(_infoTag(fuelType!, Icons.gas_meter));
+      }
+      if (year != null) {
+        infoItems.add(_infoTag(year.toString(), Icons.calendar_month));
+      }
+      if (transmission != null && transmission!.isNotEmpty) {
+        infoItems.add(_infoTag(transmission!, Icons.settings));
+      }
+      if (mileage != null && mileage!.isNotEmpty) {
+        infoItems.add(_infoTag(mileage!, Icons.rocket));
+      }
     }
 
-    // Get meaningful fuel type
-    String getDisplayFuelType() {
-      if (fuelType != null && fuelType!.isNotEmpty) return fuelType!;
-      // Default based on vehicle category
-      if (subCategory.toLowerCase().contains('car')) return 'Gasoline';
-      return 'Unknown';
+    // If no specific info available, show minimal info
+    if (infoItems.isEmpty) {
+      if (year != null) {
+        infoItems.add(_infoTag(year.toString(), Icons.calendar_month));
+      }
     }
-
-    // Get meaningful transmission
-    String getDisplayTransmission() {
-      if (transmission != null && transmission!.isNotEmpty)
-        return transmission!;
-      return 'Manual'; // Most common default
-    }
-
-    // Get meaningful mileage/distance info
-    String getDisplayMileage() {
-      if (mileage != null && mileage!.isNotEmpty) return mileage!;
-      return 'Contact seller'; // More helpful than N/A
-    }
-
-    final infoItems = [
-      _infoTag(getDisplayFuelType(), Icons.gas_meter),
-      _infoTag(getDisplayYear(), Icons.calendar_month),
-      _infoTag(getDisplayTransmission(), Icons.settings),
-      _infoTag(getDisplayMileage(), Icons.rocket),
-    ];
 
     // Split the list into chunks of 2
     List<Widget> rows = [];

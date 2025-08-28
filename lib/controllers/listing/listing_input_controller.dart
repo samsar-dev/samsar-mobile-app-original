@@ -89,7 +89,6 @@ class ListingInputController extends GetxController {
   RxString view = "".obs;
   RxString orientation = "".obs;
   RxInt buildingAge = 0.obs;
-  RxString maintenanceFee = "".obs;
   RxString energyRating = "".obs;
 
   // Store-specific fields
@@ -865,6 +864,7 @@ class ListingInputController extends GetxController {
       buildingAge: buildingAge.value,
       orientation: orientation.value,
       view: view.value,
+      features: selectedFeatures.isNotEmpty ? selectedFeatures.toList() : null,
     );
 
     return real_estate_model.RealEstateModel(

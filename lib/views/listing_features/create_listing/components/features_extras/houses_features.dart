@@ -21,9 +21,7 @@ class _HousesFeaturesState extends State<HousesFeatures> {
     'central_heating': false,
     'air_conditioning': false,
     'fireplace': false,
-    'swimming_pool': false,
     'security_system': false,
-    'generator': false,
     'solar_panels': false,
     'water_well': false,
   };

@@ -10,6 +10,7 @@ import 'package:samsar/views/home/home_view.dart';
 import 'package:samsar/widgets/custom_snackbar/custom_snackbar.dart';
 import 'package:samsar/widgets/loading_dialog/loading_dialog.dart';
 import 'package:samsar/utils/error_message_mapper.dart';
+import 'package:samsar/controllers/listing/listing_input_controller.dart';
 
 class AuthController extends GetxController {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -134,6 +135,18 @@ class AuthController extends GetxController {
       await _storage.deleteAll(); // Clear all stored data including user_email
       user.value = null;
       accessToken.value = '';
+      
+      // Clear listing data when clearing invalid session
+      try {
+        if (Get.isRegistered<ListingInputController>()) {
+          final listingController = Get.find<ListingInputController>();
+          listingController.clearAllData();
+          print('🧹 Cleared listing data on invalid session');
+        }
+      } catch (e) {
+        print('⚠️ Could not clear listing data on invalid session: $e');
+      }
+      
       print('🧹 Cleared all invalid session data');
     } catch (e) {
       print('❌ Error clearing invalid session: $e');
@@ -427,6 +440,18 @@ class AuthController extends GetxController {
     await _storage.deleteAll();
     user.value = null;
     accessToken.value = '';
+    
+    // Clear listing data to prevent cached data from appearing in new sessions
+    try {
+      if (Get.isRegistered<ListingInputController>()) {
+        final listingController = Get.find<ListingInputController>();
+        listingController.clearAllData();
+        print('🧹 Cleared listing data on logout');
+      }
+    } catch (e) {
+      print('⚠️ Could not clear listing data on logout: $e');
+    }
+    
     Get.offAll(() => LoginView());
     showCustomSnackbar('logout_successful'.tr, true);
   }

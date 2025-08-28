@@ -15,7 +15,6 @@ class _HousesAdvancedDetailsState extends State<HousesAdvancedDetails> {
   late final ListingInputController _listingInputController;
 
   final TextEditingController furnishingController = TextEditingController();
-  final TextEditingController totalFloorsController = TextEditingController();
   final TextEditingController parkingController = TextEditingController();
   final TextEditingController yearBuiltController = TextEditingController();
 
@@ -46,9 +45,6 @@ class _HousesAdvancedDetailsState extends State<HousesAdvancedDetails> {
     }
 
     furnishingController.text = _listingInputController.furnishing.value;
-    totalFloorsController.text = _listingInputController.totalFloors.value > 0
-        ? _listingInputController.totalFloors.value.toString()
-        : '';
     parkingController.text = _listingInputController.parking.value;
     yearBuiltController.text = _listingInputController.yearBuilt.value > 0
         ? _listingInputController.yearBuilt.value.toString()
@@ -57,10 +53,7 @@ class _HousesAdvancedDetailsState extends State<HousesAdvancedDetails> {
     furnishingController.addListener(() {
       _listingInputController.furnishing.value = furnishingController.text;
     });
-    totalFloorsController.addListener(() {
-      _listingInputController.totalFloors.value =
-          int.tryParse(totalFloorsController.text) ?? 0;
-    });
+  
     parkingController.addListener(() {
       _listingInputController.parking.value = parkingController.text;
     });
@@ -74,7 +67,6 @@ class _HousesAdvancedDetailsState extends State<HousesAdvancedDetails> {
   @override
   void dispose() {
     furnishingController.dispose();
-    totalFloorsController.dispose();
     parkingController.dispose();
     yearBuiltController.dispose();
     super.dispose();
@@ -105,14 +97,7 @@ class _HousesAdvancedDetailsState extends State<HousesAdvancedDetails> {
           ),
           const SizedBox(height: 16),
 
-          // 2. Total Floors - Important for family size planning
-          BuildInput(
-            title: 'Total Floors',
-            label: 'Total floors in the building',
-            textController: totalFloorsController,
-            keyboardType: TextInputType.number,
-          ),
-          const SizedBox(height: 16),
+          
 
           // 3. Furnishing - HIGH priority for Syrian renters
           BuildInputWithOptions(

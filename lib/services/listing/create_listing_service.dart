@@ -180,18 +180,17 @@ class CreateListingService {
         'totalArea': realEstateDetails.details.totalArea?.toString(),
         'bathrooms': realEstateDetails.details.bathrooms?.toString(),
         'bedrooms': realEstateDetails.details.bedrooms?.toString(),
+        'totalRooms': realEstateDetails.details.totalRooms?.toString(),
         // Only essential fields as separate columns
         'yearBuilt': realEstateDetails.details.yearBuilt?.toString(),
         'furnishing': realEstateDetails.details.furnishing,
+        'floor': realEstateDetails.details.floor?.toString() ?? '',
+        'totalFloors': realEstateDetails.details.totalFloors?.toString() ?? '',
         // Only include fields that have actual values (not empty/default)
         'details': jsonEncode({
           'realEstate': {
             if (realEstateDetails.details.propertyType.isNotEmpty)
               'propertyType': realEstateDetails.details.propertyType,
-            if (realEstateDetails.details.floor != null && realEstateDetails.details.floor! > 0)
-              'floor': realEstateDetails.details.floor,
-            if (realEstateDetails.details.totalFloors != null && realEstateDetails.details.totalFloors! > 0)
-              'totalFloors': realEstateDetails.details.totalFloors,
             if (realEstateDetails.details.parking?.isNotEmpty == true)
               'parking': realEstateDetails.details.parking,
             if (realEstateDetails.details.facing?.isNotEmpty == true)
@@ -216,6 +215,8 @@ class CreateListingService {
               'orientation': realEstateDetails.details.orientation,
             if (realEstateDetails.details.view?.isNotEmpty == true)
               'view': realEstateDetails.details.view,
+            if (realEstateDetails.details.features != null && realEstateDetails.details.features!.isNotEmpty)
+              'features': realEstateDetails.details.features,
           },
         }),
         'listingImage': await Future.wait(

@@ -25,7 +25,6 @@ import 'package:samsar/widgets/listing_card/listing_card.dart'
     deferred as listing_card;
 import 'package:samsar/widgets/filters/simple_filters.dart';
 import 'package:samsar/widgets/filters/advanced_filters.dart';
-import 'package:samsar/widgets/filters/schemas/filter_schema_manager.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -588,23 +587,76 @@ class _HomePageContentState extends State<_HomePageContent> {
   }
 
   void _onSubCategorySelected(String subCategoryId) {
-    setState(() {
-      selectedSubCategory = subCategoryId;
-      selectedListingAction = null;
-      showAdvancedFilters =
-          true; // Enable advanced filters when subcategory is selected
-    });
+    final filterController = Get.find<FilterController>();
+    
+    print('🔍 [SUBCATEGORY DEBUG] _onSubCategorySelected called');
+    print('  - subCategoryId: $subCategoryId');
+    print('  - selectedMainCategory: $selectedMainCategory');
+    
+    // Check if this is a real estate category that supports multiple selection
+    final isRealEstate = selectedMainCategory?.toLowerCase() == 'real_estate';
+    print('  - isRealEstate: $isRealEstate');
+    
+    if (isRealEstate) {
+      print('🏠 [REAL ESTATE DEBUG] Using multiple selection');
+      print('  - Before toggle: ${filterController.selectedSubcategories}');
+      
+      // For real estate, use multiple selection
+      filterController.toggleSubcategory(subCategoryId.toUpperCase());
+      
+      print('  - After toggle: ${filterController.selectedSubcategories}');
+      print('  - Selected count: ${filterController.selectedSubcategories.length}');
+      
+      setState(() {
+        // Update UI state based on multiple selection
+        if (filterController.selectedSubcategories.isNotEmpty) {
+          selectedSubCategory = filterController.selectedSubcategories.first;
+          showAdvancedFilters = true;
+          print('  - UI State: selectedSubCategory = ${selectedSubCategory}');
+          print('  - UI State: showAdvancedFilters = true');
+        } else {
+          selectedSubCategory = null;
+          showAdvancedFilters = false;
+          print('  - UI State: No subcategories selected, clearing state');
+        }
+        selectedListingAction = null;
+      });
+      
+      // Load listings for multiple subcategories
+      print('🔄 [REAL ESTATE DEBUG] Loading multiple subcategory listings...');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadMultipleSubcategoryListings(selectedMainCategory!);
+      });
+    } else {
+      print('🚗 [OTHER CATEGORY DEBUG] Using single selection');
+      // For other categories, use single selection (existing behavior)
+      setState(() {
+        selectedSubCategory = subCategoryId;
+        selectedListingAction = null;
+        showAdvancedFilters = true;
+      });
 
-    // Load listings immediately for this subcategory
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadSubcategoryListings(selectedMainCategory!, subCategoryId);
-    });
+      // Clear multiple selection and use single selection
+      filterController.clearSelectedSubcategories();
+      filterController.selectedSubcategory.value = subCategoryId.toUpperCase();
+      
+      print('  - Single selection set: ${filterController.selectedSubcategory.value}');
+
+      // Load listings immediately for this subcategory
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadSubcategoryListings(selectedMainCategory!, subCategoryId);
+      });
+    }
   }
 
   void _onListingActionSelected(String actionId) {
     setState(() {
       selectedListingAction = actionId;
     });
+
+    // Sync FilterController with listing action selection
+    final filterController = Get.find<FilterController>();
+    filterController.selectedListingType.value = actionId;
 
     // Apply listing action filter and reload
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -628,6 +680,27 @@ class _HomePageContentState extends State<_HomePageContent> {
     filterController.selectedListingType.value =
         ''; // Clear listing type filter
     listingController.applyFilters();
+  }
+
+  void _loadMultipleSubcategoryListings(String category) {
+    print('🔄 [MULTIPLE SUBCATEGORY DEBUG] _loadMultipleSubcategoryListings called');
+    print('  - category: $category');
+    print('  - selectedSubcategories: ${filterController.selectedSubcategories}');
+    print('  - selectedSubcategories count: ${filterController.selectedSubcategories.length}');
+    
+    // Load listings for multiple subcategories (real estate)
+    listingController.setCategory(category.toUpperCase());
+    filterController.selectedSubcategory.value = ''; // Clear single selection
+    filterController.selectedListingType.value = ''; // Clear listing type filter
+    
+    print('  - Category set to: ${category.toUpperCase()}');
+    print('  - Single subcategory cleared');
+    print('  - Listing type cleared');
+    print('  - About to call applyFilters()...');
+    
+    listingController.applyFilters();
+    
+    print('  - applyFilters() called');
   }
 
   void _applyListingActionFilter(String action) {
@@ -699,6 +772,25 @@ class _HomePageContentState extends State<_HomePageContent> {
           selectedCategory: selectedMainCategory,
           selectedSubcategory: selectedSubCategory,
           onFiltersChanged: () {
+            // Sync FilterController with home view state
+            final filterController = Get.find<FilterController>();
+            if (selectedSubCategory != null) {
+              filterController.selectedSubcategory.value = selectedSubCategory!.toUpperCase();
+            }
+            
+            // Only set listing type if one is explicitly selected in home view
+            if (selectedListingAction != null) {
+              filterController.selectedListingType.value = selectedListingAction!;
+            } else {
+              // Clear listing type filter if none selected in home view
+              filterController.selectedListingType.value = '';
+            }
+            
+            // Set the category in ListingController to match current selection
+            if (selectedMainCategory != null) {
+              listingController.setCategory(selectedMainCategory!);
+            }
+            
             // Apply filters and refresh listings
             listingController.applyFilters();
           },
@@ -859,7 +951,7 @@ class _HomePageContentState extends State<_HomePageContent> {
                 children: [
                   // Show listings immediately based on selection state
                   if (selectedMainCategory == null) ...[
-                    _buildMainCategorySelection(),
+                    _buildMainCategoryButtons(),
                     const SizedBox(height: 24),
                     SimpleFilters(onFiltersChanged: _applySimplifiedFilters),
                     const SizedBox(height: 24),
@@ -937,10 +1029,16 @@ class _HomePageContentState extends State<_HomePageContent> {
                   subCategory: item.subCategory ?? 'General',
                   listingAction: item.listingAction ?? 'N/A',
                   imageUrl: imageProvider,
+                  // Vehicle details
                   year: item.year ?? item.yearBuilt,
                   mileage: item.mileage?.toString(),
                   fuelType: item.fuelType?.toString(),
                   transmission: item.transmission?.toString(),
+                  // Real estate details
+                  bedrooms: item.bedrooms,
+                  bathrooms: item.bathrooms,
+                  yearBuilt: item.yearBuilt,
+                  totalArea: item.totalArea,
                   isDarkTheme: _themeController.isDarkMode.value,
                 );
               } else {
@@ -954,56 +1052,83 @@ class _HomePageContentState extends State<_HomePageContent> {
     });
   }
 
-  Widget _buildMainCategorySelection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildMainCategoryButtons() {
+    return Row(
       children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue.shade600, Colors.blue.shade800],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.blue.withValues(alpha: 0.3),
-                blurRadius: 8,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.category, color: Colors.white, size: 28),
-              SizedBox(width: 12),
-              Text(
-                'select_main_category'.tr,
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  letterSpacing: 0.5,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black26,
-                      offset: Offset(1, 1),
-                      blurRadius: 2,
+        // Real Estate Button
+        Expanded(
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => _onMainCategorySelected('real_estate'),
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.deepOrange.shade50,
+                  border: Border.all(color: Colors.deepOrange.shade200, width: 1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.home_work_rounded,
+                      size: 20,
+                      color: Colors.deepOrange.shade700,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'real_estate'.tr,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.deepOrange.shade700,
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
-        const SizedBox(height: 20),
-        _buildCategoryGrid(
-          title: 'الفئات الرئيسية',
-          categories: mainCategories,
-          onCategorySelected: _onMainCategorySelected,
-          columns: 2,
+        const SizedBox(width: 12),
+        // Vehicles Button
+        Expanded(
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => _onMainCategorySelected('vehicles'),
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.indigo.shade50,
+                  border: Border.all(color: Colors.indigo.shade200, width: 1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.directions_car_rounded,
+                      size: 20,
+                      color: Colors.indigo.shade700,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'vehicles'.tr,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.indigo.shade700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -1041,41 +1166,81 @@ class _HomePageContentState extends State<_HomePageContent> {
 
   Widget _buildSubcategoryToggles() {
     final subcategories = _getCurrentSubCategories();
+    final filterController = Get.find<FilterController>();
+    final isRealEstate = selectedMainCategory?.toLowerCase() == 'real_estate';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'select_type'.tr,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: _themeController.isDarkMode.value
-                ? Colors.white
-                : Colors.black87,
-          ),
+        Row(
+          children: [
+            Text(
+              'select_type'.tr,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: _themeController.isDarkMode.value
+                    ? Colors.white
+                    : Colors.black87,
+              ),
+            ),
+            if (isRealEstate) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                ),
+                child: Text(
+                  'Multiple Selection',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.blue[700],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
         const SizedBox(height: 12),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
             children: subcategories.map((category) {
-              final isSelected = selectedSubCategory == category.id;
+              bool isSelected;
+              if (isRealEstate) {
+                // For real estate, check multiple selection
+                isSelected = filterController.isSubcategorySelected(category.id.toUpperCase());
+              } else {
+                // For other categories, use single selection
+                isSelected = selectedSubCategory == category.id;
+              }
+              
               return Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: FilterChip(
                   selected: isSelected,
                   label: Text(category.title),
                   onSelected: (selected) {
-                    if (selected) {
+                    if (isRealEstate) {
+                      // For real estate, always toggle (multiple selection)
                       _onSubCategorySelected(category.id);
                     } else {
-                      setState(() {
-                        selectedSubCategory = null;
-                        selectedListingAction = null;
-                        showAdvancedFilters = false;
-                      });
-                      _loadCategoryListings(selectedMainCategory!);
+                      // For other categories, use single selection logic
+                      if (selected) {
+                        _onSubCategorySelected(category.id);
+                      } else {
+                        setState(() {
+                          selectedSubCategory = null;
+                          selectedListingAction = null;
+                          showAdvancedFilters = false;
+                        });
+                        filterController.clearSelectedSubcategories();
+                        _loadCategoryListings(selectedMainCategory!);
+                      }
                     }
                   },
                   backgroundColor: _themeController.isDarkMode.value
@@ -1088,6 +1253,18 @@ class _HomePageContentState extends State<_HomePageContent> {
             }).toList(),
           ),
         ),
+        // Show selected count for real estate
+        if (isRealEstate && filterController.selectedSubcategories.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            '${filterController.selectedSubcategories.length} type(s) selected',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.blue[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -1158,57 +1335,13 @@ class _HomePageContentState extends State<_HomePageContent> {
   Widget _buildAdvancedFiltersButton() {
     return ElevatedButton.icon(
       onPressed: () {
-        // Get dynamic filters for the selected subcategory
-        final availableFilters = FilterSchemaManager.getFilters(
-          mainCategory: selectedMainCategory!,
-          subcategory: selectedSubCategory,
-        );
-
-        // Show advanced filters dialog with dynamic schema
-        _showAdvancedFiltersDialog(availableFilters);
+        _showAdvancedFilters();
       },
       icon: const Icon(Icons.tune),
       label: Text('advanced_filters'.tr),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
-      ),
-    );
-  }
-
-  void _showAdvancedFiltersDialog(List<String> availableFilters) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('advanced_filters'.tr),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('available_filters_for'.tr + ' ${selectedSubCategory}:'),
-              const SizedBox(height: 16),
-              ...availableFilters.map(
-                (filter) => ListTile(
-                  title: Text(filter),
-                  leading: Icon(Icons.filter_alt),
-                  onTap: () {
-                    // TODO: Implement specific filter logic
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('$filter filter selected')),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('close'.tr),
-          ),
-        ],
       ),
     );
   }

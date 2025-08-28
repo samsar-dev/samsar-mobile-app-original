@@ -53,6 +53,8 @@ dependencies:
   characters: ^1.4.0  # For better text handling - pinned by Flutter SDK
   meta: ^1.16.0  # Aligned with Flutter SDK version
   dio_cache_interceptor: ^4.0.3
+  photo_view: ^0.14.0
+  share_plus: ^11.1.0
 
 dev_dependencies:
   flutter_test:

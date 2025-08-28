@@ -42,8 +42,9 @@ class _RealEstateEssentialDetailsState
   final TextEditingController priceController = TextEditingController();
   late TextEditingController locationController;
   final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController bedroomsController = TextEditingController();
-  final TextEditingController bathroomsController = TextEditingController();
+  final TextEditingController _bedroomsController = TextEditingController();
+  final TextEditingController _bathroomsController = TextEditingController();
+  final TextEditingController _totalRoomsController = TextEditingController();
   final TextEditingController areaController = TextEditingController();
   final TextEditingController sellerTypeController = TextEditingController();
   final TextEditingController conditionController = TextEditingController();
@@ -55,7 +56,8 @@ class _RealEstateEssentialDetailsState
   String selectedPropertyType = "";
   int selectedIndex = -1;
 
-  // Image picker
+  // Listing action
+  String listingAction = 'FOR_SALE';
   final List<XFile> _images = [];
   final ImagePicker _picker = ImagePicker();
 
@@ -166,6 +168,11 @@ class _RealEstateEssentialDetailsState
     });
   }
 
+  bool _shouldShowBedroomsAndBathrooms() {
+    final subCategory = _listingInputController.subCategory.value;
+    return subCategory == 'APARTMENT' || subCategory == 'HOUSE' || subCategory == 'VILLA';
+  }
+
   void _loadExistingData() {
     // 🔄 Load existing data from shared controller
     if (_listingInputController.title.value.isNotEmpty) {
@@ -259,10 +266,10 @@ class _RealEstateEssentialDetailsState
       areaController.text = _listingInputController.totalArea.value.toString();
     }
     if (_listingInputController.bedrooms.value > 0) {
-      bedroomsController.text = _listingInputController.bedrooms.value.toString();
+      _bedroomsController.text = _listingInputController.bedrooms.value.toString();
     }
     if (_listingInputController.bathrooms.value > 0) {
-      bathroomsController.text = _listingInputController.bathrooms.value.toString();
+      _bathroomsController.text = _listingInputController.bathrooms.value.toString();
     }
 
     // 🔧 CRITICAL FIX: Load existing images from controller
@@ -300,20 +307,20 @@ class _RealEstateEssentialDetailsState
       // SYNC: Update controller with current value
       _listingInputController.location.value = locationController.text;
     });
-    bedroomsController.addListener(() {
+    _bedroomsController.addListener(() {
       if (widget.showValidation) setState(() {});
       // SYNC: Update controller with current value for bedrooms
-      if (bedroomsController.text.isNotEmpty) {
+      if (_bedroomsController.text.isNotEmpty) {
         _listingInputController.bedrooms.value =
-            int.tryParse(bedroomsController.text) ?? 0;
+            int.tryParse(_bedroomsController.text) ?? 0;
       }
     });
-    bathroomsController.addListener(() {
+    _bathroomsController.addListener(() {
       if (widget.showValidation) setState(() {});
       // SYNC: Update controller with current value for bathrooms
-      if (bathroomsController.text.isNotEmpty) {
+      if (_bathroomsController.text.isNotEmpty) {
         _listingInputController.bathrooms.value =
-            int.tryParse(bathroomsController.text) ?? 0;
+            int.tryParse(_bathroomsController.text) ?? 0;
       }
     });
     areaController.addListener(() {
@@ -436,8 +443,9 @@ class _RealEstateEssentialDetailsState
     priceController.dispose();
     locationController.dispose();
     descriptionController.dispose();
-    bedroomsController.dispose();
-    bathroomsController.dispose();
+    _bedroomsController.dispose();
+    _bathroomsController.dispose();
+    _totalRoomsController.dispose();
     areaController.dispose();
     sellerTypeController.dispose();
     listingActionController.dispose();
@@ -545,8 +553,15 @@ class _RealEstateEssentialDetailsState
                               'LAND',
                               'STORE',
                             ];
-                            _listingInputController.subCategory.value =
-                                propertyTypeKeys[index];
+                            
+                            // Clear subcategory-specific data when switching
+                            final newSubCategory = propertyTypeKeys[index];
+                            if (_listingInputController.subCategory.value != newSubCategory) {
+                              _listingInputController.clearSubcategorySpecificFeatures(newSubCategory);
+                              print('🧹 Cleared data for subcategory switch: ${_listingInputController.subCategory.value} → $newSubCategory');
+                            }
+                            
+                            _listingInputController.subCategory.value = newSubCategory;
                             // Keep mainCategory as REAL_ESTATE for backend
                             _listingInputController.mainCategory.value =
                                 'REAL_ESTATE';
@@ -634,15 +649,282 @@ class _RealEstateEssentialDetailsState
                                             ]
                                           : null,
                                     ),
+                                    child: Center(
+                                      child: Text(
+                                        'for_sale'.tr,
+                                        style: TextStyle(
+                                          color: listingAction == 'FOR_SALE'
+                                              ? Colors.white
+                                              : Colors.green.shade600,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              // For Rent Button
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      // listingAction = 'FOR_RENT'; // Removed - managed by controller
+                                    });
+                                    _listingInputController.listingAction.value = 'FOR_RENT';
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                      horizontal: 16,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: listingAction == 'FOR_RENT'
+                                          ? Colors.red.shade600
+                                          : Colors.white,
+                                      border: Border.all(
+                                        color: listingAction == 'FOR_RENT'
+                                            ? Colors.red.shade600
+                                            : Colors.grey.shade300,
+                                        width: 2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'for_rent'.tr,
+                                        style: TextStyle(
+                                          color: listingAction == 'FOR_RENT'
+                                              ? Colors.white
+                                              : Colors.red.shade600,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    }),
+                    const SizedBox(height: 24),
+                    
+                    // Bedrooms Field
+                    if (_shouldShowBedroomsAndBathrooms())
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Bedrooms',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _bedroomsController,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(2),
+                              ],
+                              decoration: InputDecoration(
+                                hintText: 'Enter number of bedrooms',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 16,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter number of bedrooms';
+                                }
+                                final bedrooms = int.tryParse(value);
+                                if (bedrooms == null || bedrooms < 0 || bedrooms > 10) {
+                                  return 'Bedrooms must be between 0 and 10';
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                final bedrooms = int.tryParse(value);
+                                if (bedrooms != null) {
+                                  _listingInputController.bedrooms.value = bedrooms;
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // Bathrooms Field
+                    if (_shouldShowBedroomsAndBathrooms())
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Bathrooms',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _bathroomsController,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,1}$')),
+                              ],
+                              decoration: InputDecoration(
+                                hintText: 'Enter number of bathrooms (e.g., 2.5)',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 16,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter number of bathrooms';
+                                }
+                                final bathrooms = double.tryParse(value);
+                                if (bathrooms == null || bathrooms < 0 || bathrooms > 10) {
+                                  return 'Bathrooms must be between 0 and 10';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // Total Rooms Field
+                    if (_shouldShowBedroomsAndBathrooms())
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Total Rooms',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _totalRoomsController,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(2),
+                              ],
+                              decoration: InputDecoration(
+                                hintText: 'Enter total number of rooms',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 16,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter total number of rooms';
+                                }
+                                final totalRooms = int.tryParse(value);
+                                if (totalRooms == null || totalRooms < 1 || totalRooms > 20) {
+                                  return 'Total rooms must be between 1 and 20';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // Listing Action Selection
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'listing_action'.tr,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              // For Sale Button
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      listingAction = 'FOR_SALE';
+                                    });
+                                    _listingInputController.listingAction.value = 'FOR_SALE';
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                      horizontal: 16,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: listingAction == 'FOR_SALE'
+                                          ? Colors.blue.shade600
+                                          : Colors.white,
+                                      border: Border.all(
+                                        color: listingAction == 'FOR_SALE'
+                                            ? Colors.blue.shade600
+                                            : Colors.grey.shade300,
+                                        width: 2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: listingAction == 'FOR_SALE'
+                                          ? [
+                                              BoxShadow(
+                                                color: Colors.blue.withOpacity(
+                                                  0.4,
+                                                ),
+                                                blurRadius: 8,
+                                                offset: Offset(0, 4),
+                                              ),
+                                            ]
+                                          : null,
+                                    ),
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
                                         Icon(
-                                          Icons.monetization_on,
+                                          Icons.sell,
                                           color: listingAction == 'FOR_SALE'
                                               ? Colors.white
-                                              : Colors.green.shade700,
+                                              : Colors.blue.shade700,
                                           size: 22,
                                         ),
                                         SizedBox(width: 10),
@@ -651,7 +933,7 @@ class _RealEstateEssentialDetailsState
                                           style: TextStyle(
                                             color: listingAction == 'FOR_SALE'
                                                 ? Colors.white
-                                                : Colors.green.shade700,
+                                                : Colors.blue.shade700,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 17,
                                             letterSpacing: 0.5,
@@ -662,37 +944,32 @@ class _RealEstateEssentialDetailsState
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 12),
-                              // For Rent Button - Enhanced
+                              const SizedBox(width: 12),
+                              // For Rent Button
                               Expanded(
                                 child: GestureDetector(
                                   onTap: () {
-                                    _listingInputController
-                                            .listingAction
-                                            .value =
-                                        'FOR_RENT';
+                                    setState(() {
+                                      // listingAction = 'FOR_RENT'; // Removed - managed by controller
+                                    });
+                                    _listingInputController.listingAction.value = 'FOR_RENT';
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(vertical: 18),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                      horizontal: 16,
+                                    ),
                                     decoration: BoxDecoration(
-                                      gradient: listingAction == 'FOR_RENT'
-                                          ? LinearGradient(
-                                              colors: [
-                                                Colors.red.shade500,
-                                                Colors.red.shade700,
-                                              ],
-                                              begin: Alignment.topCenter,
-                                              end: Alignment.bottomCenter,
-                                            )
-                                          : null,
                                       color: listingAction == 'FOR_RENT'
-                                          ? null
-                                          : Colors.red.withOpacity(0.08),
-                                      borderRadius: BorderRadius.circular(15),
+                                          ? Colors.red.shade600
+                                          : Colors.white,
                                       border: Border.all(
-                                        color: Colors.red.shade600,
-                                        width: 2.5,
+                                        color: listingAction == 'FOR_RENT'
+                                            ? Colors.red.shade600
+                                            : Colors.grey.shade300,
+                                        width: 2,
                                       ),
+                                      borderRadius: BorderRadius.circular(8),
                                       boxShadow: listingAction == 'FOR_RENT'
                                           ? [
                                               BoxShadow(
@@ -736,8 +1013,8 @@ class _RealEstateEssentialDetailsState
                             ],
                           ),
                         ],
-                      );
-                    }),
+                      ),
+                    ),
                     SizedBox(height: 12),
                     // Searching Button
                     Obx(() {
@@ -907,12 +1184,12 @@ class _RealEstateEssentialDetailsState
                     : SizedBox.shrink();
               }),
 
-              // Show bedrooms and bathrooms only for Apartment and House
+              // Show bedrooms and bathrooms for Apartment, House, and Villa
               Obx(() {
-                final propertyType = _listingInputController.mainCategory.value
-                    .toLowerCase();
-                final shouldShow =
-                    propertyType == 'apartment' || propertyType == 'house';
+                final subCategory = _listingInputController.subCategory.value.toUpperCase();
+                final shouldShow = subCategory == 'APARTMENT' || 
+                                 subCategory == 'HOUSE' || 
+                                 subCategory == 'VILLA';
                 return shouldShow
                     ? Container(
                         child: Column(
@@ -920,7 +1197,7 @@ class _RealEstateEssentialDetailsState
                             BuildInput(
                               title: "bedrooms".tr,
                               label: "number_of_bedrooms".tr,
-                              textController: bedroomsController,
+                              textController: _bedroomsController,
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "bedrooms_required".tr;
@@ -929,12 +1206,12 @@ class _RealEstateEssentialDetailsState
                               },
                               hasError:
                                   widget.showValidation &&
-                                  bedroomsController.text.trim().isEmpty,
+                                  _bedroomsController.text.trim().isEmpty,
                             ),
                             BuildInput(
                               title: "bathrooms".tr,
                               label: "number_of_bathrooms".tr,
-                              textController: bathroomsController,
+                              textController: _bathroomsController,
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "bathrooms_required".tr;
@@ -943,7 +1220,7 @@ class _RealEstateEssentialDetailsState
                               },
                               hasError:
                                   widget.showValidation &&
-                                  bathroomsController.text.trim().isEmpty,
+                                  _bathroomsController.text.trim().isEmpty,
                             ),
                           ],
                         ),

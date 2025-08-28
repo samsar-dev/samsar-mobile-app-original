@@ -45,6 +45,13 @@ class _CreateListingViewState extends State<CreateListingView> {
     );
     print('🆕 ListingInputController registered as PERMANENT instance');
 
+    // Clear any cached data from previous sessions to ensure fresh start
+    if (_listingInputController.hasEssentialData()) {
+      print('🧹 Found cached data from previous session, clearing...');
+      _listingInputController.clearAllData();
+      print('✅ Cached data cleared for fresh listing creation');
+    }
+
     print('📊 Controller state at CreateListingView init:');
     print(
       '   📝 mainCategory: "${_listingInputController.mainCategory.value}"',

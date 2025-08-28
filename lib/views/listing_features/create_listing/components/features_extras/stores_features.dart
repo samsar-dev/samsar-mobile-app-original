@@ -17,15 +17,10 @@ class _StoresFeaturesState extends State<StoresFeatures> {
     'street_front': false,
     'display_windows': false,
     'storage_room': false,
-    'customer_parking': false,
     'air_conditioning': false,
     'security_system': false,
-    'loading_dock': false,
-    'office_space': false,
     'restroom': false,
-    'generator': false,
     'internet_ready': false,
-    'disabled_access': false,
   };
 
   @override

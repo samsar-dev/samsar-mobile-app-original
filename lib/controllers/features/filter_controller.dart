@@ -6,6 +6,7 @@ class FilterController extends GetxController {
   // Filter state variables
   RxString selectedSort = ''.obs;
   RxString selectedSubcategory = ''.obs;
+  RxList<String> selectedSubcategories = <String>[].obs; // For multiple selection
   RxString selectedListingType = ''.obs;
   RxString selectedCity = ''.obs;
   RxnInt selectedYear = RxnInt();
@@ -17,12 +18,20 @@ class FilterController extends GetxController {
   RxString selectedTransmission = ''.obs;
   RxString selectedBodyType = ''.obs;
   RxString selectedCondition = ''.obs;
+  RxString selectedMake = ''.obs;
+  RxString selectedModel = ''.obs;
+  RxnInt selectedMaxMileage = RxnInt();
 
   // Real estate-specific filters
   RxnInt selectedBedrooms = RxnInt();
   RxnInt selectedBathrooms = RxnInt();
   RxString selectedFurnishing = ''.obs;
   RxString selectedParking = ''.obs;
+  RxnDouble selectedMinArea = RxnDouble();
+  RxnDouble selectedMaxArea = RxnDouble();
+  RxnInt selectedYearBuilt = RxnInt();
+  RxnInt selectedFloor = RxnInt();
+  RxString selectedSellerType = ''.obs;
 
   // Location-based filtering
   Rx<CityInfo?> selectedLocation = Rx<CityInfo?>(null);
@@ -98,6 +107,7 @@ class FilterController extends GetxController {
   bool get hasActiveFilters {
     return selectedSort.value.isNotEmpty ||
         selectedSubcategory.value.isNotEmpty ||
+        selectedSubcategories.isNotEmpty ||
         selectedListingType.value.isNotEmpty ||
         selectedCity.value.isNotEmpty ||
         selectedYear.value != null ||
@@ -109,10 +119,18 @@ class FilterController extends GetxController {
         selectedTransmission.value.isNotEmpty ||
         selectedBodyType.value.isNotEmpty ||
         selectedCondition.value.isNotEmpty ||
+        selectedMake.value.isNotEmpty ||
+        selectedModel.value.isNotEmpty ||
+        selectedMaxMileage.value != null ||
         selectedBedrooms.value != null ||
         selectedBathrooms.value != null ||
         selectedFurnishing.value.isNotEmpty ||
-        selectedParking.value.isNotEmpty;
+        selectedParking.value.isNotEmpty ||
+        selectedMinArea.value != null ||
+        selectedMaxArea.value != null ||
+        selectedYearBuilt.value != null ||
+        selectedFloor.value != null ||
+        selectedSellerType.value.isNotEmpty;
   }
 
   /// Get count of active filters
@@ -120,6 +138,7 @@ class FilterController extends GetxController {
     int count = 0;
     if (selectedSort.value.isNotEmpty) count++;
     if (selectedSubcategory.value.isNotEmpty) count++;
+    if (selectedSubcategories.isNotEmpty) count++;
     if (selectedListingType.value.isNotEmpty) count++;
     if (selectedCity.value.isNotEmpty) count++;
     if (selectedYear.value != null) count++;
@@ -131,10 +150,18 @@ class FilterController extends GetxController {
     if (selectedTransmission.value.isNotEmpty) count++;
     if (selectedBodyType.value.isNotEmpty) count++;
     if (selectedCondition.value.isNotEmpty) count++;
+    if (selectedMake.value.isNotEmpty) count++;
+    if (selectedModel.value.isNotEmpty) count++;
+    if (selectedMaxMileage.value != null) count++;
     if (selectedBedrooms.value != null) count++;
     if (selectedBathrooms.value != null) count++;
     if (selectedFurnishing.value.isNotEmpty) count++;
     if (selectedParking.value.isNotEmpty) count++;
+    if (selectedMinArea.value != null) count++;
+    if (selectedMaxArea.value != null) count++;
+    if (selectedYearBuilt.value != null) count++;
+    if (selectedFloor.value != null) count++;
+    if (selectedSellerType.value.isNotEmpty) count++;
     return count;
   }
 
@@ -156,6 +183,7 @@ class FilterController extends GetxController {
 
     selectedSort.value = '';
     selectedSubcategory.value = '';
+    selectedSubcategories.clear();
     selectedListingType.value = '';
     selectedCity.value = '';
     selectedYear.value = null;
@@ -171,12 +199,20 @@ class FilterController extends GetxController {
     selectedTransmission.value = '';
     selectedBodyType.value = '';
     selectedCondition.value = '';
+    selectedMake.value = '';
+    selectedModel.value = '';
+    selectedMaxMileage.value = null;
 
     // Reset real estate filters
     selectedBedrooms.value = null;
     selectedBathrooms.value = null;
     selectedFurnishing.value = '';
     selectedParking.value = '';
+    selectedMinArea.value = null;
+    selectedMaxArea.value = null;
+    selectedYearBuilt.value = null;
+    selectedFloor.value = null;
+    selectedSellerType.value = '';
 
     print('  After reset:');
     print('    selectedSort: "${selectedSort.value}"');
@@ -201,10 +237,13 @@ class FilterController extends GetxController {
     int? limit,
   }) {
     // Debug: Print current filter values
-    print('🔧 Filter Controller Values:');
+    print('🔧 [SEARCH QUERY DEBUG] createSearchQuery called');
     print('  selectedSort: "${selectedSort.value}"');
     print('  selectedSubcategory: "${selectedSubcategory.value}"');
+    print('  selectedSubcategories: $selectedSubcategories');
+    print('  selectedSubcategories.length: ${selectedSubcategories.length}');
     print('  selectedListingType: "${selectedListingType.value}"');
+    print('  category parameter: $category');
     print('  selectedCity: "${selectedCity.value}"');
     print('  selectedYear: ${selectedYear.value}');
     print('  minPrice: ${minPrice.value}');
@@ -226,12 +265,23 @@ class FilterController extends GetxController {
       print('  🎯 Using distance-based sorting');
     }
 
+    // Determine final subcategory value
+    String? finalSubCategory;
+    if (selectedSubcategories.isNotEmpty) {
+      finalSubCategory = selectedSubcategories.join(',');
+      print('  🎯 Using multiple subcategories: $finalSubCategory');
+    } else if (selectedSubcategory.value.isNotEmpty) {
+      finalSubCategory = selectedSubcategory.value;
+      print('  🎯 Using single subcategory: $finalSubCategory');
+    } else {
+      finalSubCategory = null;
+      print('  🎯 No subcategory selected');
+    }
+
     return SearchQuery(
       query: query,
       category: category,
-      subCategory: selectedSubcategory.value.isNotEmpty
-          ? selectedSubcategory.value
-          : null,
+      subCategory: finalSubCategory,
       listingAction: selectedListingType.value.isNotEmpty
           ? selectedListingType.value
           : null,
@@ -370,6 +420,35 @@ class FilterController extends GetxController {
     return status;
   }
 
+  /// Add/remove subcategory from multiple selection
+  void toggleSubcategory(String subcategory) {
+    print('🔧 [FILTER CONTROLLER DEBUG] toggleSubcategory called');
+    print('  - subcategory: $subcategory');
+    print('  - Before toggle: $selectedSubcategories');
+    print('  - Contains check: ${selectedSubcategories.contains(subcategory)}');
+    
+    if (selectedSubcategories.contains(subcategory)) {
+      selectedSubcategories.remove(subcategory);
+      print('  - REMOVED subcategory: $subcategory');
+    } else {
+      selectedSubcategories.add(subcategory);
+      print('  - ADDED subcategory: $subcategory');
+    }
+    print('  - After toggle: $selectedSubcategories');
+    print('  - Final count: ${selectedSubcategories.length}');
+  }
+
+  /// Check if subcategory is selected in multiple selection
+  bool isSubcategorySelected(String subcategory) {
+    return selectedSubcategories.contains(subcategory);
+  }
+
+  /// Clear all selected subcategories
+  void clearSelectedSubcategories() {
+    selectedSubcategories.clear();
+    selectedSubcategory.value = '';
+  }
+
   /// Get filter summary for display
   String getFilterSummary() {
     List<String> activeSummary = [];
@@ -379,7 +458,12 @@ class FilterController extends GetxController {
         '${'sort'.tr}: ${getTranslatedSortOption(selectedSort.value)}',
       );
     }
-    if (selectedSubcategory.value.isNotEmpty) {
+    if (selectedSubcategories.isNotEmpty) {
+      String subcatList = selectedSubcategories
+          .map((sub) => getTranslatedSubcategory(sub))
+          .join(', ');
+      activeSummary.add('${'subcategory'.tr}: $subcatList');
+    } else if (selectedSubcategory.value.isNotEmpty) {
       activeSummary.add(
         '${'subcategory'.tr}: ${getTranslatedSubcategory(selectedSubcategory.value)}',
       );
@@ -407,6 +491,29 @@ class FilterController extends GetxController {
         priceRange += '${'up_to'.tr} ${maxPrice.value}';
       }
       activeSummary.add(priceRange);
+    }
+
+    // Add vehicle filter summaries
+    if (selectedFuelType.value.isNotEmpty) {
+      activeSummary.add('${'fuel_type'.tr}: ${selectedFuelType.value}');
+    }
+    if (selectedTransmission.value.isNotEmpty) {
+      activeSummary.add('${'transmission'.tr}: ${selectedTransmission.value}');
+    }
+    if (selectedBodyType.value.isNotEmpty) {
+      activeSummary.add('${'body_type'.tr}: ${selectedBodyType.value}');
+    }
+    if (selectedCondition.value.isNotEmpty) {
+      activeSummary.add('${'condition'.tr}: ${selectedCondition.value}');
+    }
+    if (selectedMake.value.isNotEmpty) {
+      activeSummary.add('${'make'.tr}: ${selectedMake.value}');
+    }
+    if (selectedModel.value.isNotEmpty) {
+      activeSummary.add('${'model'.tr}: ${selectedModel.value}');
+    }
+    if (selectedMaxMileage.value != null) {
+      activeSummary.add('${'max_mileage'.tr}: ${selectedMaxMileage.value} km');
     }
 
     // Add location filter summary
