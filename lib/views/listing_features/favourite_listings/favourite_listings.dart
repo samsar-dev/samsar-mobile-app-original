@@ -110,7 +110,6 @@ class _FavouriteListingsState extends State<FavouriteListings> {
     
     Share.share(
       shareText,
-      subject: 'Samsar Listing: $title',
     );
   }
 

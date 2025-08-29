@@ -42,7 +42,6 @@ class VehicleController extends ChangeNotifier {
   Future<void> loadMakes(VehicleSubcategory subcategory) async {
     // Always clear data when switching subcategories to prevent cross-contamination
     if (_currentSubcategory != subcategory) {
-      print('🔄 Subcategory changed from ${_currentSubcategory?.value} to ${subcategory.value} - clearing all data');
       _makes.clear();
       _models.clear();
       _allModels.clear();
@@ -67,10 +66,8 @@ class VehicleController extends ChangeNotifier {
       _makes = makes;
       _makesError = null;
       
-      print('✅ Loaded ${makes.length} makes for ${subcategory.displayName}');
     } catch (e) {
       _makesError = 'Failed to load vehicle makes: ${e.toString()}';
-      print('❌ Error loading makes: $_makesError');
     } finally {
       _isLoadingMakes = false;
       notifyListeners();
@@ -101,10 +98,8 @@ class VehicleController extends ChangeNotifier {
       _models = models;
       _modelsError = null;
       
-      print('✅ Loaded ${models.length} models for $make');
     } catch (e) {
       _modelsError = 'Failed to load vehicle models: ${e.toString()}';
-      print('❌ Error loading models: $_modelsError');
     } finally {
       _isLoadingModels = false;
       notifyListeners();
@@ -140,10 +135,8 @@ class VehicleController extends ChangeNotifier {
       _makesError = null;
       _modelsError = null;
       
-      print('✅ Loaded all vehicle data for ${subcategory.displayName}: ${response.totalMakes} makes, ${response.totalModels ?? 0} total models');
     } catch (e) {
       _makesError = 'Failed to load vehicle data: ${e.toString()}';
-      print('❌ Error loading all vehicle data: $_makesError');
     } finally {
       _isLoadingAllData = false;
       notifyListeners();
@@ -226,7 +219,6 @@ class VehicleController extends ChangeNotifier {
   Future<void> forceClearCache() async {
     await VehicleService.clearCache();
     reset();
-    print('🗑️ Force cleared all vehicle cache and reset controller');
   }
 
   /// Get models for a specific make (useful for dropdowns)

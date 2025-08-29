@@ -96,18 +96,13 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
     try {
       if (Get.isRegistered<ListingInputController>()) {
         _listingInputController = Get.find<ListingInputController>();
-        print('✅ VehicleEssentialDetails: Found existing controller');
       } else {
-        print(
-          '🚨 VehicleEssentialDetails: Controller not registered, creating permanent instance',
-        );
         _listingInputController = Get.put(
           ListingInputController(),
           permanent: true,
         );
       }
     } catch (e) {
-      print('🚨 VehicleEssentialDetails: Error accessing controller: $e');
       _listingInputController = Get.put(
         ListingInputController(),
         permanent: true,
@@ -118,22 +113,6 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
         .map((data) => SelectTypeItem(title: data['title'], icon: data['icon']))
         .toList();
 
-    print('🚀 VehicleEssentialDetails initState() called');
-    print('📊 Controller state at init:');
-    print(
-      '   📝 mainCategory: "${_listingInputController.mainCategory.value}"',
-    );
-    print('   🚗 subCategory: "${_listingInputController.subCategory.value}"');
-    print(
-      '   🖼️ images count: ${_listingInputController.listingImage.value.length}',
-    );
-    print('   📋 title: "${_listingInputController.title.value}"');
-    print('   💰 price: "${_listingInputController.price.value}"');
-    print('   📍 location: "${_listingInputController.location.value}"');
-    print('   📝 description: "${_listingInputController.description.value}"');
-    print('   🚗 make: "${_listingInputController.make.value}"');
-    print('   🚗 model: "${_listingInputController.model.value}"');
-    print('   🚗 year: "${_listingInputController.year.value}"');
 
     // 🔄 LOAD EXISTING DATA: Pre-populate fields when returning from review
     _loadExistingData();
@@ -151,47 +130,29 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
 
     // Debug controller changes
     ever(_listingInputController.title, (value) {
-      print('🔄 VehicleEssentialDetails: title changed to "$value"');
     });
     ever(_listingInputController.price, (value) {
-      print('🔄 VehicleEssentialDetails: price changed to "$value"');
     });
     ever(_listingInputController.location, (value) {
-      print('🔄 VehicleEssentialDetails: location changed to "$value"');
     });
   }
 
   void _loadExistingData() {
-    print('🔄 _loadExistingData() called');
-    print('📊 BEFORE loading - Controller state:');
-    print(
-      '   📝 mainCategory: "${_listingInputController.mainCategory.value}"',
-    );
-    print('   🚗 subCategory: "${_listingInputController.subCategory.value}"');
-    print('   🖼️ images: ${_listingInputController.listingImage.value}');
-    print('   📋 title: "${_listingInputController.title.value}"');
-    print('   🏭 make: "${_listingInputController.make.value}"');
-    print('   🚙 model: "${_listingInputController.model.value}"');
 
     // 🔄 Load existing data from shared controller
     if (_listingInputController.title.value.isNotEmpty) {
       titleController.text = _listingInputController.title.value;
-      print('✅ Title loaded: "${titleController.text}"');
     }
     if (_listingInputController.price.value > 0) {
       priceController.text = _listingInputController.price.value.toString();
-      print('✅ Price loaded: "${priceController.text}"');
     }
     if (_listingInputController.location.value.isNotEmpty) {
-      print('✅ Location loaded: "${_listingInputController.location.value}"');
     }
     if (_listingInputController.description.value.isNotEmpty) {
       descriptionController.text = _listingInputController.description.value;
-      print('✅ Description loaded: "${descriptionController.text}"');
     }
     if (_listingInputController.condition.value.isNotEmpty) {
       conditionController.text = _listingInputController.condition.value;
-      print('✅ Condition loaded: "${conditionController.text}"');
     }
     if (_listingInputController.sellerType.value.isNotEmpty) {
       // Map database value to display text
@@ -203,27 +164,21 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
       } else if (value == 'business_firm') {
         sellerTypeController.text = 'business_firm'.tr;
       }
-      print('✅ Seller type loaded: "${sellerTypeController.text}"');
     }
     if (_listingInputController.make.value.isNotEmpty) {
       makeController.text = _listingInputController.make.value;
-      print('✅ Make loaded: "${makeController.text}"');
     }
     if (_listingInputController.model.value.isNotEmpty) {
       modelController.text = _listingInputController.model.value;
-      print('✅ Model loaded: "${modelController.text}"');
     }
     if (_listingInputController.year.value > 0) {
       yearController.text = _listingInputController.year.value.toString();
-      print('✅ Year loaded: "${yearController.text}"');
     }
 
     // 🚗 CRITICAL FIX: Load vehicle type from subCategory (not mainCategory)
-    print('🚗 Attempting to load vehicle type from subCategory...');
     if (_listingInputController.subCategory.value.isNotEmpty) {
       final subCategory = _listingInputController.subCategory.value
           .toUpperCase();
-      print('🚗 Found subCategory: "$subCategory"');
 
       // Map subcategory to vehicle type display name
       String vehicleTypeDisplay = '';
@@ -249,7 +204,6 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
           _listingInputController.subCategory.value = 'CONSTRUCTION_VEHICLES';
           break;
         default:
-          print('❌ Unknown subCategory: "$subCategory"');
       }
 
       if (vehicleTypeDisplay.isNotEmpty) {
@@ -259,37 +213,23 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
         );
         if (index != -1) {
           selectedIndex = index;
-          print('✅ Vehicle type restored: $vehicleTypeDisplay (index: $index)');
         } else {
-          print('❌ Vehicle type index not found for: $vehicleTypeDisplay');
         }
       }
     } else {
-      print('❌ No subCategory found in controller');
     }
 
     // 🖼️ CRITICAL FIX: Load existing images
-    print('🖼️ Attempting to load existing images...');
     final existingImages = _listingInputController.listingImage.value;
-    print(
-      '🖼️ Controller has ${existingImages.length} image paths: $existingImages',
-    );
 
     if (existingImages.isNotEmpty) {
       _images.clear();
       for (String imagePath in existingImages) {
         _images.add(XFile(imagePath));
-        print('🖼️ Added image: $imagePath');
       }
-      print('✅ Images restored: ${_images.length} images loaded');
     } else {
-      print('❌ No images found in controller');
     }
 
-    print('📊 AFTER loading - Local state:');
-    print('   🚗 selectedVehicleType: "$selectedVehicleType"');
-    print('   📍 selectedIndex: $selectedIndex');
-    print('   🖼️ _images count: ${_images.length}');
   }
 
   void _addValidationListeners() {
@@ -370,7 +310,6 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
       _listingInputController.make.value = make ?? '';
       _listingInputController.model.value = model ?? '';
       
-      print('🚗 Vehicle selection changed: $make -> $model');
     });
   }
 
@@ -386,12 +325,9 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
     }
 
     try {
-      print('🖼️ _pickImage() called');
-      print('🖼️ Current images count: ${_images.length}');
 
       final List<XFile> pickedFiles = await _picker.pickMultiImage();
       if (pickedFiles.isNotEmpty) {
-        print('🖼️ User picked ${pickedFiles.length} new images');
 
         setState(() {
           // Add new images but don't exceed 20 total
@@ -403,17 +339,10 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
           List<String> imagePaths = _images.map((image) => image.path).toList();
           _listingInputController.listingImage.value = imagePaths;
 
-          print(
-            '✅ Images added: ${newImages.length}, Total: ${_images.length}',
-          );
-          print('✅ Controller updated with ${imagePaths.length} image paths');
-          print('🖼️ Image paths: $imagePaths');
         });
       } else {
-        print('❌ No images were picked');
       }
     } catch (e) {
-      print('❌ Error picking images: $e');
       debugPrint('Error picking images: $e');
     }
   }
@@ -478,16 +407,10 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
       // Clear subcategory-specific data when switching
       if (_listingInputController.subCategory.value != newSubCategory) {
         _listingInputController.clearSubcategorySpecificFeatures(newSubCategory);
-        print('🧹 Cleared data for subcategory switch: ${_listingInputController.subCategory.value} → $newSubCategory');
       }
       
       _listingInputController.subCategory.value = newSubCategory;
 
-      print('🚗 Vehicle type selected: $selectedVehicleType (Display)');
-      print('🔑 Translation key used: $translationKey');
-      print(
-        '📊 Controller subCategory updated to: ${_listingInputController.subCategory.value}',
-      );
 
       // Validate form after selection
       bool isValid = validateForm();
@@ -513,7 +436,6 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
         vehicleController.reset();
       }
     } catch (e) {
-      print('🔄 VehicleController cleanup error: $e');
     }
     
     super.dispose();
@@ -655,9 +577,6 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
                                             .listingAction
                                             .value =
                                         'FOR_SALE';
-                                    print(
-                                      '🚗 Vehicle listing action set to: FOR_SALE',
-                                    );
                                   },
                                   child: Container(
                                     padding: EdgeInsets.symmetric(vertical: 18),
@@ -749,9 +668,6 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
                                             .listingAction
                                             .value =
                                         'FOR_RENT';
-                                    print(
-                                      '🚗 Vehicle listing action set to: FOR_RENT',
-                                    );
                                   },
                                   child: Container(
                                     padding: EdgeInsets.symmetric(vertical: 18),
@@ -842,9 +758,6 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
                             onTap: () {
                               _listingInputController.listingAction.value =
                                   'SEARCHING';
-                              print(
-                                '🚗 Vehicle listing action set to: SEARCHING',
-                              );
                             },
                             child: Container(
                               width: double.infinity,
@@ -1335,12 +1248,6 @@ class _VehicleEssentialDetailsState extends State<VehicleEssentialDetails> {
                                                     .value =
                                                 imagePaths;
 
-                                            print(
-                                              '🖼️ Image removed, Total: ${_images.length}',
-                                            );
-                                            print(
-                                              '🖼️ Controller updated with ${imagePaths.length} image paths',
-                                            );
                                           });
                                         },
                                         child: Container(

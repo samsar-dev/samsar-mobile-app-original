@@ -49,11 +49,9 @@ class _VehicleSelectionWidgetState extends State<VehicleSelectionWidget> {
     try {
       final controller = Provider.of<VehicleController>(context, listen: false);
       
-      print('🚗 Loading makes for subcategory: ${widget.subcategory.value}');
       
       // Load makes for the subcategory
       controller.loadMakes(widget.subcategory).then((_) {
-        print('✅ Makes loaded: ${controller.makes.length} items');
         // If initial make is provided, select it and load models
         if (widget.initialMake != null && controller.makes.contains(widget.initialMake)) {
           controller.selectMake(widget.initialMake!).then((_) {
@@ -64,10 +62,8 @@ class _VehicleSelectionWidgetState extends State<VehicleSelectionWidget> {
           });
         }
       }).catchError((error) {
-        print('❌ Error loading makes: $error');
       });
     } catch (e) {
-      print('❌ Error in _loadInitialData: $e');
     }
   }
 

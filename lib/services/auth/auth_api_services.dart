@@ -33,7 +33,6 @@ class AuthApiServices {
       }
       return null;
     } catch (e) {
-      print('Error getting access token: $e');
       return null;
     }
   }
@@ -193,7 +192,6 @@ class AuthApiServices {
     File? profileImage,
   }) async {
     try {
-      print('Creating multipart form data...');
       final formData = FormData.fromMap({
         'name': name,
         'username': username,
@@ -204,11 +202,6 @@ class AuthApiServices {
       });
 
       if (profileImage != null) {
-        print('Adding profile image: ${profileImage.path}');
-        print('Image file exists: ${await File(profileImage.path).exists()}');
-        print(
-          'Image file size: ${await File(profileImage.path).length()} bytes',
-        );
 
         formData.files.add(
           MapEntry(
@@ -220,11 +213,8 @@ class AuthApiServices {
           ),
         );
       } else {
-        print('No profile image provided');
       }
 
-      print('Form data created with fields: ${formData.fields}');
-      print('Form data files: ${formData.files.length}');
 
       final response = await _dio.put(
         updateProfileRoute,
@@ -237,11 +227,6 @@ class AuthApiServices {
         ),
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response data: ${response.data}');
-      print('Response data type: ${response.data.runtimeType}');
-      print('Response headers: ${response.headers}');
-      print('Full response: ${response.toString()}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (response.data != null) {
@@ -253,7 +238,6 @@ class AuthApiServices {
           });
         }
       } else {
-        print('Profile update failed with status: ${response.statusCode}');
         if (response.data != null) {
           final error = ApiError.fromJson(response.data);
           return ApiResponse.failure(error);
@@ -264,9 +248,6 @@ class AuthApiServices {
         }
       }
     } on DioException catch (dioError) {
-      print('DioException: ${dioError.message}');
-      print('Status code: ${dioError.response?.statusCode}');
-      print('Response data: ${dioError.response?.data}');
 
       if (dioError.response != null && dioError.response?.data != null) {
         return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
@@ -276,7 +257,6 @@ class AuthApiServices {
         ApiError.fromMessage(('profile_update_failed').tr),
       );
     } catch (e) {
-      print('Profile update service error: $e');
       return ApiResponse.failure(
         ApiError.fromMessage('${('unexpected_error').tr}: $e'),
       );
@@ -285,8 +265,6 @@ class AuthApiServices {
 
   Future<ApiResponse<Map<String, dynamic>>> getUserProfile(String token) async {
     try {
-      print('🔍 getUserProfile: Making request to $getUserProfileRoute');
-      print('🔑 getUserProfile: Using token ${token.substring(0, 20)}...');
 
       final response = await _dio.get(
         getUserProfileRoute,
@@ -301,18 +279,11 @@ class AuthApiServices {
         ),
       );
 
-      print('📥 getUserProfile: Response status ${response.statusCode}');
-      print('📥 getUserProfile: Response headers ${response.headers}');
-      print('📥 getUserProfile: Response data ${response.data}');
-      print(
-        '📥 getUserProfile: Response data type ${response.data.runtimeType}',
-      );
 
       if (response.statusCode == 200) {
         if (response.data != null) {
           return ApiResponse.success(response.data as Map<String, dynamic>);
         } else {
-          print('❌ getUserProfile: Response data is null despite 200 status');
           return ApiResponse.failure(
             ApiError.fromMessage(('no_response_data').tr),
           );
@@ -321,9 +292,6 @@ class AuthApiServices {
         return ApiResponse.failure(ApiError.fromJson(response.data));
       }
     } on DioException catch (dioError) {
-      print('❌ getUserProfile: DioException ${dioError.message}');
-      print('❌ getUserProfile: Status code ${dioError.response?.statusCode}');
-      print('❌ getUserProfile: Response data ${dioError.response?.data}');
 
       if (dioError.response != null && dioError.response?.data != null) {
         return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
@@ -346,34 +314,15 @@ class AuthApiServices {
       // Get the access token from storage
       final token = await _getAccessToken();
 
-      print('🔧 sendEmailChangeVerification: Checking authentication');
-      print('🔧 sendEmailChangeVerification: Token exists: ${token != null}');
       if (token != null) {
-        print('🔧 sendEmailChangeVerification: Token length: ${token.length}');
-        print(
-          '🔧 sendEmailChangeVerification: Token preview: ${token.substring(0, math.min(50, token.length))}...',
-        );
       }
 
       if (token == null) {
-        print('❌ sendEmailChangeVerification: No access token found');
         return ApiResponse.failure(
           ApiError.fromMessage(('unauthorized_message').tr),
         );
       }
 
-      print(
-        '🔍 sendEmailChangeVerification: Making request to $sendEmailChangeVerificationRoute',
-      );
-      print(
-        '🔑 sendEmailChangeVerification: Using token ${token.substring(0, 20)}...',
-      );
-      print(
-        '🔧 sendEmailChangeVerification: Request data = {"newEmail": "$newEmail"}',
-      );
-      print(
-        '🔧 sendEmailChangeVerification: Request headers = {"Authorization": "Bearer ${token.substring(0, 20)}...", "Content-Type": "application/json", "Accept": "application/json"}',
-      );
 
       final response = await _dio.post(
         sendEmailChangeVerificationRoute,
@@ -387,16 +336,6 @@ class AuthApiServices {
         ),
       );
 
-      print(
-        '📥 sendEmailChangeVerification: Response status ${response.statusCode}',
-      );
-      print(
-        '📥 sendEmailChangeVerification: Response headers ${response.headers}',
-      );
-      print('📥 sendEmailChangeVerification: Response data ${response.data}');
-      print(
-        '📥 sendEmailChangeVerification: Response data type ${response.data.runtimeType}',
-      );
 
       if (response.statusCode == 200) {
         return ApiResponse.success(response.data as Map<String, dynamic>);
@@ -404,42 +343,12 @@ class AuthApiServices {
         return ApiResponse.failure(ApiError.fromJson(response.data));
       }
     } on DioException catch (dioError) {
-      print('❌ sendEmailChangeVerification: DioException caught');
-      print(
-        '❌ sendEmailChangeVerification: Error message: ${dioError.message}',
-      );
-      print('❌ sendEmailChangeVerification: Error type: ${dioError.type}');
-      print(
-        '❌ sendEmailChangeVerification: Status code: ${dioError.response?.statusCode}',
-      );
-      print(
-        '❌ sendEmailChangeVerification: Response headers: ${dioError.response?.headers}',
-      );
-      print(
-        '❌ sendEmailChangeVerification: Response data: ${dioError.response?.data}',
-      );
-      print(
-        '❌ sendEmailChangeVerification: Response data type: ${dioError.response?.data.runtimeType}',
-      );
-      print(
-        '❌ sendEmailChangeVerification: Request path: ${dioError.requestOptions.path}',
-      );
-      print(
-        '❌ sendEmailChangeVerification: Request method: ${dioError.requestOptions.method}',
-      );
-      print(
-        '❌ sendEmailChangeVerification: Request headers: ${dioError.requestOptions.headers}',
-      );
 
       if (dioError.response != null && dioError.response?.data != null) {
         try {
           final apiError = ApiError.fromJson(dioError.response!.data);
-          print('❌ sendEmailChangeVerification: Parsed API error: $apiError');
           return ApiResponse.failure(apiError);
         } catch (parseError) {
-          print(
-            '❌ sendEmailChangeVerification: Failed to parse error response: $parseError',
-          );
           return ApiResponse.failure(
             ApiError.fromMessage(
               '${('server_error_message').tr}: ${dioError.response?.statusCode}',
@@ -453,8 +362,6 @@ class AuthApiServices {
         ),
       );
     } catch (e, stackTrace) {
-      print('❌ sendEmailChangeVerification: Unexpected exception: $e');
-      print('❌ sendEmailChangeVerification: Stack trace: $stackTrace');
       return ApiResponse.failure(
         ApiError.fromMessage('${('unexpected_error').tr}: $e'),
       );
@@ -475,12 +382,6 @@ class AuthApiServices {
         );
       }
 
-      print(
-        '🔍 changeEmailWithVerification: Making request to $changeEmailWithVerificationRoute',
-      );
-      print(
-        '🔑 changeEmailWithVerification: Using token ${token.substring(0, 20)}...',
-      );
 
       final response = await _dio.post(
         changeEmailWithVerificationRoute,
@@ -494,10 +395,6 @@ class AuthApiServices {
         ),
       );
 
-      print(
-        '📥 changeEmailWithVerification: Response status ${response.statusCode}',
-      );
-      print('📥 changeEmailWithVerification: Response data ${response.data}');
 
       if (response.statusCode == 200) {
         return ApiResponse.success(response.data as Map<String, dynamic>);
@@ -505,13 +402,6 @@ class AuthApiServices {
         return ApiResponse.failure(ApiError.fromJson(response.data));
       }
     } on DioException catch (dioError) {
-      print('❌ changeEmailWithVerification: ${dioError.message}');
-      print(
-        '❌ changeEmailWithVerification: Status code ${dioError.response?.statusCode}',
-      );
-      print(
-        '❌ changeEmailWithVerification: Response data ${dioError.response?.data}',
-      );
 
       if (dioError.response != null && dioError.response?.data != null) {
         return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
@@ -531,16 +421,12 @@ class AuthApiServices {
     String email,
   ) async {
     try {
-      print('🔍 forgotPassword: Making request to $forgotPasswordRoute');
-      print('🔧 forgotPassword: Request data = {"email": "$email"}');
 
       final response = await _dio.post(
         forgotPasswordRoute,
         data: {"email": email},
       );
 
-      print('📥 forgotPassword: Response status ${response.statusCode}');
-      print('📥 forgotPassword: Response data ${response.data}');
 
       if (response.statusCode == 200) {
         return ApiResponse.success(response.data as Map<String, dynamic>);
@@ -548,9 +434,6 @@ class AuthApiServices {
         return ApiResponse.failure(ApiError.fromJson(response.data));
       }
     } on DioException catch (dioError) {
-      print('❌ forgotPassword: DioException ${dioError.message}');
-      print('❌ forgotPassword: Status code ${dioError.response?.statusCode}');
-      print('❌ forgotPassword: Response data ${dioError.response?.data}');
 
       if (dioError.response != null && dioError.response?.data != null) {
         return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
@@ -572,10 +455,6 @@ class AuthApiServices {
     required String newPassword,
   }) async {
     try {
-      print('🔍 resetPassword: Making request to $changePasswordRoute');
-      print(
-        '🔧 resetPassword: Request data = {"email": "$email", "verificationCode": "$verificationCode", "newPassword": "[HIDDEN]"}',
-      );
 
       final response = await _dio.post(
         changePasswordRoute,
@@ -586,8 +465,6 @@ class AuthApiServices {
         },
       );
 
-      print('📥 resetPassword: Response status ${response.statusCode}');
-      print('📥 resetPassword: Response data ${response.data}');
 
       if (response.statusCode == 200) {
         return ApiResponse.success(response.data as Map<String, dynamic>);
@@ -595,9 +472,6 @@ class AuthApiServices {
         return ApiResponse.failure(ApiError.fromJson(response.data));
       }
     } on DioException catch (dioError) {
-      print('❌ resetPassword: DioException ${dioError.message}');
-      print('❌ resetPassword: Status code ${dioError.response?.statusCode}');
-      print('❌ resetPassword: Response data ${dioError.response?.data}');
 
       if (dioError.response != null && dioError.response?.data != null) {
         return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
@@ -628,11 +502,6 @@ class AuthApiServices {
         );
       }
 
-      print('🔍 changePassword: Making request to $changePasswordRoute');
-      print('🔑 changePassword: Using token ${token.substring(0, 20)}...');
-      print(
-        '🔧 changePassword: Request data = {"currentPassword": "[HIDDEN]", "newPassword": "[HIDDEN]", "verificationCode": "$verificationCode"}',
-      );
 
       final response = await _dio.post(
         changePasswordRoute,
@@ -650,8 +519,6 @@ class AuthApiServices {
         ),
       );
 
-      print('📥 changePassword: Response status ${response.statusCode}');
-      print('📥 changePassword: Response data ${response.data}');
 
       if (response.statusCode == 200) {
         return ApiResponse.success(response.data as Map<String, dynamic>);
@@ -659,9 +526,6 @@ class AuthApiServices {
         return ApiResponse.failure(ApiError.fromJson(response.data));
       }
     } on DioException catch (dioError) {
-      print('❌ changePassword: DioException ${dioError.message}');
-      print('❌ changePassword: Status code ${dioError.response?.statusCode}');
-      print('❌ changePassword: Response data ${dioError.response?.data}');
 
       if (dioError.response != null && dioError.response?.data != null) {
         return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
@@ -697,12 +561,6 @@ class AuthApiServices {
         return ApiResponse.failure(ApiError.fromMessage(('email_missing').tr));
       }
 
-      print(
-        '🔍 sendPasswordChangeVerification: Making request to send-password-change-verification',
-      );
-      print(
-        '🔧 sendPasswordChangeVerification: Request data = {"email": "$userEmail", "currentPassword": "[HIDDEN]"}',
-      );
 
       final response = await _dio.post(
         sendPasswordChangeVerificationRoute,
@@ -716,12 +574,6 @@ class AuthApiServices {
         ),
       );
 
-      print(
-        '📥 sendPasswordChangeVerification: Response status ${response.statusCode}',
-      );
-      print(
-        '📥 sendPasswordChangeVerification: Response data ${response.data}',
-      );
 
       if (response.statusCode == 200) {
         return ApiResponse.success(response.data as Map<String, dynamic>);
@@ -729,15 +581,6 @@ class AuthApiServices {
         return ApiResponse.failure(ApiError.fromJson(response.data));
       }
     } on DioException catch (dioError) {
-      print(
-        '❌ sendPasswordChangeVerification: DioException ${dioError.message}',
-      );
-      print(
-        '❌ sendPasswordChangeVerification: Status code ${dioError.response?.statusCode}',
-      );
-      print(
-        '❌ sendPasswordChangeVerification: Response data ${dioError.response?.data}',
-      );
 
       if (dioError.response != null && dioError.response?.data != null) {
         return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
@@ -766,8 +609,6 @@ class AuthApiServices {
         );
       }
 
-      print('🔍 updateFCMToken: Making request to update FCM token');
-      print('🔑 updateFCMToken: Using token ${token.substring(0, 20)}...');
 
       final response = await _dio.post(
         '/api/fcm/update-token', // FCM route
@@ -781,8 +622,6 @@ class AuthApiServices {
         ),
       );
 
-      print('📥 updateFCMToken: Response status ${response.statusCode}');
-      print('📥 updateFCMToken: Response data ${response.data}');
 
       if (response.statusCode == 200) {
         return ApiResponse.success(response.data as Map<String, dynamic>);
@@ -790,9 +629,6 @@ class AuthApiServices {
         return ApiResponse.failure(ApiError.fromJson(response.data));
       }
     } on DioException catch (dioError) {
-      print('❌ updateFCMToken: DioException ${dioError.message}');
-      print('❌ updateFCMToken: Status code ${dioError.response?.statusCode}');
-      print('❌ updateFCMToken: Response data ${dioError.response?.data}');
 
       if (dioError.response != null && dioError.response?.data != null) {
         return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));

@@ -70,7 +70,6 @@ class SmartDateUtils {
       final dateTime = DateTime.parse(dateString);
       return getSmartDateDisplay(dateTime);
     } catch (e) {
-      print('Error parsing date string: $dateString');
       return 'Unknown';
     }
   }

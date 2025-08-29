@@ -165,12 +165,6 @@ class Item {
                      details?.flatDetails?["yearBuilt"] ??
                      details?.flatDetails?["year_built"];
     
-    print('🔍 [YEAR BUILT DEBUG] yearBuilt getter called for item: $title');
-    print('  - yearBuiltRoot: $yearBuiltRoot');
-    print('  - realEstate yearBuilt: ${details?.realEstate?.yearBuilt}');
-    print('  - flatDetails yearBuilt: ${details?.flatDetails?["yearBuilt"]}');
-    print('  - flatDetails year_built: ${details?.flatDetails?["year_built"]}');
-    print('  - final yearValue: $yearValue');
     
     return yearValue;
   }
@@ -207,14 +201,9 @@ class Item {
   }
 
   factory Item.fromJson(Map<String, dynamic> json) {
-    print('🔍 [ITEM JSON DEBUG] Raw JSON for item: ${json["title"]}');
-    print('  - Raw JSON keys: ${json.keys.toList()}');
-    print('  - details keys: ${json["details"]?.keys?.toList()}');
     if (json["details"]?["realEstate"] != null) {
-      print('  - realEstate keys: ${json["details"]["realEstate"].keys.toList()}');
     }
     if (json["details"]?["flatDetails"] != null) {
-      print('  - flatDetails keys: ${json["details"]["flatDetails"].keys.toList()}');
     }
     
     return Item(

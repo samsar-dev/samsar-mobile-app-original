@@ -35,7 +35,6 @@ class _CreateListingViewState extends State<CreateListingView> {
   @override
   void initState() {
     super.initState();
-    print('🚀 CreateListingView initState() called');
 
     // BULLETPROOF CONTROLLER INITIALIZATION
     // Always use Get.put with permanent=true to ensure controller survives navigation
@@ -43,32 +42,17 @@ class _CreateListingViewState extends State<CreateListingView> {
       ListingInputController(),
       permanent: true,
     );
-    print('🆕 ListingInputController registered as PERMANENT instance');
 
     // Clear any cached data from previous sessions to ensure fresh start
     if (_listingInputController.hasEssentialData()) {
-      print('🧹 Found cached data from previous session, clearing...');
       _listingInputController.clearAllData();
-      print('✅ Cached data cleared for fresh listing creation');
     }
 
-    print('📊 Controller state at CreateListingView init:');
-    print(
-      '   📝 mainCategory: "${_listingInputController.mainCategory.value}"',
-    );
-    print('   🚗 subCategory: "${_listingInputController.subCategory.value}"');
-    print(
-      '   🖼️ images count: ${_listingInputController.listingImage.value.length}',
-    );
-    print('   📋 title: "${_listingInputController.title.value}"');
 
     // Initialize mainCategory based on selectedIndex if it's empty
     if (_listingInputController.mainCategory.value.isEmpty) {
       String initialCategory = selectedIndex == 0 ? 'vehicles' : 'real_estate';
       _listingInputController.mainCategory.value = initialCategory;
-      print(
-        '🔧 FIXED: Initialized mainCategory to "$initialCategory" based on selectedIndex: $selectedIndex',
-      );
     }
   }
 
@@ -87,7 +71,6 @@ class _CreateListingViewState extends State<CreateListingView> {
 
     // SAFETY CHECK: Ensure controller is still registered
     if (!Get.isRegistered<ListingInputController>()) {
-      print('🚨 CRITICAL: Controller lost during build, re-registering...');
       _listingInputController = Get.put(
         ListingInputController(),
         permanent: true,
@@ -189,14 +172,6 @@ class _CreateListingViewState extends State<CreateListingView> {
                   ),
                   // ✅ RE-ENABLED: Features & Extras
                   Obx(() {
-                    print('🔍 CreateListingView passing to FeaturesWrapper:');
-                    print('   📝 currentCategory: "$currentCategory"');
-                    print(
-                      '   📝 subCategory from controller: "${_listingInputController.subCategory.value}"',
-                    );
-                    print(
-                      '   📝 controller.mainCategory.value: "${_listingInputController.mainCategory.value}"',
-                    );
 
                     return FeaturesWrapper(
                       category: currentCategory,
@@ -306,26 +281,14 @@ class _CreateListingViewState extends State<CreateListingView> {
   }
 
   void _handleNextButton() {
-    print('🔄 _handleNextButton() called - currentStep: $currentStep');
 
     // Handle step navigation
-    print('📊 Controller state before navigation:');
-    print(
-      '   📝 mainCategory: "${_listingInputController.mainCategory.value}"',
-    );
-    print('   🚗 subCategory: "${_listingInputController.subCategory.value}"');
-    print(
-      '   🖼️ images count: ${_listingInputController.listingImage.value.length}',
-    );
-    print('   📋 title: "${_listingInputController.title.value}"');
 
     if (currentStep == 0) {
       // Validate essential details before proceeding
       if (_validateEssentialDetails()) {
-        print('✅ Essential details validation passed');
         _nextStep();
       } else {
-        print('❌ Essential details validation failed');
         setState(() {
           _showValidation = true;
         });
@@ -337,13 +300,11 @@ class _CreateListingViewState extends State<CreateListingView> {
         );
       }
     } else {
-      print('✅ Moving to next step without validation');
       _nextStep();
     }
   }
 
   void _handlePreviousButton() {
-    print('🔄 _handlePreviousButton() called - currentStep: $currentStep');
 
     // Handle step navigation
     _pageController.previousPage(
@@ -353,44 +314,24 @@ class _CreateListingViewState extends State<CreateListingView> {
   }
 
   void _nextStep() {
-    print('🔄 _nextStep() called - currentStep: $currentStep');
 
     if (currentStep < 2) {
       setState(() {
         currentStep++;
       });
-      print('✅ Moving to step: $currentStep');
       _pageController.nextPage(
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     } else {
-      print('🔄 Navigating to review screen...');
       // Navigate to review screen
       _navigateToReview();
     }
   }
 
   void _navigateToReview() {
-    print('🔄 _navigateToReview() called');
-    print('📊 Controller state BEFORE navigation to review:');
-    print(
-      '   📝 mainCategory: "${_listingInputController.mainCategory.value}"',
-    );
-    print('   🚗 subCategory: "${_listingInputController.subCategory.value}"');
-    print(
-      '   🖼️ images count: ${_listingInputController.listingImage.value.length}',
-    );
-    print('   📋 title: "${_listingInputController.title.value}"');
-    print('   🏭 make: "${_listingInputController.make.value}"');
-    print('   🚙 model: "${_listingInputController.model.value}"');
-    print('   💰 price: "${_listingInputController.price.value}"');
-    print('   📍 location: "${_listingInputController.location.value}"');
-    print('   📝 description: "${_listingInputController.description.value}"');
-    print('   📅 year: "${_listingInputController.year.value}"');
 
     // ✅ RE-ENABLED: Review navigation
-    print('🚀 Navigating to review screen...');
 
     // Navigate to review screen
     _navigateToReviewScreen();
@@ -407,12 +348,6 @@ class _CreateListingViewState extends State<CreateListingView> {
       ),
     ).then((_) {
       // This runs when returning from review screen
-      print('🔄 Returned from review screen');
-      print('📊 Controller state AFTER returning from review:');
-      print('   📝 mainCategory: "${_listingInputController.mainCategory.value}"');
-      print('   🚗 subCategory: "${_listingInputController.subCategory.value}"');
-      print('   🖼️ images count: ${_listingInputController.listingImage.value.length}');
-      print('   📋 title: "${_listingInputController.title.value}"');
     });
     */
   }
@@ -478,22 +413,9 @@ class _CreateListingViewState extends State<CreateListingView> {
   }
 
   void _onCategorySelected(int index) {
-    print(
-      '🔄 Category switching from ${tabs[selectedIndex]} to ${tabs[index]}',
-    );
-    print('📊 BEFORE category switch - Controller state:');
-    print(
-      '   📝 mainCategory: "${_listingInputController.mainCategory.value}"',
-    );
-    print('   🚗 subCategory: "${_listingInputController.subCategory.value}"');
-    print(
-      '   🖼️ images count: ${_listingInputController.listingImage.value.length}',
-    );
-    print('   📋 title: "${_listingInputController.title.value}"');
 
     // Backup current data before switching
     _listingInputController.backupCurrentData();
-    print('💾 Data backed up successfully');
 
     setState(() {
       selectedIndex = index;
@@ -503,21 +425,10 @@ class _CreateListingViewState extends State<CreateListingView> {
     // Update main category in controller
     String mainCategory = index == 0 ? 'vehicles' : 'real_estate';
     _listingInputController.mainCategory.value = mainCategory;
-    print('📝 Updated mainCategory to: $mainCategory');
 
     // 🔧 CRITICAL FIX: Restore backed up data after category switch
     _listingInputController.restoreFromBackup();
-    print('🔄 Data restored from backup');
 
-    print('📊 AFTER category switch - Controller state:');
-    print(
-      '   📝 mainCategory: "${_listingInputController.mainCategory.value}"',
-    );
-    print('   🚗 subCategory: "${_listingInputController.subCategory.value}"');
-    print(
-      '   🖼️ images count: ${_listingInputController.listingImage.value.length}',
-    );
-    print('   📋 title: "${_listingInputController.title.value}"');
 
     // Reset page controller to first step
     _pageController.animateToPage(
@@ -526,14 +437,9 @@ class _CreateListingViewState extends State<CreateListingView> {
       curve: Curves.easeInOut,
     );
 
-    print('✅ Category switch completed, data preserved');
   }
 
   bool _validateEssentialDetails() {
-    print('🔍 === VALIDATION DEBUG START ===');
-    print('🔍 Current step: $currentStep');
-    print('🔍 Selected category index: $selectedIndex');
-    print('🔍 Form key exists: ${_formKey.currentState != null}');
 
     setState(() {
       _showValidation = true;
@@ -545,21 +451,16 @@ class _CreateListingViewState extends State<CreateListingView> {
     // Check form validation first
     bool isFormValid =
         _formKey.currentState != null && _formKey.currentState!.validate();
-    print('🔍 Form validation result: $isFormValid');
 
     // Check specific required fields based on category
     List<String> missingFields = _getMissingRequiredFields();
-    print('🔍 Missing fields: $missingFields');
 
     // Check if images are uploaded
     bool areImagesUploaded = _checkImagesUploaded();
-    print('🔍 Images uploaded: $areImagesUploaded');
 
     if (isFormValid && missingFields.isEmpty && areImagesUploaded) {
-      print('🔍 ✅ Validation PASSED - proceeding to submit');
       return true;
     } else {
-      print('🔍 ❌ Validation FAILED');
       String errorMessage = '${'pleaseCompleteTheFollowing'.tr}\n';
       if (missingFields.isNotEmpty) {
         errorMessage += '${'missingFieldsDetail'.tr}${missingFields.join(", ")}\n';
@@ -616,7 +517,6 @@ class _CreateListingViewState extends State<CreateListingView> {
 
   // Re-enabled for testing review functionality
   void _navigateToReviewScreen() {
-    print('🚀 === NAVIGATION DEBUG START ===');
 
     // Ensure all data is saved to the controller before navigation
     _saveCurrentFormData();
@@ -624,45 +524,33 @@ class _CreateListingViewState extends State<CreateListingView> {
     final String category = selectedIndex == 0 ? 'vehicles' : 'real_estate';
     final bool isVehicle = category == 'vehicles';
 
-    print('🚀 Category: $category, isVehicle: $isVehicle');
 
     // CRITICAL: Backup all current data before navigation
     final listingController = Get.find<ListingInputController>();
     listingController.backupCurrentData();
-    print('💾 Data backed up before navigation');
 
     // Final debug before navigation
     _debugControllerState('BEFORE NAVIGATION');
 
     // Validate that essential data exists
     if (!listingController.hasEssentialData()) {
-      print('⚠️ WARNING: No essential data found before navigation');
     }
 
     // Get comprehensive data summary
     final dataSummary = listingController.getDataSummary();
-    print('📊 Current data summary: $dataSummary');
 
     // Get images and debug them
     final imageUrls = _getImageUrls();
-    print('🚀 Images being passed: ${imageUrls.length} images');
-    print('🚀 Image URLs: $imageUrls');
 
     // Validate images are properly synced
     if (imageUrls.length != listingController.listingImage.length) {
-      print(
-        '🚨 IMAGE SYNC ERROR: URLs(${imageUrls.length}) != Controller(${listingController.listingImage.length})',
-      );
     }
 
-    print('🚀 Navigating to ReviewListing...');
     Get.to(() => ReviewListing(isVehicle: isVehicle, imageUrls: imageUrls));
 
-    print('🚀 === NAVIGATION DEBUG END ===');
   }
 
   void _saveCurrentFormData() {
-    print('💾 === SAVING FORM DATA DEBUG START ===');
 
     // Debug controller state BEFORE saving
     _debugControllerState('BEFORE SAVING');
@@ -674,16 +562,13 @@ class _CreateListingViewState extends State<CreateListingView> {
 
     // Force update of any pending form data
     if (_formKey.currentState != null) {
-      print('💾 Form key exists, calling save()');
       _formKey.currentState!.save();
     } else {
-      print('💾 ❌ Form key is null!');
     }
 
     // Debug controller state AFTER saving
     _debugControllerState('AFTER SAVING');
 
-    print('💾 === SAVING FORM DATA DEBUG END ===');
   }
 
   List<String> _getImageUrls() {
@@ -692,29 +577,5 @@ class _CreateListingViewState extends State<CreateListingView> {
   }
 
   void _debugControllerState(String phase) {
-    print('🔍 === CONTROLLER STATE DEBUG: $phase ===');
-    print('🔍 ListingInputController state:');
-    print('   📝 Title: "${_listingInputController.title.value}"');
-    print('   📝 Description: "${_listingInputController.description.value}"');
-    print('   💰 Price: ${_listingInputController.price.value}');
-    print('   📍 Location: "${_listingInputController.location.value}"');
-    print(
-      '   🏷️ Main Category: "${_listingInputController.mainCategory.value}"',
-    );
-    print(
-      '   🏷️ Sub Category: "${_listingInputController.subCategory.value}"',
-    );
-    print('   🚗 Make: "${_listingInputController.make.value}"');
-    print('   🚗 Model: "${_listingInputController.model.value}"');
-    print('   📅 Year: ${_listingInputController.year.value}');
-    print('   📸 Images count: ${_listingInputController.listingImage.length}');
-    print('   🔧 Body Type: "${_listingInputController.bodyType.value}"');
-    print('   ⛽ Fuel Type: "${_listingInputController.fuelType.value}"');
-    print(
-      '   🔄 Transmission: "${_listingInputController.transmissionType.value}"',
-    );
-    print('   📍 Latitude: "${_listingInputController.latitude.value}"');
-    print('   📍 Longitude: "${_listingInputController.longitude.value}"');
-    print('🔍 === END CONTROLLER STATE DEBUG ===');
   }
 }

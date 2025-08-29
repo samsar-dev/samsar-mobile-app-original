@@ -169,7 +169,6 @@ class SearchIndividualListingModel {
     final rootLevel = fuelTypeRoot;
     final nested = details?.json['vehicles']?['fuelType'] ?? details?.json['fuelType'];
     final result = rootLevel ?? nested;
-    print('🔍 [SEARCH MODEL DEBUG] FuelType getter: $result (root: $rootLevel, nested: $nested)');
     return result;
   }
   
@@ -177,7 +176,6 @@ class SearchIndividualListingModel {
     final rootLevel = yearRoot;
     final nested = details?.json['vehicles']?['year'] ?? details?.json['year'];
     final result = rootLevel ?? nested;
-    print('🔍 [SEARCH MODEL DEBUG] Year getter: $result (root: $rootLevel, nested: $nested)');
     return result;
   }
   
@@ -185,7 +183,6 @@ class SearchIndividualListingModel {
     final rootLevel = transmissionTypeRoot;
     final nested = details?.json['vehicles']?['transmissionType'] ?? details?.json['vehicles']?['transmission'] ?? details?.json['transmissionType'] ?? details?.json['transmission'];
     final result = rootLevel ?? nested;
-    print('🔍 [SEARCH MODEL DEBUG] Transmission getter: $result (root: $rootLevel, nested: $nested)');
     return result;
   }
   
@@ -193,7 +190,6 @@ class SearchIndividualListingModel {
     final rootLevel = mileageRoot;
     final nested = details?.json['vehicles']?['mileage'] ?? details?.json['mileage'];
     final result = rootLevel ?? nested;
-    print('🔍 [SEARCH MODEL DEBUG] Mileage getter: $result (root: $rootLevel, nested: $nested)');
     return result;
   }
   
@@ -201,7 +197,6 @@ class SearchIndividualListingModel {
     final rootLevel = makeRoot;
     final nested = details?.json['vehicles']?['make'] ?? details?.json['make'];
     final result = rootLevel ?? nested;
-    print('🔍 [SEARCH MODEL DEBUG] Make getter: $result (root: $rootLevel, nested: $nested)');
     return result;
   }
   
@@ -209,7 +204,6 @@ class SearchIndividualListingModel {
     final rootLevel = modelRoot;
     final nested = details?.json['vehicles']?['model'] ?? details?.json['model'];
     final result = rootLevel ?? nested;
-    print('🔍 [SEARCH MODEL DEBUG] Model getter: $result (root: $rootLevel, nested: $nested)');
     return result;
   }
 
@@ -243,15 +237,6 @@ class SearchIndividualListingModel {
   }
 
   factory SearchIndividualListingModel.fromJson(Map<String, dynamic> json) {
-    print('🔍 [SEARCH MODEL DEBUG] Parsing search result with root vehicle fields:');
-    print('  - make: ${json["make"]}');
-    print('  - model: ${json["model"]}');
-    print('  - year: ${json["year"]}');
-    print('  - mileage: ${json["mileage"]}');
-    print('  - fuelType: ${json["fuelType"]}');
-    print('  - transmission: ${json["transmission"]} (backend field name)');
-    print('  - exteriorColor: ${json["exteriorColor"]} (backend field name)');
-    print('  - condition: ${json["condition"]}');
     
     return SearchIndividualListingModel(
       id: json["id"],
@@ -352,7 +337,6 @@ class Details {
   final Map<String, dynamic> json;
 
   factory Details.fromJson(Map<String, dynamic> json) {
-    print('🔍 [DETAILS DEBUG] Parsing details from JSON: $json');
     return Details(json: json);
   }
 

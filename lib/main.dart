@@ -60,12 +60,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('🎨 MyApp.build() called');
     return Obx(() {
-      print('🔄 Obx rebuilding MyApp...');
-      print('🌍 Current locale: ${_languageController.currentLocale}');
-      print('📱 Current language: ${_languageController.currentLanguage}');
-      print('➡️ Is RTL: ${_languageController.isRTL}');
 
       return GetMaterialApp(
         debugShowCheckedModeBanner: false,
@@ -150,9 +145,6 @@ class MyApp extends StatelessWidget {
         fallbackLocale: const Locale('ar', 'SA'),
         // RTL support
         builder: (context, child) {
-          print(
-            '🏠 App builder called with locale: ${_languageController.currentLocale}',
-          );
           return Directionality(
             textDirection: _languageController.isRTL
                 ? TextDirection.rtl

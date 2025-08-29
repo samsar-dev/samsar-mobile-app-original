@@ -29,20 +29,23 @@ class VehicleService {
         if (!isExpired) {
           final cachedData = prefs.getStringList(cacheKey);
           if (cachedData != null && cachedData.isNotEmpty) {
-            print('🚗 Loaded makes for $subcategory from cache (${cachedData.length} items)');
             return cachedData;
           }
         }
       }
       
       // Fetch from API
-      print('🌐 Fetching makes for $subcategory from API...');
       final response = await http.get(
         Uri.parse('$baseUrl/makes?subcategory=$subcategory'),
         headers: {'Content-Type': 'application/json'},
       );
       
       if (response.statusCode == 200) {
+        // Check if response body is empty
+        if (response.body.isEmpty) {
+          throw Exception('Backend returned empty response - will use fallback makes');
+        }
+        
         final responseData = json.decode(response.body);
         final makes = List<String>.from(responseData['data']['makes'] ?? []);
         
@@ -50,20 +53,25 @@ class VehicleService {
         await prefs.setStringList(cacheKey, makes);
         await prefs.setInt(timestampKey, DateTime.now().millisecondsSinceEpoch);
         
-        print('✅ Cached ${makes.length} makes for $subcategory');
         return makes;
       } else {
         throw Exception('Failed to load makes: ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ Error fetching makes for $subcategory: $e');
-      
       // Try to return cached data even if expired as fallback
       final prefs = await SharedPreferences.getInstance();
       final cachedData = prefs.getStringList(cacheKey);
       if (cachedData != null && cachedData.isNotEmpty) {
-        print('🔄 Using expired cache as fallback');
         return cachedData;
+      }
+      
+      // If no cache available, provide basic fallback makes for common subcategories
+      final fallbackMakes = _getFallbackMakes(subcategory);
+      if (fallbackMakes.isNotEmpty) {
+        // Cache the fallback data temporarily
+        await prefs.setStringList(cacheKey, fallbackMakes);
+        await prefs.setInt(timestampKey, DateTime.now().millisecondsSinceEpoch);
+        return fallbackMakes;
       }
       
       throw Exception('Failed to load vehicle makes: $e');
@@ -87,20 +95,23 @@ class VehicleService {
         if (!isExpired) {
           final cachedData = prefs.getStringList(cacheKey);
           if (cachedData != null && cachedData.isNotEmpty) {
-            print('🚗 Loaded models for $make ($subcategory) from cache (${cachedData.length} items)');
             return cachedData;
           }
         }
       }
       
       // Fetch from API
-      print('🌐 Fetching models for $make ($subcategory) from API...');
       final response = await http.get(
         Uri.parse('$baseUrl/models?make=$make&subcategory=$subcategory'),
         headers: {'Content-Type': 'application/json'},
       );
       
       if (response.statusCode == 200) {
+        // Check if response body is empty
+        if (response.body.isEmpty) {
+          throw Exception('Backend returned empty response - will use fallback models');
+        }
+        
         final responseData = json.decode(response.body);
         final models = List<String>.from(responseData['data']['models'] ?? []);
         
@@ -108,19 +119,15 @@ class VehicleService {
         await prefs.setStringList(cacheKey, models);
         await prefs.setInt(timestampKey, DateTime.now().millisecondsSinceEpoch);
         
-        print('✅ Cached ${models.length} models for $make ($subcategory)');
         return models;
       } else {
         throw Exception('Failed to load models: ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ Error fetching models for $make ($subcategory): $e');
-      
       // Try to return cached data even if expired as fallback
       final prefs = await SharedPreferences.getInstance();
       final cachedData = prefs.getStringList(cacheKey);
       if (cachedData != null && cachedData.isNotEmpty) {
-        print('🔄 Using expired cache as fallback');
         return cachedData;
       }
       
@@ -146,14 +153,12 @@ class VehicleService {
           final cachedDataString = prefs.getString(cacheKey);
           if (cachedDataString != null) {
             final cachedData = json.decode(cachedDataString);
-            print('🚗 Loaded all vehicle data for $subcategory from cache');
             return Map<String, dynamic>.from(cachedData);
           }
         }
       }
       
       // Fetch from API
-      print('🌐 Fetching all vehicle data for $subcategory from API...');
       final response = await http.get(
         Uri.parse('$baseUrl/all?subcategory=$subcategory'),
         headers: {'Content-Type': 'application/json'},
@@ -166,19 +171,16 @@ class VehicleService {
         await prefs.setString(cacheKey, json.encode(data));
         await prefs.setInt(timestampKey, DateTime.now().millisecondsSinceEpoch);
         
-        print('✅ Cached all vehicle data for $subcategory');
         return data;
       } else {
         throw Exception('Failed to load vehicle data: ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ Error fetching all vehicle data for $subcategory: $e');
       
       // Try to return cached data even if expired as fallback
       final prefs = await SharedPreferences.getInstance();
       final cachedDataString = prefs.getString(cacheKey);
       if (cachedDataString != null) {
-        print('🔄 Using expired cache as fallback');
         return Map<String, dynamic>.from(json.decode(cachedDataString));
       }
       
@@ -186,22 +188,46 @@ class VehicleService {
     }
   }
 
-  /// Clear all vehicle cache
+  /// Clear all cached vehicle data
   static Future<void> clearCache() async {
     final prefs = await SharedPreferences.getInstance();
-    final keys = prefs.getKeys();
-    
-    final vehicleKeys = keys.where((key) => 
-      key.startsWith(_makesPrefix) || 
-      key.startsWith(_modelsPrefix) || 
-      key.startsWith(_allDataPrefix)
+    final keys = prefs.getKeys().where((key) => 
+      key.startsWith(_makesPrefix) || key.startsWith(_modelsPrefix)
     ).toList();
     
-    for (final key in vehicleKeys) {
+    for (final key in keys) {
       await prefs.remove(key);
     }
-    
-    print('🗑️ Cleared vehicle cache (${vehicleKeys.length} items)');
+  }
+
+  /// Get fallback vehicle makes when API is unavailable
+  static List<String> _getFallbackMakes(String subcategory) {
+    switch (subcategory.toUpperCase()) {
+      case 'CARS':
+        return [
+          'Toyota', 'Honda', 'Nissan', 'Hyundai', 'Kia', 'Mazda', 'Mitsubishi',
+          'BMW', 'Mercedes-Benz', 'Audi', 'Volkswagen', 'Peugeot', 'Renault',
+          'Ford', 'Chevrolet', 'Opel', 'Fiat', 'Skoda', 'Citroen', 'Volvo',
+          'Suzuki', 'Subaru', 'Lexus', 'Infiniti', 'Acura', 'Genesis',
+          'Chery', 'Geely', 'BYD', 'Great Wall', 'JAC', 'MG', 'Others'
+        ];
+      case 'CONSTRUCTION_VEHICLES':
+        return [
+          'Caterpillar', 'Komatsu', 'Volvo', 'JCB', 'Case', 'Liebherr',
+          'Hitachi', 'Doosan', 'Hyundai', 'XCMG', 'Sany', 'Zoomlion',
+          'LiuGong', 'New Holland', 'Bobcat', 'Takeuchi', 'Kubota',
+          'John Deere', 'Terex', 'Atlas', 'Manitou', 'Others'
+        ];
+      case 'PASSENGER_VEHICLES':
+        return [
+          'Toyota', 'Honda', 'Nissan', 'Hyundai', 'Kia', 'Mazda',
+          'Mitsubishi', 'Suzuki', 'Isuzu', 'Ford', 'Chevrolet',
+          'Mercedes-Benz', 'BMW', 'Volkswagen', 'Peugeot', 'Renault',
+          'Fiat', 'Iveco', 'MAN', 'Volvo', 'Scania', 'Others'
+        ];
+      default:
+        return [];
+    }
   }
 
   /// Clear cache for specific subcategory
@@ -216,43 +242,5 @@ class VehicleService {
     for (final key in subcategoryKeys) {
       await prefs.remove(key);
     }
-    
-    print('🗑️ Cleared cache for $subcategory (${subcategoryKeys.length} items)');
-  }
-
-  /// Check cache status for debugging
-  static Future<Map<String, dynamic>> getCacheStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final keys = prefs.getKeys();
-    
-    final vehicleKeys = keys.where((key) => 
-      key.startsWith(_makesPrefix) || 
-      key.startsWith(_modelsPrefix) || 
-      key.startsWith(_allDataPrefix)
-    ).toList();
-    
-    final status = <String, dynamic>{};
-    
-    for (final key in vehicleKeys) {
-      if (key.endsWith(_timestampSuffix)) {
-        final timestamp = prefs.getInt(key);
-        if (timestamp != null) {
-          final cacheTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
-          final age = DateTime.now().difference(cacheTime);
-          final isExpired = age > cacheExpiry;
-          
-          status[key] = {
-            'timestamp': cacheTime.toIso8601String(),
-            'age_hours': age.inHours,
-            'expired': isExpired,
-          };
-        }
-      }
-    }
-    
-    return {
-      'total_keys': vehicleKeys.length,
-      'cache_details': status,
-    };
   }
 }

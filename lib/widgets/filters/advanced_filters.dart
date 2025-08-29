@@ -1820,7 +1820,6 @@ class AdvancedFilters extends StatelessWidget {
         ),
       );
     } catch (e) {
-      print('Error loading makes: $e');
     }
   }
 
@@ -1893,7 +1892,6 @@ class AdvancedFilters extends StatelessWidget {
         ),
       );
     } catch (e) {
-      print('Error loading models: $e');
     }
   }
 }

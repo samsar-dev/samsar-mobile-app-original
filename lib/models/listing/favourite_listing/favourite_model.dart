@@ -60,7 +60,6 @@ class FavoriteModel {
     final rootLevel = fuelTypeRoot;
     final nested = details?.json['vehicles']?['fuelType'] ?? details?.json['fuelType'];
     final result = rootLevel ?? nested;
-    print('🔍 [FAVORITE MODEL DEBUG] FuelType getter: $result (root: $rootLevel, nested: $nested)');
     return result;
   }
   
@@ -68,7 +67,6 @@ class FavoriteModel {
     final rootLevel = yearRoot;
     final nested = details?.json['vehicles']?['year'] ?? details?.json['year'];
     final result = rootLevel ?? nested;
-    print('🔍 [FAVORITE MODEL DEBUG] Year getter: $result (root: $rootLevel, nested: $nested)');
     return result;
   }
   
@@ -76,7 +74,6 @@ class FavoriteModel {
     final rootLevel = transmissionTypeRoot;
     final nested = details?.json['vehicles']?['transmissionType'] ?? details?.json['vehicles']?['transmission'] ?? details?.json['transmissionType'] ?? details?.json['transmission'];
     final result = rootLevel ?? nested;
-    print('🔍 [FAVORITE MODEL DEBUG] Transmission getter: $result (root: $rootLevel, nested: $nested)');
     return result;
   }
   
@@ -84,7 +81,6 @@ class FavoriteModel {
     final rootLevel = mileageRoot;
     final nested = details?.json['vehicles']?['mileage'] ?? details?.json['mileage'];
     final result = rootLevel ?? nested;
-    print('🔍 [FAVORITE MODEL DEBUG] Mileage getter: $result (root: $rootLevel, nested: $nested)');
     return result;
   }
   
@@ -92,7 +88,6 @@ class FavoriteModel {
     final rootLevel = makeRoot;
     final nested = details?.json['vehicles']?['make'] ?? details?.json['make'];
     final result = rootLevel ?? nested;
-    print('🔍 [FAVORITE MODEL DEBUG] Make getter: $result (root: $rootLevel, nested: $nested)');
     return result;
   }
   
@@ -100,20 +95,10 @@ class FavoriteModel {
     final rootLevel = modelRoot;
     final nested = details?.json['vehicles']?['model'] ?? details?.json['model'];
     final result = rootLevel ?? nested;
-    print('🔍 [FAVORITE MODEL DEBUG] Model getter: $result (root: $rootLevel, nested: $nested)');
     return result;
   }
 
   factory FavoriteModel.fromJson(Map<String, dynamic> json) {
-    print('🔍 [FAVORITE MODEL DEBUG] Parsing favorite with root vehicle fields:');
-    print('  - make: ${json["make"]}');
-    print('  - model: ${json["model"]}');
-    print('  - year: ${json["year"]}');
-    print('  - mileage: ${json["mileage"]}');
-    print('  - fuelType: ${json["fuelType"]}');
-    print('  - transmission: ${json["transmission"]} (backend field name)');
-    print('  - exteriorColor: ${json["exteriorColor"]} (backend field name)');
-    print('  - condition: ${json["condition"]}');
     
     return FavoriteModel(
       id: json["id"],

@@ -129,9 +129,7 @@ class SearchModuleController extends GetxController {
           .toQueryParams();
 
       // Debug: Print query parameters
-      print('🔍 Search API Query Parameters:');
       queryParams.forEach((key, value) {
-        print('  $key: $value');
       });
 
       // Always use search endpoint for simple text search
@@ -147,10 +145,7 @@ class SearchModuleController extends GetxController {
       // Remove null values
       apiParams.removeWhere((key, value) => value == null);
 
-      print('🔍 Using SEARCH endpoint for text search only');
-      print('  Final API params:');
       apiParams.forEach((key, value) {
-        print('    $key: $value');
       });
 
       final response = await _dio.get(
@@ -170,36 +165,23 @@ class SearchModuleController extends GetxController {
             .map((e) => SearchIndividualListingModel.fromJson(e))
             .toList();
 
-        print('📊 API RESPONSE SUCCESS:');
-        print('  Total items received: ${items.length}');
-        print('  Parsed results: ${newResults.length}');
-        print('  hasMore: ${data['data']['hasMore']}');
 
         if (reset) {
-          print('  🔄 RESET: Replacing all results');
           allResults.value = newResults;
         } else {
-          print('  ➕ APPEND: Adding to existing results');
           allResults.addAll(newResults);
         }
 
-        print('  Total allResults count: ${allResults.length}');
 
         // Apply fuzzy search filter
         applyFuzzyFilter(currentQuery.value);
 
-        print(
-          '  After fuzzy filter - searchResults count: ${searchResults.length}',
-        );
 
         hasMore.value = data['data']['hasMore'] ?? false;
         currentPage.value++;
 
         // Show success message only for new searches
         if (reset && newResults.isNotEmpty) {
-          print(
-            '🎉 Showing success message: Found ${newResults.length} results',
-          );
           showCustomSnackbar("Found ${newResults.length} results", false);
         }
       } else {

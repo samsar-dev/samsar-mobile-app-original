@@ -73,7 +73,6 @@ class _CommercialsAdvancedDetailsState
           );
         }
       } catch (e) {
-        print('Error parsing color: $e');
         selectedColor = Colors.grey; // Fallback
       }
     }

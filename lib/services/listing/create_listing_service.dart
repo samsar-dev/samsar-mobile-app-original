@@ -24,16 +24,6 @@ class CreateListingService {
   ) async {
     try {
       // Prepare multipart form data
-      print("=== SENDING COMMERCIAL VEHICLE DATA ===");
-      print("mainCategory: ${commercialDetails.mainCategory}");
-      print("subCategory: ${commercialDetails.subCategory}");
-      print("vehicleSubtype: ${commercialDetails.vehicleSubtype}");
-      print("title: ${commercialDetails.title}");
-      print("description: ${commercialDetails.description}");
-      print("price: ${commercialDetails.price}");
-      print("location: ${commercialDetails.location}");
-      print("condition: ${commercialDetails.condition}");
-      print("vehicles details: ${commercialDetails.details.toJson()}");
 
       final formData = FormData.fromMap({
         'title': commercialDetails.title,
@@ -114,21 +104,14 @@ class CreateListingService {
         ),
       );
 
-      print("=== COMMERCIAL VEHICLE API CALL COMPLETED ===");
-      print("Response status: ${response.statusCode}");
-      print("Response data: ${response.data}");
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        print(
-          "=== SUCCESS: Commercial vehicle listing created successfully ===",
-        );
 
         Map<String, dynamic> responseMap;
         if (response.data is String) {
           try {
             responseMap = json.decode(response.data);
           } catch (e) {
-            print("=== ERROR: Failed to parse string response as JSON ===");
             return ApiResponse.failure(
               ApiError(fastifyErrorResponse: null, errorResponse: null),
             );
@@ -136,7 +119,6 @@ class CreateListingService {
         } else if (response.data is Map<String, dynamic>) {
           responseMap = response.data;
         } else {
-          print("=== ERROR: Unexpected response data type ===");
           return ApiResponse.failure(
             ApiError(fastifyErrorResponse: null, errorResponse: null),
           );
@@ -145,14 +127,11 @@ class CreateListingService {
         final model = CreateCarListing.fromJson(responseMap);
         return ApiResponse.success(model);
       } else {
-        print("=== ERROR: Commercial vehicle listing creation failed ===");
         return ApiResponse.failure(
           ApiError(fastifyErrorResponse: null, errorResponse: null),
         );
       }
     } catch (e) {
-      print("=== EXCEPTION in createCommercialVehicleService ===");
-      print("Exception: $e");
       return ApiResponse.failure(
         ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
@@ -264,66 +243,17 @@ class CreateListingService {
     car_listing.VehicleModel carModel,
   ) async {
     try {
-      print("\n📡 === CREATE LISTING SERVICE START ===");
-      print(
-        "🔐 Access Token: ${accessToken.isNotEmpty ? 'Present (${accessToken.length} chars)' : 'Missing'}",
-      );
 
-      print("\n📋 RECEIVED CAR MODEL:");
-      print("  Type: ${carModel.runtimeType}");
-      print("  Title: '${carModel.title}'");
-      print("  Description: '${carModel.description}'");
-      print("  Price: ${carModel.price}");
-      print("  Main Category: '${carModel.mainCategory}'");
-      print("  Sub Category: '${carModel.subCategory}'");
-      print("  Location: '${carModel.location}'");
-      print("  Latitude: ${carModel.latitude}");
-      print("  Longitude: ${carModel.longitude}");
-      print("  Condition: '${carModel.condition}'");
-      print("  Listing Action: '${carModel.listingAction}'");
-      print("  Seller Type: '${carModel.sellerType}'");
-      print("  Images count: ${carModel.listingImage.length}");
 
-      print("\n🔍 DETAILS ANALYSIS:");
-      print("  Details type: ${carModel.details.runtimeType}");
-      print("  Details.json type: ${carModel.details.json.runtimeType}");
-      print("  Details.json keys: ${carModel.details.json.keys.toList()}");
-      print("  Full details content: ${carModel.details.json}");
 
-      print("\n🔧 EXTRACTING VEHICLE FIELDS FROM NESTED STRUCTURE:");
       final vehicleData =
           carModel.details.json['vehicles'] as Map<String, dynamic>?;
       if (vehicleData != null) {
-        print("  ✅ Vehicle data found in nested structure");
-        print("  Raw make: '${vehicleData['make']}'");
-        print("  Raw model: '${vehicleData['model']}'");
-        print("  Raw year: '${vehicleData['year']}'");
-        print("  Raw mileage: '${vehicleData['mileage']}'");
-        print("  Raw horsepower: '${vehicleData['horsepower']}'");
-        print("  Raw fuelType: '${vehicleData['fuelType']}'");
-        print("  Raw transmission: '${vehicleData['transmission']}'");
-        print("  Raw bodyType: '${vehicleData['bodyType']}'");
-        print("  Raw exteriorColor: '${vehicleData['exteriorColor']}'");
-        print("  Raw accidentFree: '${vehicleData['accidentFree']}'");
-        print("  Raw importStatus: '${vehicleData['importStatus']}'");
         // doors and seatingCapacity moved to JSON details only
-        print("  Raw interiorColor: '${vehicleData['interiorColor']}'");
 
-        print("\n🔄 MAPPED VALUES:");
-        print("  Mapped fuelType: '${_mapFuelType(vehicleData['fuelType'])}'");
-        print(
-          "  Mapped transmission: '${_mapTransmissionType(vehicleData['transmission'])}'",
-        );
-        print("  Mapped sellerType: '${_mapSellerType(carModel.sellerType)}'");
-        print(
-          "  Mapped listingAction: '${_mapListingAction(carModel.listingAction)}'",
-        );
       } else {
-        print("  ❌ No vehicle data found in nested structure!");
-        print("  Available keys: ${carModel.details.json.keys.toList()}");
       }
 
-      print("\n🏗️ BUILDING FORM DATA:");
       // Extract vehicle fields directly from nested structure and add to root level
 
       final Map<String, dynamic> formFields = {
@@ -342,7 +272,6 @@ class CreateListingService {
 
       // Add ALL vehicle fields from nested structure OR fallback to controller values
       if (vehicleData != null) {
-        print("\n🔧 ADDING VEHICLE FIELDS TO FORM:");
         // Always add fields if they exist, let backend handle null/empty values
         _addFieldIfExists(formFields, 'make', vehicleData['make']);
         _addFieldIfExists(formFields, 'model', vehicleData['model']);
@@ -367,29 +296,22 @@ class CreateListingService {
         // Handle mapped fields
         if (vehicleData['fuelType'] != null) {
           formFields['fuelType'] = _mapFuelType(vehicleData['fuelType']);
-          print("  ✅ Added fuelType: ${formFields['fuelType']}");
         }
         if (vehicleData['transmission'] != null) {
           formFields['transmission'] = _mapTransmissionType(
             vehicleData['transmission'],
           );
-          print("  ✅ Added transmission: ${formFields['transmission']}");
         }
         if (vehicleData['accidentFree'] != null) {
           formFields['accidental'] = vehicleData['accidentFree'] == true
               ? 'no'
               : 'yes';
-          print("  ✅ Added accidental: ${formFields['accidental']}");
         }
       } else {
-        print("\n❌ NO VEHICLE DATA FOUND - TRYING DIRECT EXTRACTION:");
         // Fallback: try to get fields directly from the main details object
         final mainDetails = carModel.details.json;
-        print("  Main details keys: ${mainDetails.keys.toList()}");
-        print("  Full details content: $mainDetails");
 
         // Try to extract from controller directly as fallback
-        print("\n🔄 FALLBACK: EXTRACTING FROM CONTROLLER:");
         final controller = GetX.Get.find<ListingInputController>();
 
         _addFieldIfExists(formFields, 'make', controller.make.value);
@@ -418,35 +340,22 @@ class CreateListingService {
         // Handle mapped fields from controller
         if (controller.fuelType.value.isNotEmpty) {
           formFields['fuelType'] = _mapFuelType(controller.fuelType.value);
-          print(
-            "  ✅ Added fuelType from controller: ${formFields['fuelType']}",
-          );
         }
         if (controller.transmissionType.value.isNotEmpty) {
           formFields['transmission'] = _mapTransmissionType(
             controller.transmissionType.value,
-          );
-          print(
-            "  ✅ Added transmission from controller: ${formFields['transmission']}",
           );
         }
         if (controller.accidental.value.isNotEmpty) {
           formFields['accidental'] = controller.accidental.value == "No"
               ? 'no'
               : 'yes';
-          print(
-            "  ✅ Added accidental from controller: ${formFields['accidental']}",
-          );
         }
       }
 
-      print("\n🚀 FINAL FORM FIELDS TO SEND:");
       formFields.forEach((key, value) {
-        print("  '$key': '$value'");
       });
-      print("  Total form fields: ${formFields.length}");
 
-      print("\n📦 CREATING MULTIPART FORM DATA:");
       final formData = FormData.fromMap({
         ...formFields,
         // Keep only features and non-main fields in details JSON - only include non-null/non-empty values
@@ -506,7 +415,6 @@ class CreateListingService {
         'listingImage': await Future.wait(
           carModel.listingImage.map((filePath) async {
             final mimeType = lookupMimeType(filePath) ?? 'image/jpeg';
-            print("  📸 Adding image: ${basename(filePath)} (${mimeType})");
             return await MultipartFile.fromFile(
               filePath,
               contentType: MediaType.parse(mimeType),
@@ -516,9 +424,6 @@ class CreateListingService {
         ),
       });
 
-      print(
-        "  ✅ FormData created with ${formData.fields.length} fields and ${formData.files.length} files",
-      );
 
       final response = await _dio.post(
         createListingRoute,
@@ -531,23 +436,15 @@ class CreateListingService {
         ),
       );
 
-      print("\n📡 === API CALL COMPLETED ===");
-      print("📊 Response status: ${response.statusCode}");
-      print("📊 Response headers: ${response.headers}");
-      print("📊 Response data type: ${response.data.runtimeType}");
-      print("📊 Response data: ${response.data}");
 
       if (response.data is Map<String, dynamic>) {
         final responseMap = response.data as Map<String, dynamic>;
         if (responseMap.containsKey('data')) {
           final dataMap = responseMap['data'] as Map<String, dynamic>?;
           if (dataMap != null && dataMap.containsKey('details')) {
-            print("\n🔍 BACKEND SAVED DETAILS:");
-            print("  Backend details: ${dataMap['details']}");
             if (dataMap['details'] is Map<String, dynamic>) {
               final detailsMap = dataMap['details'] as Map<String, dynamic>;
               if (detailsMap.containsKey('vehicles')) {
-                print("  Backend vehicles data: ${detailsMap['vehicles']}");
               }
             }
           }
@@ -555,31 +452,20 @@ class CreateListingService {
       }
 
       if (response.statusCode == 201) {
-        print("\n✅ === SUCCESS: Listing created successfully ===");
-        print("🎉 Success response: ${response.data}");
 
         // Handle case where response.data might be a String instead of Map
         Map<String, dynamic> responseMap;
         if (response.data is String) {
           try {
             responseMap = json.decode(response.data);
-            print("Successfully parsed string response as JSON: $responseMap");
           } catch (e) {
-            print("=== ERROR: Failed to parse string response as JSON ===");
-            print("Error: $e");
-            print("Error type: ${e.runtimeType}");
-            print("Raw response data: ${response.data}");
             return ApiResponse.failure(
               ApiError(fastifyErrorResponse: null, errorResponse: null),
             );
           }
         } else if (response.data is Map<String, dynamic>) {
           responseMap = response.data;
-          print("Response is already Map<String, dynamic>: $responseMap");
         } else {
-          print("=== ERROR: Unexpected response data type ===");
-          print("Error response: ${response.data}");
-          print("Error response type: ${response.data.runtimeType}");
           return ApiResponse.failure(
             ApiError(fastifyErrorResponse: null, errorResponse: null),
           );
@@ -588,37 +474,18 @@ class CreateListingService {
         final model = CreateCarListing.fromJson(responseMap);
         return ApiResponse.success(model);
       } else {
-        print("=== ERROR: API returned status ${response.statusCode} ===");
-        print("Error Response: ${response.data}");
-        print("Error Response Type: ${response.data.runtimeType}");
         return ApiResponse.failure(ApiError.fromJson(response.data));
       }
     } on DioException catch (dioError) {
-      print("=== DIO EXCEPTION ===");
-      print("DioException occurred: ${dioError.message}");
-      print("DioException type: ${dioError.type}");
-      print("DioException response: ${dioError.response}");
-      print("DioException status code: ${dioError.response?.statusCode}");
-      print("DioException response data: ${dioError.response?.data}");
-      print("DioException request URL: ${dioError.requestOptions.path}");
-      print("DioException request method: ${dioError.requestOptions.method}");
 
       if (dioError.response != null && dioError.response?.data != null) {
-        print("Processing error response from server...");
         return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
       }
-      print("DioException has no response data, returning generic error");
       return ApiResponse.failure(
         ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     } catch (e) {
-      print("\n❌ === ERROR CREATING CAR LISTING ===");
-      print("🚨 Error type: ${e.runtimeType}");
-      print("🚨 Error message: $e");
       if (e is DioException) {
-        print("🚨 Dio error type: ${e.type}");
-        print("🚨 Dio response: ${e.response?.data}");
-        print("🚨 Dio status code: ${e.response?.statusCode}");
       }
       return ApiResponse.failure(
         ApiError(fastifyErrorResponse: null, errorResponse: null),
@@ -717,9 +584,7 @@ class CreateListingService {
         value.toString().isNotEmpty &&
         value.toString() != '0') {
       formFields[key] = value.toString();
-      print("    ✅ Added $key: '${value.toString()}'");
     } else {
-      print("    ❌ Skipped $key: '$value' (null/empty/zero)");
     }
   }
 }

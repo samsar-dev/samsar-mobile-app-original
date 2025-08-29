@@ -23,7 +23,6 @@ class ChatController extends GetxController {
       final data = await chatService.getConversations();
       conversations.assignAll(data);
     } catch (e) {
-      print("Error fetching conversations: $e");
     } finally {
       isLoading.value = false;
     }
@@ -45,7 +44,6 @@ class ChatController extends GetxController {
       messages.add(message);
       await fetchConversations(); // Refresh conversation preview
     } catch (e) {
-      print("Send message error: $e");
     } finally {
       isSending.value = false;
     }
@@ -58,7 +56,6 @@ class ChatController extends GetxController {
       final data = await chatService.getMessages(conversationId);
       messages.assignAll(data);
     } catch (e) {
-      print("Error fetching messages: $e");
     } finally {
       isLoading.value = false;
     }
@@ -77,7 +74,6 @@ class ChatController extends GetxController {
       );
       conversations.add(conversation);
     } catch (e) {
-      print("Create conversation error: $e");
     } finally {
       isLoading.value = false;
     }
@@ -89,7 +85,6 @@ class ChatController extends GetxController {
       await chatService.deleteMessage(messageId);
       messages.removeWhere((m) => m.id == messageId);
     } catch (e) {
-      print("Delete message error: $e");
     }
   }
 
@@ -99,7 +94,6 @@ class ChatController extends GetxController {
       await chatService.deleteConversation(conversationId);
       conversations.removeWhere((c) => c.id == conversationId);
     } catch (e) {
-      print("Delete conversation error: $e");
     }
   }
 
@@ -132,7 +126,6 @@ class ChatController extends GetxController {
       }
       return newConversation;
     } catch (e) {
-      print("Error getting or creating conversation: $e");
       return null;
     }
   }

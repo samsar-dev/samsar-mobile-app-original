@@ -190,8 +190,6 @@ class _LocationFieldState extends State<LocationField> {
     // Trigger callback if provided
     widget.onLocationChanged?.call();
 
-    print('📍 Location updated: ${location.displayName}');
-    print('🌍 Coordinates: ${location.lat}, ${location.lon}');
   }
 }
 

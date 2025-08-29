@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/views/listing_features/listing_detail/listing_detail.dart';
 import 'package:samsar/controllers/listing/favourite_listing_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:io' show Platform;
 
 // Utility function to shorten long subcategory names for display
 String shortenSubcategory(String subcategory) {
@@ -24,15 +26,8 @@ class ListingCard extends StatelessWidget {
   final String subCategory;
   final String listingAction;
   final int price;
-  final String? fuelType;
-  final dynamic year;
-  final String? transmission;
-  final String? mileage;
   final String listingId;
-  final int? bedrooms;
-  final int? bathrooms;
-  final int? yearBuilt;
-  final int? totalArea;
+  final String? location;
   bool isDarkTheme;
   ListingCard({
     super.key,
@@ -42,15 +37,8 @@ class ListingCard extends StatelessWidget {
     required this.listingAction,
     required this.subCategory,
     required this.price,
-    this.fuelType,
-    this.year,
-    this.transmission,
-    this.mileage,
     required this.listingId,
-    this.bedrooms,
-    this.bathrooms,
-    this.yearBuilt,
-    this.totalArea,
+    this.location,
     this.isDarkTheme = false,
   });
 
@@ -227,6 +215,36 @@ class ListingCard extends StatelessWidget {
 
           const SizedBox(height: 8),
 
+          // Location section
+          if (location != null && location!.isNotEmpty)
+            GestureDetector(
+              onTap: () => _openMaps(location!),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.location_on,
+                    color: Colors.grey[600],
+                    size: screenWidth * 0.035,
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      location!,
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.03,
+                        color: Colors.grey[600],
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          if (location != null && location!.isNotEmpty)
+            const SizedBox(height: 8),
+
           Text(
             "\$${price}",
             style: TextStyle(
@@ -251,118 +269,51 @@ class ListingCard extends StatelessWidget {
     );
   }
 
-  Widget _infoTag(String info, IconData icon) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: blueColor, size: 16),
-        const SizedBox(width: 3),
-        Flexible(
-          child: Text(
-            info,
-            style: TextStyle(
-              color: blackColor,
-              fontWeight: FontWeight.w500,
-              fontSize: 11,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget infoGrid(double screenWidth) {
-    // Check if this is a real estate listing
-    bool isRealEstate = subCategory.toLowerCase().contains('apartment') ||
-        subCategory.toLowerCase().contains('house') ||
-        subCategory.toLowerCase().contains('villa') ||
-        subCategory.toLowerCase().contains('office') ||
-        subCategory.toLowerCase().contains('land') ||
-        subCategory.toLowerCase().contains('store') ||
-        subCategory.toLowerCase().contains('commercial');
+    // Return empty container - no technical details shown
+    return const SizedBox.shrink();
+  }
 
-    List<Widget> infoItems = [];
-
-    if (isRealEstate) {
-      // Real estate info display
-      print('🏠 [LISTING CARD DEBUG] Real estate detected for: $title');
-      print('  - subCategory: $subCategory');
-      print('  - totalArea: $totalArea');
-      print('  - yearBuilt: $yearBuilt');
-      print('  - bedrooms: $bedrooms');
-      print('  - bathrooms: $bathrooms');
+  // Function to open maps based on platform
+  Future<void> _openMaps(String location) async {
+    try {
+      final encodedLocation = Uri.encodeComponent(location);
       
-      if (totalArea != null && totalArea! > 0) {
-        print('  - Adding area tag: ${totalArea} m²');
-        infoItems.add(_infoTag('${totalArea} m²', Icons.square_foot));
+      // Create URLs for different platforms
+      final googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=$encodedLocation';
+      final appleMapsUrl = 'https://maps.apple.com/?q=$encodedLocation';
+      
+      Uri uri;
+      
+      // Choose appropriate maps app based on platform
+      if (Platform.isIOS) {
+        // Try Apple Maps first on iOS
+        uri = Uri.parse(appleMapsUrl);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          return;
+        }
       }
       
-      // Only show yearBuilt for apartments, houses, and villas
-      final showYearBuilt = subCategory.toLowerCase().contains('apartment') ||
-                           subCategory.toLowerCase().contains('house') ||
-                           subCategory.toLowerCase().contains('villa');
-      
-      if (showYearBuilt && yearBuilt != null && yearBuilt! > 0) {
-        print('  - Adding year built tag: Built ${yearBuilt}');
-        infoItems.add(_infoTag('Built ${yearBuilt}', Icons.calendar_month));
-      } else if (showYearBuilt) {
-        print('  - yearBuilt is null or 0, not showing year built tag');
+      // Fallback to Google Maps (works on both platforms)
+      uri = Uri.parse(googleMapsUrl);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
-        print('  - Not showing yearBuilt for subcategory: $subCategory');
+        // If all else fails, show a snackbar
+        Get.snackbar(
+          'Error',
+          'Could not open maps application',
+          snackPosition: SnackPosition.BOTTOM,
+        );
       }
-      if (bedrooms != null && bedrooms! > 0) {
-        infoItems.add(_infoTag('${bedrooms} bed', Icons.bed));
-      }
-      if (bathrooms != null && bathrooms! > 0) {
-        infoItems.add(_infoTag('${bathrooms} bath', Icons.bathtub));
-      }
-    } else {
-      // Vehicle info display
-      if (fuelType != null && fuelType!.isNotEmpty) {
-        infoItems.add(_infoTag(fuelType!, Icons.gas_meter));
-      }
-      if (year != null) {
-        infoItems.add(_infoTag(year.toString(), Icons.calendar_month));
-      }
-      if (transmission != null && transmission!.isNotEmpty) {
-        infoItems.add(_infoTag(transmission!, Icons.settings));
-      }
-      if (mileage != null && mileage!.isNotEmpty) {
-        infoItems.add(_infoTag(mileage!, Icons.rocket));
-      }
-    }
-
-    // If no specific info available, show minimal info
-    if (infoItems.isEmpty) {
-      if (year != null) {
-        infoItems.add(_infoTag(year.toString(), Icons.calendar_month));
-      }
-    }
-
-    // Split the list into chunks of 2
-    List<Widget> rows = [];
-    for (int i = 0; i < infoItems.length; i += 2) {
-      rows.add(
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Row(
-            children: [
-              Expanded(flex: 1, child: infoItems[i]),
-              const SizedBox(width: 8),
-              Expanded(
-                flex: 1,
-                child: i + 1 < infoItems.length
-                    ? infoItems[i + 1]
-                    : const SizedBox(),
-              ),
-            ],
-          ),
-        ),
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Could not open maps: $e',
+        snackPosition: SnackPosition.BOTTOM,
       );
     }
-
-    return Column(children: rows);
   }
 }

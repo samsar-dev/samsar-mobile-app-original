@@ -42,7 +42,6 @@ class _SettingsState extends State<Settings> {
     if (_isInitialized) return;
 
     try {
-      print('🔧 Initializing settings screen...');
       // Ensure settings are loaded with proper error handling
       await _settingsController.getSettingsController();
 
@@ -51,9 +50,7 @@ class _SettingsState extends State<Settings> {
           _isInitialized = true;
         });
       }
-      print('✅ Settings screen initialized successfully');
     } catch (e) {
-      print('❌ Error initializing settings: $e');
       if (mounted) {
         setState(() {
           _isInitialized =
@@ -554,25 +551,12 @@ class _SettingsState extends State<Settings> {
             return Expanded(
               child: GestureDetector(
                 onTap: () async {
-                  print('👆 Language switcher tapped: $languageName');
-                  print(
-                    '📱 Current selected: ${_languageController.currentLanguage}',
-                  );
-                  print('❓ Is selected: $isSelected');
 
                   if (!isSelected) {
-                    print('🔄 Starting language change process...');
 
                     // Immediate visual feedback
                     await _languageController.changeLanguage(languageName);
 
-                    print('✅ Language change completed');
-                    print(
-                      '📱 New current language: ${_languageController.currentLanguage}',
-                    );
-                    print(
-                      '🌍 New current locale: ${_languageController.currentLocale}',
-                    );
 
                     // Show success message
                     Get.snackbar(
@@ -590,7 +574,6 @@ class _SettingsState extends State<Settings> {
                       ),
                     );
                   } else {
-                    print('⚠️ Language already selected: $languageName');
                   }
                 },
                 child: AnimatedContainer(

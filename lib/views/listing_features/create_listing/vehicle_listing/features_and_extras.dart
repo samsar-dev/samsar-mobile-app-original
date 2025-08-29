@@ -31,17 +31,6 @@ class _FeaturesAndExtrasState extends State<FeaturesAndExtras> {
     // Clear subcategory-specific features to ensure clean state for current subcategory
     _listingInputController.clearSubcategorySpecificFeatures(_listingInputController.subCategory.value);
 
-    print('🚀 FeaturesAndExtras initState() called');
-    print('📊 Controller state at features screen:');
-    print(
-      '   📝 Main Category: "${_listingInputController.mainCategory.value}"',
-    );
-    print('   🚗 Sub Category: "${_listingInputController.subCategory.value}"');
-    print('   📝 Title: "${_listingInputController.title.value}"');
-    print('   💰 Price: ${_listingInputController.price.value}');
-    print('   🚗 Make: "${_listingInputController.make.value}"');
-    print('   🚗 Model: "${_listingInputController.model.value}"');
-    print('   🖼️ Images: ${_listingInputController.listingImage.length}');
   }
 
   @override
@@ -62,20 +51,8 @@ class _FeaturesAndExtrasState extends State<FeaturesAndExtras> {
           subCategory: _listingInputController.subCategory.value,
           currentStep: 0, // Single step for features
           onNext: () {
-            print('🚀 Features completed, navigating to review...');
 
             // Debug controller state before navigation
-            print('📊 Controller state before review navigation:');
-            print('   📝 Title: "${_listingInputController.title.value}"');
-            print('   💰 Price: ${_listingInputController.price.value}');
-            print('   🚗 Make: "${_listingInputController.make.value}"');
-            print('   🚗 Model: "${_listingInputController.model.value}"');
-            print(
-              '   🖼️ Images: ${_listingInputController.listingImage.length}',
-            );
-            print(
-              '   🎯 Features: ${_listingInputController.selectedFeatures.length}',
-            );
 
             // Navigate to review screen
             Get.to(

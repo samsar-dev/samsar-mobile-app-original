@@ -57,7 +57,6 @@ class _AdvanceListingOptionsState extends State<AdvanceListingOptions> {
             .replaceAll('#', '');
         exteriorColor = Color(int.parse('FF$exteriorHex', radix: 16));
       } catch (e) {
-        print('Error parsing exterior color: $e');
         exteriorColor = Colors.white;
       }
     }

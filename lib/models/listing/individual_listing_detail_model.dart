@@ -107,27 +107,7 @@ class Data {
   final int? totalFloors;
 
   factory Data.fromJson(Map<String, dynamic> json) {
-    print('🔍 [DATA MODEL DEBUG] Parsing root level vehicle fields:');
-    print('  - make: ${json["make"]}');
-    print('  - model: ${json["model"]}');
-    print('  - year: ${json["year"]}');
-    print('  - mileage: ${json["mileage"]}');
-    print('  - fuelType: ${json["fuelType"]}');
-    print('  - transmission: ${json["transmission"]} (backend field name)');
-    print('  - exteriorColor: ${json["exteriorColor"]} (backend field name)');
-    print('  - condition: ${json["condition"]}');
-    print('  - bodyType: ${json["bodyType"]} (backend field name)');
-    print('  - accidental: ${json["accidental"]} (backend field name)');
-    print('  - engineSize: ${json["engineSize"]} (backend field name)');
-    print('  - listingAction: ${json["listingAction"]} (backend field name)');
-    print('  - sellerType: ${json["sellerType"]} (backend field name)');
     
-    print('🔍 [DATA MODEL DEBUG] Parsing root level real estate fields:');
-    print('  - totalArea: ${json["totalArea"]}');
-    print('  - yearBuilt: ${json["yearBuilt"]}');
-    print('  - furnishing: ${json["furnishing"]}');
-    print('  - floor: ${json["floor"]}');
-    print('  - totalFloors: ${json["totalFloors"]}');
     
     return Data(
       id: json["id"],

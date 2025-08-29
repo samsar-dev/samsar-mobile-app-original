@@ -32,9 +32,7 @@ class ListingController extends GetxController {
   }) async {
     if (isInitial) {
       _page = 1;
-      print('🧹 CLEARING LISTINGS - Current count: ${listings.length}');
       listings.clear();
-      print('🧹 LISTINGS CLEARED - New count: ${listings.length}');
       hasMore.value = true;
     } else {
       if (!hasMore.value) return;
@@ -63,15 +61,6 @@ class ListingController extends GetxController {
     final minPrice = _filterController.minPrice.value;
     final maxPrice = _filterController.maxPrice.value;
 
-    print('🏠 FETCHING LISTINGS WITH BACKEND FILTERS:');
-    print('  mainCategory: $mainCategory');
-    print('  subCategory: $subCategory');
-    print('  listingAction: $listingAction');
-    print('  sortBy: $sortBy, sortOrder: $sortOrder');
-    print('  year: $year');
-    print('  minPrice: $minPrice, maxPrice: $maxPrice');
-    print('  page: $_page, limit: $_limit');
-    print('  forceRefresh: $forceRefresh');
 
     final response = await _service.getListingsService(
       forceRefresh: forceRefresh,
@@ -79,7 +68,6 @@ class ListingController extends GetxController {
 
     if (response.successResponse != null) {
       try {
-        print('📝 RAW API RESPONSE: ${response.successResponse}');
         final listingResponse = ListingResponse.fromJson(
           response.successResponse!,
         );
@@ -91,34 +79,20 @@ class ListingController extends GetxController {
             .where((item) => !existingIds.contains(item.id))
             .toList();
 
-        print(
-          '  New items: ${newItems.length}, Unique new items: ${uniqueNewItems.length}',
-        );
 
         // Apply client-side filtering since Railway backend doesn't support the new filters yet
         final filtered = _applyAllFilters(uniqueNewItems);
         listings.addAll(filtered);
 
-        print(
-          '✅ FETCHED ${newItems.length} ITEMS, UNIQUE: ${uniqueNewItems.length}, FILTERED TO ${filtered.length}',
-        );
-        print('📝 FINAL FILTERED ITEMS BEING DISPLAYED:');
         for (int i = 0; i < filtered.length; i++) {
-          print(
-            '  $i: ${filtered[i].title} (${filtered[i].year ?? 'no year'})',
-          );
         }
-        print('📊 TOTAL LISTINGS NOW: ${listings.length}');
 
         // Endpoint returns all items at once, so no more pages
         hasMore.value = false;
       } catch (e) {
-        print('❌ JSON PARSING ERROR: $e');
-        print('  Raw response: ${response.successResponse}');
         hasMore.value = false;
       }
     } else {
-      print('❌ FAILED TO FETCH LISTINGS: ${response.apiError?.message}');
     }
 
     isLoading.value = false;
@@ -126,24 +100,12 @@ class ListingController extends GetxController {
   }
 
   void setCategory(String category) {
-    print('🏷️ SETTING CATEGORY: $category');
     selectedCategory.value = category;
     fetchListings(isInitial: true, forceRefresh: true);
   }
 
   /// Apply filters to current listings without refetching from API
   void applyFilters() {
-    print('🔄 APPLYING FILTERS TO EXISTING LISTINGS');
-    print('🔧 Current FilterController state:');
-    print('  selectedSubcategory: "${_filterController.selectedSubcategory.value}"');
-    print('  selectedListingType: "${_filterController.selectedListingType.value}"');
-    print('  selectedFuelType: "${_filterController.selectedFuelType.value}"');
-    print('  selectedTransmission: "${_filterController.selectedTransmission.value}"');
-    print('  selectedMake: "${_filterController.selectedMake.value}"');
-    print('  selectedModel: "${_filterController.selectedModel.value}"');
-    print('  selectedMaxMileage: ${_filterController.selectedMaxMileage.value}');
-    print('  selectedBedrooms: ${_filterController.selectedBedrooms.value}');
-    print('  selectedBathrooms: ${_filterController.selectedBathrooms.value}');
     
     // Always fetch fresh data when filters are applied to ensure we have complete data
     fetchListings(isInitial: true, forceRefresh: true);
@@ -151,7 +113,6 @@ class ListingController extends GetxController {
 
   /// Force refresh listings from backend (for pull-to-refresh)
   Future<void> refreshListings() async {
-    print('🔄 FORCE REFRESHING LISTINGS FROM BACKEND');
     await fetchListings(isInitial: true, forceRefresh: true);
   }
 
@@ -194,8 +155,6 @@ class ListingController extends GetxController {
 
   /// Apply client-side filters to items (temporary solution until Railway backend is updated)
   List<Item> _applyAllFilters(List<Item> items) {
-    print('🏠 APPLYING CLIENT-SIDE FILTERS:');
-    print('  Total items before filtering: ${items.length}');
 
     var filtered = items;
 
@@ -216,12 +175,8 @@ class ListingController extends GetxController {
           mappedCategory = itemCategory;
 
         final matches = mappedCategory == filterCategory;
-        print(
-          '    Category check: item="$itemCategory" -> mapped="$mappedCategory" vs filter="$filterCategory" = $matches',
-        );
         return matches;
       }).toList();
-      print('  After category filter: ${filtered.length} items');
     }
 
     // Apply subcategory filter - handle both single and multiple selection
@@ -230,40 +185,26 @@ class ListingController extends GetxController {
       final subcategories = _filterController.selectedSubcategories
           .map((s) => s.toUpperCase())
           .toList();
-      print('  🏠 [MULTIPLE SUBCATEGORY DEBUG] Filtering with: $subcategories');
       
       filtered = filtered.where((item) {
         final itemSubcategory = item.subCategory?.toUpperCase() ?? '';
         final matches = subcategories.contains(itemSubcategory);
         if (matches) {
-          print(
-            '    ✓ Matches multiple subcategories: ${item.subCategory} in $subcategories',
-          );
         }
         return matches;
       }).toList();
-      print(
-        '  After multiple subcategory filter ($subcategories): ${filtered.length} items',
-      );
     } else if (_filterController.selectedSubcategory.value.isNotEmpty) {
       // Single subcategory selection (for vehicles)
       final subcategory = _filterController.selectedSubcategory.value
           .toUpperCase();
-      print('  🚗 [SINGLE SUBCATEGORY DEBUG] Filtering with: $subcategory');
       
       filtered = filtered.where((item) {
         final itemSubcategory = item.subCategory?.toUpperCase() ?? '';
         final matches = itemSubcategory == subcategory;
         if (matches) {
-          print(
-            '    ✓ Matches single subcategory: ${item.subCategory} == $subcategory',
-          );
         }
         return matches;
       }).toList();
-      print(
-        '  After single subcategory filter ($subcategory): ${filtered.length} items',
-      );
     }
 
     // Apply listing type filter (for_sale/for_rent)
@@ -284,14 +225,8 @@ class ListingController extends GetxController {
           matches = true; // Direct match fallback
         }
 
-        print(
-          '    Checking item: ${item.title} - listingAction: "$itemListingAction" vs filter: "${listingType.toLowerCase()}" = $matches',
-        );
         return matches;
       }).toList();
-      print(
-        '  After listing type filter ($listingType): ${filtered.length} items',
-      );
     }
 
     // Apply city filter with improved neighborhood support
@@ -327,12 +262,10 @@ class ListingController extends GetxController {
           location.contains(variation.toLowerCase()));
         
         if (matches) {
-          print('    ✓ Location match: "${item.location}" contains city "$city"');
         }
         
         return matches;
       }).toList();
-      print('  After enhanced city filter ($city): ${filtered.length} items');
     }
 
     // Apply year filter
@@ -356,12 +289,8 @@ class ListingController extends GetxController {
 
         final matches = itemYear == year;
 
-        print(
-          '    Checking item: ${item.title} - year: ${item.year}, yearBuilt: ${item.yearBuilt}, extracted: $itemYear vs filter: $year = $matches',
-        );
         return matches;
       }).toList();
-      print('  After year filter ($year): ${filtered.length} items');
     }
 
     // Apply price range filter
@@ -380,9 +309,6 @@ class ListingController extends GetxController {
 
         return matches;
       }).toList();
-      print(
-        '  After price filter ($minPrice-$maxPrice): ${filtered.length} items',
-      );
     }
 
     // Apply vehicle-specific filters
@@ -394,11 +320,9 @@ class ListingController extends GetxController {
           final itemFuelType = item.fuelTypeRoot?.toUpperCase() ?? '';
           final matches = itemFuelType == fuelType.toUpperCase();
           if (matches) {
-            print('    ✓ Matches fuel type: $itemFuelType == ${fuelType.toUpperCase()}');
           }
           return matches;
         }).toList();
-        print('  After fuel type filter ($fuelType): ${filtered.length} items');
       }
 
       // Transmission Filter
@@ -408,11 +332,9 @@ class ListingController extends GetxController {
           final itemTransmission = item.transmissionRoot?.toUpperCase() ?? '';
           final matches = itemTransmission == transmission.toUpperCase();
           if (matches) {
-            print('    ✓ Matches transmission: $itemTransmission == ${transmission.toUpperCase()}');
           }
           return matches;
         }).toList();
-        print('  After transmission filter ($transmission): ${filtered.length} items');
       }
 
       // Body Type Filter (for cars)
@@ -424,11 +346,9 @@ class ListingController extends GetxController {
                               item.details?.vehicles?.vehicleType?.toUpperCase() ?? '';
           final matches = itemBodyType == bodyType.toUpperCase();
           if (matches) {
-            print('    ✓ Matches body type: $itemBodyType == ${bodyType.toUpperCase()}');
           }
           return matches;
         }).toList();
-        print('  After body type filter ($bodyType): ${filtered.length} items');
       }
 
       // Condition Filter
@@ -438,11 +358,9 @@ class ListingController extends GetxController {
           final itemCondition = item.conditionRoot?.toUpperCase() ?? '';
           final matches = itemCondition == condition.toUpperCase();
           if (matches) {
-            print('    ✓ Matches condition: $itemCondition == ${condition.toUpperCase()}');
           }
           return matches;
         }).toList();
-        print('  After condition filter ($condition): ${filtered.length} items');
       }
 
       // Make Filter
@@ -452,11 +370,9 @@ class ListingController extends GetxController {
           final itemMake = item.make?.toUpperCase() ?? '';
           final matches = itemMake == make.toUpperCase();
           if (matches) {
-            print('    ✓ Matches make: $itemMake == ${make.toUpperCase()}');
           }
           return matches;
         }).toList();
-        print('  After make filter ($make): ${filtered.length} items');
       }
 
       // Model Filter
@@ -466,11 +382,9 @@ class ListingController extends GetxController {
           final itemModel = item.model?.toUpperCase() ?? '';
           final matches = itemModel.contains(model.toUpperCase());
           if (matches) {
-            print('    ✓ Matches model: $itemModel contains ${model.toUpperCase()}');
           }
           return matches;
         }).toList();
-        print('  After model filter ($model): ${filtered.length} items');
       }
 
       // Mileage Filter
@@ -480,11 +394,9 @@ class ListingController extends GetxController {
           final itemMileage = item.mileage ?? 0;
           final matches = itemMileage <= maxMileage;
           if (matches) {
-            print('    ✓ Matches mileage: $itemMileage <= $maxMileage');
           }
           return matches;
         }).toList();
-        print('  After mileage filter (≤$maxMileage): ${filtered.length} items');
       }
     }
 
@@ -497,11 +409,9 @@ class ListingController extends GetxController {
           final itemBedrooms = item.bedrooms ?? 0;
           final matches = itemBedrooms == bedrooms;
           if (matches) {
-            print('    ✓ Matches bedrooms: $itemBedrooms == $bedrooms');
           }
           return matches;
         }).toList();
-        print('  After bedrooms filter ($bedrooms): ${filtered.length} items');
       }
 
       // Bathrooms Filter
@@ -511,11 +421,9 @@ class ListingController extends GetxController {
           final itemBathrooms = item.bathrooms ?? 0;
           final matches = itemBathrooms == bathrooms;
           if (matches) {
-            print('    ✓ Matches bathrooms: $itemBathrooms == $bathrooms');
           }
           return matches;
         }).toList();
-        print('  After bathrooms filter ($bathrooms): ${filtered.length} items');
       }
 
       // Furnishing Filter
@@ -526,11 +434,9 @@ class ListingController extends GetxController {
                                 item.details?.realEstate?.utilities?.toUpperCase() ?? '';
           final matches = itemFurnishing == furnishing.toUpperCase();
           if (matches) {
-            print('    ✓ Matches furnishing: $itemFurnishing == ${furnishing.toUpperCase()}');
           }
           return matches;
         }).toList();
-        print('  After furnishing filter ($furnishing): ${filtered.length} items');
       }
 
       // Parking Filter
@@ -547,11 +453,9 @@ class ListingController extends GetxController {
           
           final matches = itemParking == parking.toUpperCase();
           if (matches) {
-            print('    ✓ Matches parking: $itemParking == ${parking.toUpperCase()}');
           }
           return matches;
         }).toList();
-        print('  After parking filter ($parking): ${filtered.length} items');
       }
 
       // Area Filter
@@ -565,11 +469,9 @@ class ListingController extends GetxController {
           if (minArea != null && itemArea < minArea) matches = false;
           if (maxArea != null && itemArea > maxArea) matches = false;
           if (matches) {
-            print('    ✓ Matches area: $itemArea sqft (${minArea ?? 0}-${maxArea ?? "∞"})');
           }
           return matches;
         }).toList();
-        print('  After area filter (${minArea ?? 0}-${maxArea ?? "∞"}): ${filtered.length} items');
       }
 
       // Property Condition Filter
@@ -580,11 +482,9 @@ class ListingController extends GetxController {
                                item.condition?.toUpperCase() ?? '';
           final matches = itemCondition == condition.toUpperCase();
           if (matches) {
-            print('    ✓ Matches condition: $itemCondition == ${condition.toUpperCase()}');
           }
           return matches;
         }).toList();
-        print('  After condition filter ($condition): ${filtered.length} items');
       }
 
       // Year Built Filter
@@ -595,11 +495,9 @@ class ListingController extends GetxController {
                                item.details?.flatDetails?['year_built']?.toInt() ?? 0;
           final matches = itemYearBuilt == yearBuilt;
           if (matches) {
-            print('    ✓ Matches year built: $itemYearBuilt == $yearBuilt');
           }
           return matches;
         }).toList();
-        print('  After year built filter ($yearBuilt): ${filtered.length} items');
       }
 
       // Floor Filter
@@ -609,11 +507,9 @@ class ListingController extends GetxController {
           final itemFloor = item.details?.flatDetails?['floor']?.toInt() ?? 0;
           final matches = itemFloor == floor;
           if (matches) {
-            print('    ✓ Matches floor: $itemFloor == $floor');
           }
           return matches;
         }).toList();
-        print('  After floor filter ($floor): ${filtered.length} items');
       }
 
       // Seller Type Filter
@@ -624,18 +520,15 @@ class ListingController extends GetxController {
                                 item.details?.flatDetails?['seller_type']?.toString().toUpperCase() ?? '';
           final matches = itemSellerType == sellerType.toUpperCase();
           if (matches) {
-            print('    ✓ Matches seller type: $itemSellerType == ${sellerType.toUpperCase()}');
           }
           return matches;
         }).toList();
-        print('  After seller type filter ($sellerType): ${filtered.length} items');
       }
     }
 
     // Apply sorting
     if (_filterController.selectedSort.value.isNotEmpty) {
       final sortBy = _filterController.selectedSort.value;
-      print('  Applying sort: $sortBy');
 
       switch (sortBy) {
         case 'newest_first':
@@ -676,7 +569,6 @@ class ListingController extends GetxController {
       }
     }
 
-    print('  Final filtered count: ${filtered.length}');
     return filtered;
   }
 }

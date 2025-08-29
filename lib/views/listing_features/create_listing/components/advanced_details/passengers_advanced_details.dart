@@ -65,7 +65,6 @@ class _PassengersAdvancedDetailsState extends State<PassengersAdvancedDetails> {
           );
         }
       } catch (e) {
-        print('Error parsing color: $e');
         selectedColor = Colors.grey; // Fallback
       }
     }

@@ -33,7 +33,6 @@ class _ListingDetailState extends State<ListingDetail> {
   @override
   void initState() {
     super.initState();
-    print('🔍 [LISTING DETAIL DEBUG] Fetching details for listingId: ${widget.listingId}');
     _detailController.fetchListingDetail(widget.listingId);
   }
 
@@ -56,24 +55,6 @@ class _ListingDetailState extends State<ListingDetail> {
         final listing = _detailController.listingDetail.value!.data;
 
         // 🔍 COMPREHENSIVE DEBUGGING FOR LISTING DETAIL
-        print('🔍 [LISTING DETAIL DEBUG] Loaded listing data:');
-        print('🔍 [LISTING DETAIL DEBUG] Title: ${listing?.title}');
-        print('🔍 [LISTING DETAIL DEBUG] Price: ${listing?.price}');
-        print('🔍 [LISTING DETAIL DEBUG] Location: ${listing?.location}');
-        print('🔍 [LISTING DETAIL DEBUG] Raw details object: ${listing?.details}');
-        print('🔍 [LISTING DETAIL DEBUG] Vehicle details structure:');
-        print('  - Make: ${listing?.make} (ROOT LEVEL)');
-        print('  - Model: ${listing?.model} (ROOT LEVEL)');
-        print('  - Year: ${listing?.year} (ROOT LEVEL)');
-        print('  - FuelType: ${listing?.fuelType} (ROOT LEVEL)');
-        print('  - Transmission: ${listing?.transmissionType} (ROOT LEVEL)');
-        print('  - Mileage: ${listing?.mileage} (ROOT LEVEL)');
-        print('  - Color: ${listing?.color} (ROOT LEVEL)');
-        print('  - Condition: ${listing?.condition} (ROOT LEVEL)');
-        print('  - Horsepower: ${listing?.details?.vehicles?.horsepower} (NESTED)');
-        print('  - DriveType: ${listing?.details?.vehicles?.driveType} (NESTED)');
-        print('  - BodyType: ${listing?.details?.vehicles?.bodyType} (NESTED)');
-        print('🔍 [LISTING DETAIL DEBUG] ================');
 
         final String smartDate = SmartDateUtils.getSmartDateDisplayFromString(listing?.createdAt?.toString());
 
@@ -741,7 +722,6 @@ class _ListingDetailState extends State<ListingDetail> {
                               }
                             }
                           } catch (e) {
-                            print('Warning: Could not check user ID: $e');
                           }
 
                           try {
@@ -777,7 +757,6 @@ class _ListingDetailState extends State<ListingDetail> {
                                     }
                                   }
                                 } catch (e) {
-                                  print('Warning: Could not add auth token to ChatService: $e');
                                 }
                                 
                                 chatService = Get.put(ChatService(dio));
@@ -802,7 +781,6 @@ class _ListingDetailState extends State<ListingDetail> {
                                 chatController.conversations.insert(0, conversation);
                               }
                             } catch (e) {
-                              print("Error creating/finding conversation: $e");
                               conversation = null;
                             }
                             
@@ -813,7 +791,6 @@ class _ListingDetailState extends State<ListingDetail> {
                               showCustomSnackbar("Unable to start chat", true);
                             }
                           } catch (e) {
-                            print("Error starting chat: $e");
                             showCustomSnackbar("Unable to start chat", true);
                           }
                         },

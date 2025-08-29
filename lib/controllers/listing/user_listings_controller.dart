@@ -40,7 +40,6 @@ class UserListingsController extends GetxController {
       hasError.value = false;
       errorMessage.value = '';
 
-      print('🔍 [USER LISTINGS] Fetching user listings...');
 
       // Get access token for authentication
       final token = await _getAccessToken();
@@ -58,14 +57,10 @@ class UserListingsController extends GetxController {
         ),
       );
       
-      print('🔍 [USER LISTINGS] Response status: ${response.statusCode}');
-      print('🔍 [USER LISTINGS] Response data: ${response.data}');
-      print('🔍 [USER LISTINGS] Response type: ${response.data.runtimeType}');
 
       if (response.statusCode == 200) {
         // Handle different response formats
         if (response.data == null) {
-          print('🔍 [USER LISTINGS] Response data is null - user has no listings');
           userListings.value = [];
           return;
         }
@@ -73,7 +68,6 @@ class UserListingsController extends GetxController {
         // Check if response.data is the listings array directly
         if (response.data is List) {
           final listingsData = response.data as List;
-          print('🔍 [USER LISTINGS] Direct array response with ${listingsData.length} listings');
           
           userListings.value = listingsData
               .map((listingJson) => Item.fromJson(listingJson))
@@ -84,7 +78,6 @@ class UserListingsController extends GetxController {
           final data = response.data['data'];
           final listingsData = data['listings'] as List;
           
-          print('🔍 [USER LISTINGS] Structured response with ${listingsData.length} listings');
           
           userListings.value = listingsData
               .map((listingJson) => Item.fromJson(listingJson))
@@ -95,27 +88,22 @@ class UserListingsController extends GetxController {
           final data = response.data['data'];
           if (data['listings'] != null) {
             final listingsData = data['listings'] as List;
-            print('🔍 [USER LISTINGS] Data field response with ${listingsData.length} listings');
             
             userListings.value = listingsData
                 .map((listingJson) => Item.fromJson(listingJson))
                 .toList();
           } else {
-            print('🔍 [USER LISTINGS] Data field exists but no listings array');
             userListings.value = [];
           }
         }
         else {
-          print('🔍 [USER LISTINGS] Unknown response format - treating as empty');
           userListings.value = [];
         }
             
-        print('✅ [USER LISTINGS] Successfully loaded ${userListings.length} listings');
       } else {
         throw Exception('Failed to fetch user listings: HTTP ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ [USER LISTINGS] Error fetching listings: $e');
       hasError.value = true;
       
       if (e is DioException) {
@@ -144,7 +132,6 @@ class UserListingsController extends GetxController {
   /// Delete a listing
   Future<void> deleteListing(String listingId) async {
     try {
-      print('🔍 [USER LISTINGS] Deleting listing: $listingId');
       
       // Get access token for authentication
       final token = await _getAccessToken();
@@ -163,8 +150,6 @@ class UserListingsController extends GetxController {
         ),
       );
       
-      print('🔍 [USER LISTINGS] Delete response status: ${response.statusCode}');
-      print('🔍 [USER LISTINGS] Delete response data: ${response.data}');
       
       if (response.statusCode == 200) {
         // Handle different response formats
@@ -181,7 +166,6 @@ class UserListingsController extends GetxController {
           // Remove from local list
           userListings.removeWhere((listing) => listing.id == listingId);
           showCustomSnackbar('Listing deleted successfully', false);
-          print('✅ [USER LISTINGS] Listing deleted successfully');
         } else {
           throw Exception('Delete operation failed: ${response.data}');
         }
@@ -189,15 +173,9 @@ class UserListingsController extends GetxController {
         throw Exception('Failed to delete listing: HTTP ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ [USER LISTINGS] Error deleting listing: $e');
       
       // Enhanced error handling for DioException
       if (e is DioException) {
-        print('🔍 [USER LISTINGS] DioException details:');
-        print('  - Status code: ${e.response?.statusCode}');
-        print('  - Response data: ${e.response?.data}');
-        print('  - Request path: ${e.requestOptions.path}');
-        print('  - Request headers: ${e.requestOptions.headers}');
         
         String errorMessage = 'Failed to delete listing';
         if (e.response?.statusCode == 400) {
@@ -234,7 +212,6 @@ class UserListingsController extends GetxController {
       }
       return null;
     } catch (e) {
-      print('❌ [USER LISTINGS] Error getting access token: $e');
       return null;
     }
   }

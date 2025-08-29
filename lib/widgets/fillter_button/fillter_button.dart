@@ -33,23 +33,16 @@ class _FillterButtonState extends State<FillterButton> {
   }
 
   void _applyFilters() {
-    print('🏠 APPLY FILTERS TO HOME LISTINGS ONLY');
-    print(
-      '  Filters will only affect the home page listings, not search results',
-    );
 
     // Apply filters only to home page listings
-    print('📋 Updating home page listings with filters...');
     _listingController.applyFilters();
 
     // Notify parent if callback provided
     if (widget.onFiltersApplied != null) {
       final summary = _filterController.getFilterSummary();
-      print('📢 Notifying parent with filter summary: "$summary"');
       widget.onFiltersApplied!(summary);
     }
 
-    print('✅ _applyFilters completed - only home page listings updated');
   }
 
   @override
@@ -106,16 +99,8 @@ class _FillterButtonState extends State<FillterButton> {
                                         )
                                         .toList(),
                                     onChanged: (val) {
-                                      print('🔽 SORT DROPDOWN CHANGED:');
-                                      print(
-                                        '  Old value: "${_filterController.selectedSort.value}"',
-                                      );
-                                      print('  New value: "$val"');
                                       _filterController.selectedSort.value =
                                           val ?? '';
-                                      print(
-                                        '  Updated value: "${_filterController.selectedSort.value}"',
-                                      );
                                     },
                                   ),
                                 ),
@@ -158,18 +143,10 @@ class _FillterButtonState extends State<FillterButton> {
                                         )
                                         .toList(),
                                     onChanged: (val) {
-                                      print('🚗 SUBCATEGORY DROPDOWN CHANGED:');
-                                      print(
-                                        '  Old value: "${_filterController.selectedSubcategory.value}"',
-                                      );
-                                      print('  New value: "$val"');
                                       _filterController
                                               .selectedSubcategory
                                               .value =
                                           val ?? '';
-                                      print(
-                                        '  Updated value: "${_filterController.selectedSubcategory.value}"',
-                                      );
                                     },
                                   ),
                                 ),
@@ -220,20 +197,10 @@ class _FillterButtonState extends State<FillterButton> {
                                                 : Colors.grey.shade300,
                                           ),
                                           onSelected: (_) {
-                                            print(
-                                              '🏷️ LISTING TYPE CHIP SELECTED:',
-                                            );
-                                            print(
-                                              '  Old value: "${_filterController.selectedListingType.value}"',
-                                            );
-                                            print('  New value: "$type"');
                                             _filterController
                                                     .selectedListingType
                                                     .value =
                                                 type;
-                                            print(
-                                              '  Updated value: "${_filterController.selectedListingType.value}"',
-                                            );
                                           },
                                         ),
                                       );
@@ -324,19 +291,14 @@ class _FillterButtonState extends State<FillterButton> {
                           children: [
                             TextButton(
                               onPressed: () {
-                                print('🔄 RESET FILTERS BUTTON PRESSED');
                                 _filterController.resetFilters();
-                                print('✅ Filters reset completed');
                               },
                               child: Text("reset".tr),
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                print('🔴 APPLY FILTERS BUTTON PRESSED');
                                 _applyFilters();
-                                print('🚪 Closing filter dialog...');
                                 Get.back();
-                                print('✅ Filter dialog closed');
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: blueColor,

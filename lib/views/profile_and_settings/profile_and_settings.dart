@@ -27,7 +27,6 @@ class ProfileAndSettings extends StatelessWidget {
       final data = LoginModel.fromJson(decoded).data;
       return data?.user;
     } catch (e) {
-      print("❌ Failed to parse user data: $e");
       return null;
     }
   }

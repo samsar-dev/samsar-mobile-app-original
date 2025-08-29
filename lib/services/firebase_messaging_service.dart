@@ -22,22 +22,18 @@ class FirebaseMessagingService {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       if (kDebugMode) {
-        print('User granted permission');
       }
     } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
       if (kDebugMode) {
-        print('User granted provisional permission');
       }
     } else {
       if (kDebugMode) {
-        print('User declined or has not accepted permission');
       }
     }
 
     // Get the token
     String? token = await _firebaseMessaging.getToken();
     if (kDebugMode) {
-      print('FCM Token: $token');
     }
 
     // Handle background messages
@@ -46,13 +42,10 @@ class FirebaseMessagingService {
     // Handle foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (kDebugMode) {
-        print('Got a message whilst in the foreground!');
-        print('Message data: ${message.data}');
       }
 
       if (message.notification != null) {
         if (kDebugMode) {
-          print('Message also contained a notification: ${message.notification}');
         }
         
         // Show notification dialog when app is in foreground
@@ -63,7 +56,6 @@ class FirebaseMessagingService {
     // Handle notification taps when app is in background
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (kDebugMode) {
-        print('A new onMessageOpenedApp event was published!');
       }
       _handleNotificationTap(message);
     });
@@ -79,7 +71,6 @@ class FirebaseMessagingService {
   static Future<String?> getToken() async {
     try {
       final token = await _firebaseMessaging.getToken();
-      print('FCM Token: $token');
       
       // Send token to backend
       if (token != null) {
@@ -88,7 +79,6 @@ class FirebaseMessagingService {
       
       return token;
     } catch (e) {
-      print('Error getting FCM token: $e');
       return null;
     }
   }
@@ -99,12 +89,9 @@ class FirebaseMessagingService {
       final response = await authApiService.updateFCMTokenService(token);
       
       if (response.isSuccess) {
-        print('✅ FCM token successfully sent to backend: $token');
       } else {
-        print('❌ Failed to send FCM token to backend: ${response.apiError?.message}');
       }
     } catch (e) {
-      print('❌ Error sending FCM token to backend: $e');
     }
   }
 
@@ -112,7 +99,6 @@ class FirebaseMessagingService {
   static Future<void> subscribeToTopic(String topic) async {
     await _firebaseMessaging.subscribeToTopic(topic);
     if (kDebugMode) {
-      print('Subscribed to topic: $topic');
     }
   }
 
@@ -120,7 +106,6 @@ class FirebaseMessagingService {
   static Future<void> unsubscribeFromTopic(String topic) async {
     await _firebaseMessaging.unsubscribeFromTopic(topic);
     if (kDebugMode) {
-      print('Unsubscribed from topic: $topic');
     }
   }
 
@@ -152,7 +137,6 @@ class FirebaseMessagingService {
   // Handle notification tap
   static void _handleNotificationTap(RemoteMessage message) {
     if (kDebugMode) {
-      print('Notification tapped: ${message.data}');
     }
     
     // Handle navigation based on notification data
@@ -172,6 +156,5 @@ class FirebaseMessagingService {
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (kDebugMode) {
-    print('Handling a background message: ${message.messageId}');
   }
 }

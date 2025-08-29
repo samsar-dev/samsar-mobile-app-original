@@ -114,18 +114,13 @@ class _RealEstateEssentialDetailsState
     try {
       if (Get.isRegistered<ListingInputController>()) {
         _listingInputController = Get.find<ListingInputController>();
-        print('✅ RealEstateEssentialDetails: Found existing controller');
       } else {
-        print(
-          '🚨 RealEstateEssentialDetails: Controller not registered, creating permanent instance',
-        );
         _listingInputController = Get.put(
           ListingInputController(),
           permanent: true,
         );
       }
     } catch (e) {
-      print('🚨 RealEstateEssentialDetails: Error accessing controller: $e');
       _listingInputController = Get.put(
         ListingInputController(),
         permanent: true,
@@ -136,19 +131,6 @@ class _RealEstateEssentialDetailsState
       text: _locationController.address.value,
     );
 
-    print('🏠 RealEstateEssentialDetails initState() called');
-    print('📊 Controller state at init:');
-    print(
-      '   📝 mainCategory: "${_listingInputController.mainCategory.value}"',
-    );
-    print('   🏢 subCategory: "${_listingInputController.subCategory.value}"');
-    print(
-      '   🖼️ images count: ${_listingInputController.listingImage.length}',
-    );
-    print('   📋 title: "${_listingInputController.title.value}"');
-    print('   💰 price: "${_listingInputController.price.value}"');
-    print('   📍 location: "${_listingInputController.location.value}"');
-    print('   📝 description: "${_listingInputController.description.value}"');
 
     // 🔄 LOAD EXISTING DATA: Pre-populate fields when returning from review
     _loadExistingData();
@@ -158,13 +140,10 @@ class _RealEstateEssentialDetailsState
 
     // Debug controller changes
     ever(_listingInputController.title, (value) {
-      print('🔄 RealEstateEssentialDetails: title changed to "$value"');
     });
     ever(_listingInputController.price, (value) {
-      print('🔄 RealEstateEssentialDetails: price changed to "$value"');
     });
     ever(_listingInputController.location, (value) {
-      print('🔄 RealEstateEssentialDetails: location changed to "$value"');
     });
   }
 
@@ -197,14 +176,12 @@ class _RealEstateEssentialDetailsState
       } else if (value == 'business_firm') {
         sellerTypeController.text = 'business_firm'.tr;
       }
-      print('✅ Seller type loaded: "${sellerTypeController.text}"');
     }
 
     // 🔧 CRITICAL FIX: Load property type from subCategory (not mainCategory)
     if (_listingInputController.subCategory.value.isNotEmpty) {
       final subCategory = _listingInputController.subCategory.value
           .toUpperCase();
-      print('🏠 Found subCategory: "$subCategory"');
 
       // Define the keys in the same order as the propertyTypes list
       final propertyTypeKeys = [
@@ -222,14 +199,9 @@ class _RealEstateEssentialDetailsState
         selectedPropertyType = propertyTypes[index].title;
         // Ensure mainCategory is REAL_ESTATE for backend
         _listingInputController.mainCategory.value = 'REAL_ESTATE';
-        print(
-          '✅ Property type restored: $selectedPropertyType (index: $index)',
-        );
       } else {
-        print('❌ Property type index not found for: $subCategory');
       }
     } else {
-      print('❌ No subCategory found in controller');
     }
 
     // Load listing action from listingAction field (not subCategory)
@@ -251,13 +223,11 @@ class _RealEstateEssentialDetailsState
       if (conditionOption['key']!.isNotEmpty) {
         selectedCondition = savedCondition;
         conditionController.text = conditionOption['title']!;
-        print('✅ Property condition loaded: "$selectedCondition" -> "${conditionOption['title']}"');
       } else {
         // Clear invalid condition (e.g., "Used" from vehicles)
         selectedCondition = "";
         conditionController.text = "";
         _listingInputController.condition.value = "";
-        print('🧹 Cleared invalid condition: "$savedCondition"');
       }
     }
 
@@ -278,7 +248,6 @@ class _RealEstateEssentialDetailsState
       for (String imagePath in _listingInputController.listingImage) {
         _images.add(XFile(imagePath));
       }
-      print('🖼️ Loaded existing images: ${_images.length} images');
     }
   }
 
@@ -360,7 +329,6 @@ class _RealEstateEssentialDetailsState
       if (conditionOption['key']!.isNotEmpty) {
         selectedCondition = conditionOption['key']!;
         _listingInputController.condition.value = selectedCondition;
-        print('🏗️ Property condition updated: $selectedCondition');
       }
       if (widget.showValidation) setState(() {});
     });
@@ -388,11 +356,9 @@ class _RealEstateEssentialDetailsState
           _listingInputController.listingImage.value = 
               _images.map((xfile) => xfile.path).toList();
           
-          print('🖼️ Images synced to controller: ${_listingInputController.listingImage.length} images');
         });
       }
     } catch (e) {
-      print('Error picking images: $e');
     }
   }
 
@@ -558,7 +524,6 @@ class _RealEstateEssentialDetailsState
                             final newSubCategory = propertyTypeKeys[index];
                             if (_listingInputController.subCategory.value != newSubCategory) {
                               _listingInputController.clearSubcategorySpecificFeatures(newSubCategory);
-                              print('🧹 Cleared data for subcategory switch: ${_listingInputController.subCategory.value} → $newSubCategory');
                             }
                             
                             _listingInputController.subCategory.value = newSubCategory;
@@ -566,15 +531,6 @@ class _RealEstateEssentialDetailsState
                             _listingInputController.mainCategory.value =
                                 'REAL_ESTATE';
                           });
-                          print(
-                            '🏠 Property type selected: $selectedPropertyType',
-                          );
-                          print(
-                            '📝 Updated subCategory to: ${_listingInputController.subCategory.value}',
-                          );
-                          print(
-                            '📝 Updated mainCategory to: ${_listingInputController.mainCategory.value}',
-                          );
                         },
                         hasError: widget.showValidation && selectedIndex == -1,
                       ),
@@ -1509,7 +1465,6 @@ class _RealEstateEssentialDetailsState
                                             _listingInputController.listingImage.value = 
                                                 _images.map((xfile) => xfile.path).toList();
                                             
-                                            print('🖼️ Image removed, synced to controller: ${_listingInputController.listingImage.length} images');
                                           });
                                         },
                                         child: Container(

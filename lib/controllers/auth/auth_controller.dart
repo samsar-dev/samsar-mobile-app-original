@@ -42,18 +42,15 @@ class AuthController extends GetxController {
 
   Future<void> _restoreSession() async {
     try {
-      print('🔄 Starting session restoration...');
       final raw = await _storage.read(key: "samsar_user_data");
 
       if (raw != null) {
-        print('📱 Found stored session data');
         final json = jsonDecode(raw);
         final loginModel = LoginModel.fromJson(json);
 
         if (loginModel.data?.user != null &&
             loginModel.data?.tokens?.accessToken != null) {
           // Validate user still exists on server before restoring session
-          print('🔍 Validating user exists on server...');
           final isValid = await _validateUserExists(
             loginModel.data!.tokens!.accessToken!,
           );
@@ -65,41 +62,28 @@ class AuthController extends GetxController {
               key: 'user_email',
               value: user.value?.email ?? "",
             );
-            print('✅ Session restored successfully');
-            print('👤 User: ${user.value?.name}');
-            print('🔑 Token: ${accessToken.value.substring(0, 10)}...');
-            print('🖼️ Profile Picture: ${user.value?.profilePicture}');
           } else {
-            print('❌ User no longer exists on server - clearing session');
             await _clearInvalidSession();
           }
         } else {
-          print('❌ Invalid session data structure');
           await _clearInvalidSession();
         }
       } else {
-        print('ℹ️ No stored session found - user needs to login');
       }
     } catch (e) {
-      print('❌ Failed to restore session: $e');
       await _clearInvalidSession();
     } finally {
       // Always mark session restoration as complete
       isSessionRestored.value = true;
-      print(
-        '🏁 Session restoration completed. Authenticated: ${isAuthenticated}',
-      );
     }
   }
 
   Future<bool> _validateUserExists(String token) async {
     try {
-      print('🔍 Validating user existence with server...');
       final response = await _authApiServices.getUserProfile(token);
 
       if (response.apiError != null) {
         final errorCode = response.apiError?.errorResponse?.error?.code;
-        print('❌ User validation failed with error: $errorCode');
 
         // If user not found, account inactive, or email not verified, clear session
         if (errorCode == 'USER_NOT_FOUND' ||
@@ -111,22 +95,16 @@ class AuthController extends GetxController {
         }
 
         // For other errors (like network issues), assume user exists to avoid blocking registration
-        print('⚠️ Non-critical validation error, assuming user exists');
         return true;
       }
 
       if (response.successResponse != null &&
           response.successResponse!['data'] != null) {
-        print('✅ User validation successful');
         return true;
       }
 
-      print(
-        '❌ User validation failed - no valid response, assuming user exists',
-      );
       return true; // Changed: assume user exists if we can't validate to avoid blocking registration
     } catch (e) {
-      print('❌ Error validating user existence: $e - assuming user exists');
       return true; // Changed: assume user exists on error to avoid blocking registration
     }
   }
@@ -142,15 +120,11 @@ class AuthController extends GetxController {
         if (Get.isRegistered<ListingInputController>()) {
           final listingController = Get.find<ListingInputController>();
           listingController.clearAllData();
-          print('🧹 Cleared listing data on invalid session');
         }
       } catch (e) {
-        print('⚠️ Could not clear listing data on invalid session: $e');
       }
       
-      print('🧹 Cleared all invalid session data');
     } catch (e) {
-      print('❌ Error clearing invalid session: $e');
     }
   }
 
@@ -450,10 +424,8 @@ class AuthController extends GetxController {
       if (Get.isRegistered<ListingInputController>()) {
         final listingController = Get.find<ListingInputController>();
         listingController.clearAllData();
-        print('🧹 Cleared listing data on logout');
       }
     } catch (e) {
-      print('⚠️ Could not clear listing data on logout: $e');
     }
     
     Get.offAll(() => LoginView());
@@ -473,8 +445,6 @@ class AuthController extends GetxController {
       isLoading.value = true;
       loadingDialog('updating_profile'.tr);
 
-      print('Starting profile update...');
-      print('Current user: ${user.value?.toJson()}');
 
       if (user.value?.id == null) {
         Get.back();
@@ -497,16 +467,7 @@ class AuthController extends GetxController {
 
       final userData = jsonDecode(token);
       final accessToken = userData['data']['tokens']['accessToken'];
-      print('Using access token: ${accessToken.substring(0, 10)}...');
 
-      print('Sending profile data:');
-      print('Name: $name');
-      print('Username: $username');
-      print('Bio: $bio');
-      print('Street: $street');
-      print('City: $city');
-      print('Phone: $phone');
-      print('Profile image: ${profileImage?.path}');
 
       final response = await _authApiServices.updateProfileService(
         token: accessToken,
@@ -521,10 +482,8 @@ class AuthController extends GetxController {
 
       Get.back();
 
-      print('Profile update response: ${response.toString()}');
 
       if (response.apiError != null) {
-        print('API Error: ${response.apiError}');
         showCustomSnackbar(
           response.apiError?.errorResponse?.error?.message ??
               'Failed to update profile'.tr,
@@ -534,7 +493,6 @@ class AuthController extends GetxController {
       }
 
       if (response.successResponse == null) {
-        print('No response data received');
         showCustomSnackbar('no_response_data'.tr, true);
         return;
       }
@@ -556,19 +514,15 @@ class AuthController extends GetxController {
         }
       } else {
         // API returned success but no user data - update local user with current values
-        print('API returned success but no user data, updating local user');
 
         // If we uploaded a profile image, fetch the updated user profile
         if (profileImage != null) {
-          print('Profile image was uploaded, fetching updated user profile...');
           try {
             await fetchUserProfile(); // This will fetch and update the user profile with the new image URL
             showCustomSnackbar('profile_updated_successfully'.tr, false);
-            print('Profile update completed successfully');
             user.refresh();
             return; // Exit early since fetchUserProfile() already updated the user
           } catch (e) {
-            print('Failed to fetch updated profile: $e');
             // Continue with local update as fallback
           }
         }
@@ -624,14 +578,11 @@ class AuthController extends GetxController {
       }
 
       showCustomSnackbar('profile_updated_successfully'.tr, false);
-      print('Profile update completed successfully');
 
       // Force refresh user state to ensure immediate UI update
       user.refresh();
     } catch (e, stackTrace) {
       Get.back();
-      print('Profile update error: $e');
-      print('Stack trace: $stackTrace');
       showCustomSnackbar(
         'profile_update_error'.trParams({'error': e.toString()}),
         true,
@@ -645,29 +596,19 @@ class AuthController extends GetxController {
     try {
       final token = await _storage.read(key: "samsar_user_data");
       if (token == null) {
-        print('No token found for profile fetch');
         return;
       }
 
       final userData = jsonDecode(token);
       final accessToken = userData['data']['tokens']['accessToken'];
 
-      print('🔍 Fetching user profile from: $getUserProfileRoute');
-      print('🔑 Using access token: ${accessToken.substring(0, 20)}...');
 
       final response = await _authApiServices.getUserProfile(accessToken);
 
-      print('📥 Profile fetch response: ${response.toString()}');
-      print('✅ Success response: ${response.successResponse}');
-      print(
-        '❌ Error response: ${response.apiError?.message ?? "Unknown error"}',
-      );
 
       if (response.successResponse != null &&
           response.successResponse!['data'] != null) {
         final updatedUser = User.fromJson(response.successResponse!['data']);
-        print('🔄 Updating user profile...');
-        print('🖼️ New profile picture URL: ${updatedUser.profilePicture}');
 
         user.value = updatedUser;
 
@@ -680,32 +621,24 @@ class AuthController extends GetxController {
             key: "samsar_user_data",
             value: jsonEncode(loginData),
           );
-          print('✅ Local storage updated with new profile picture');
         } else {
-          print('❌ Failed to update local storage - no existing data found');
         }
 
-        print('✅ User profile updated successfully with new data');
       } else {
         showCustomSnackbar('fetch_profile_failed'.tr, true);
       }
     } catch (e) {
-      print('Error fetching user profile: $e');
     }
   }
 
   // Send FCM token to backend after login
   Future<void> _sendFCMTokenToBackend() async {
     try {
-      print('🔔 Sending FCM token to backend...');
       final token = await FirebaseMessagingService.getToken();
       if (token != null) {
-        print('✅ FCM token sent successfully');
       } else {
-        print('❌ Failed to get FCM token');
       }
     } catch (e) {
-      print('❌ Error sending FCM token to backend: $e');
     }
   }
 }

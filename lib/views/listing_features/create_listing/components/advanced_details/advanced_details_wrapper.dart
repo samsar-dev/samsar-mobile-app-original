@@ -43,18 +43,13 @@ class _AdvancedDetailsWrapperState extends State<AdvancedDetailsWrapper> {
     try {
       if (Get.isRegistered<ListingInputController>()) {
         _listingInputController = Get.find<ListingInputController>();
-        print('✅ AdvancedDetailsWrapper: Found existing controller');
       } else {
-        print(
-          '🚨 AdvancedDetailsWrapper: Controller not registered, creating permanent instance',
-        );
         _listingInputController = Get.put(
           ListingInputController(),
           permanent: true,
         );
       }
     } catch (e) {
-      print('🚨 AdvancedDetailsWrapper: Error accessing controller: $e');
       _listingInputController = Get.put(
         ListingInputController(),
         permanent: true,

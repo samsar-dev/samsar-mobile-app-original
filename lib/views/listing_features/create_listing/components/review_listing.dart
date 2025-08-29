@@ -247,44 +247,6 @@ class _ReviewListingState extends State<ReviewListing> {
     List<String> errors = [];
 
     // Debug: Log all current values
-    print("=== REVIEW LISTING VALIDATION DEBUG ===");
-    print(
-      "Title: '${_listingInputController.title.value}' (empty: ${_listingInputController.title.value.isEmpty})",
-    );
-    print(
-      "Description: '${_listingInputController.description.value}' (empty: ${_listingInputController.description.value.isEmpty})",
-    );
-    print(
-      "Price: ${_listingInputController.price.value} (valid: ${_listingInputController.price.value > 0})",
-    );
-    print(
-      "Main Category: '${_listingInputController.mainCategory.value}' (empty: ${_listingInputController.mainCategory.value.isEmpty})",
-    );
-    print(
-      "Sub Category: '${_listingInputController.subCategory.value}' (empty: ${_listingInputController.subCategory.value.isEmpty})",
-    );
-    print(
-      "Location: '${_listingInputController.location.value}' (empty: ${_listingInputController.location.value.isEmpty})",
-    );
-    print(
-      "Latitude: '${_listingInputController.latitude.value}' (empty: ${_listingInputController.latitude.value.isEmpty})",
-    );
-    print(
-      "Longitude: '${_listingInputController.longitude.value}' (empty: ${_listingInputController.longitude.value.isEmpty})",
-    );
-    print(
-      "Make: '${_listingInputController.make.value}' (empty: ${_listingInputController.make.value.isEmpty})",
-    );
-    print(
-      "Model: '${_listingInputController.model.value}' (empty: ${_listingInputController.model.value.isEmpty})",
-    );
-    print(
-      "Year: ${_listingInputController.year.value} (valid: ${_listingInputController.year.value > 1900})",
-    );
-    print(
-      "Images count: ${_listingInputController.listingImage.length} (valid: ${_listingInputController.listingImage.isNotEmpty})",
-    );
-    print("========================================");
 
     // Backend required fields validation
     if (_listingInputController.title.value.isEmpty) {
@@ -350,9 +312,7 @@ class _ReviewListingState extends State<ReviewListing> {
       errors.add("At least one image is required");
     }
 
-    print("Validation errors found: ${errors.length}");
     if (errors.isNotEmpty) {
-      print("Missing fields: ${errors.join(', ')}");
     }
 
     if (errors.isNotEmpty) {
@@ -392,83 +352,42 @@ class _ReviewListingState extends State<ReviewListing> {
     try {
       if (Get.isRegistered<ListingInputController>()) {
         _listingInputController = Get.find<ListingInputController>();
-        print('✅ ReviewListing: Found existing controller');
       } else {
-        print(
-          '🚨 ReviewListing: Controller not registered, creating permanent instance',
-        );
         _listingInputController = Get.put(
           ListingInputController(),
           permanent: true,
         );
       }
     } catch (e) {
-      print('🚨 ReviewListing: Error accessing controller: $e');
       _listingInputController = Get.put(
         ListingInputController(),
         permanent: true,
       );
     }
 
-    print('🔍 === REVIEW LISTING INIT DEBUG START ===');
-    print('📱 ReviewListing initState() called');
-    print('🖼️ Images received from widget: ${widget.imageUrls.length} images');
-    print('🚗 isVehicle: ${widget.isVehicle}');
 
     // Debug controller state at review screen entry
-    print('📊 Controller state at review screen entry:');
-    print('   📝 Title: "${_listingInputController.title.value}"');
-    print('   📝 Description: "${_listingInputController.description.value}"');
-    print('   💰 Price: ${_listingInputController.price.value}');
-    print(
-      '   🏷️ Main Category: "${_listingInputController.mainCategory.value}"',
-    );
-    print(
-      '   🏷️ Sub Category: "${_listingInputController.subCategory.value}"',
-    );
-    print('   📍 Location: "${_listingInputController.location.value}"');
-    print('   🚗 Make: "${_listingInputController.make.value}"');
-    print('   🚗 Model: "${_listingInputController.model.value}"');
-    print('   📅 Year: ${_listingInputController.year.value}');
-    print(
-      '   🖼️ Controller images: ${_listingInputController.listingImage.length}',
-    );
-    print('   🔧 Body Type: "${_listingInputController.bodyType.value}"');
-    print('   ⛽ Fuel Type: "${_listingInputController.fuelType.value}"');
-    print(
-      '   🔄 Transmission: "${_listingInputController.transmissionType.value}"',
-    );
 
     // CRITICAL FIX: If controller data is empty but we have images from widget, sync them
     if (_listingInputController.listingImage.isEmpty &&
         widget.imageUrls.isNotEmpty) {
-      print('🔧 FIXING: Syncing images from widget to controller');
       _listingInputController.listingImage.value = List<String>.from(
         widget.imageUrls,
-      );
-      print(
-        '✅ Images synced: ${_listingInputController.listingImage.length} images',
       );
     }
 
     // Check for data preservation issues
     if (_listingInputController.title.value.isEmpty) {
-      print('⚠️ WARNING: Title is empty in review screen!');
     }
     if (_listingInputController.price.value == 0) {
-      print('⚠️ WARNING: Price is 0 in review screen!');
     }
     if (_listingInputController.listingImage.isEmpty) {
-      print('⚠️ WARNING: No images in controller at review screen!');
     }
 
     // Check for advanced details preservation
     if (_listingInputController.bodyType.value.isEmpty &&
         _listingInputController.fuelType.value.isEmpty &&
         _listingInputController.transmissionType.value.isEmpty) {
-      print(
-        '⚠️ WARNING: All advanced details are empty! Advanced details may not be saving.',
-      );
     }
 
     // CRITICAL: Check if we have ANY data at all
@@ -480,8 +399,6 @@ class _ReviewListingState extends State<ReviewListing> {
         _listingInputController.listingImage.isNotEmpty;
 
     if (!hasAnyData) {
-      print('🚨 CRITICAL: NO DATA FOUND IN CONTROLLER!');
-      print('🚨 This means data is not being saved from previous steps');
 
       // Show error dialog to user
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -506,15 +423,10 @@ class _ReviewListingState extends State<ReviewListing> {
       });
     }
 
-    print('🔍 === REVIEW LISTING INIT DEBUG END ===');
   }
 
   @override
   Widget build(BuildContext context) {
-    print('ReviewListing: imageUrls = ${widget.imageUrls}'); // Debug print
-    print(
-      'ReviewListing: _listingInputController.listingImage = ${_listingInputController.listingImage}',
-    ); // Debug print
 
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -601,15 +513,10 @@ class _ReviewListingState extends State<ReviewListing> {
                   if (widget.isVehicle) {
                     // Validate required fields before submission
                     if (_validateRequiredFields()) {
-                      print("=== VALIDATION PASSED ===");
-                      print(
-                        "All required fields are valid, proceeding with submission...",
-                      );
 
                       // Use the createCarModel method which includes all features and extras
                       final carModel = _listingInputController
                           .createVehicleModel();
-                      print("Car model created successfully: $carModel");
 
                       // Lazy initialization of controller only when needed for submission
                       _createListingController ??= Get.put(
@@ -619,24 +526,16 @@ class _ReviewListingState extends State<ReviewListing> {
                         carModel,
                       );
                     } else {
-                      print("=== VALIDATION FAILED ===");
-                      print("Submission blocked due to validation errors");
                     }
                   } else {
                     // 🔧 CRITICAL FIX: Handle real estate listings
-                    print("=== REAL ESTATE LISTING SUBMISSION ===");
                     
                     // Validate required fields for real estate
                     if (_validateRequiredFields()) {
-                      print("=== REAL ESTATE VALIDATION PASSED ===");
-                      print(
-                        "All required fields are valid, proceeding with real estate submission...",
-                      );
 
                       // Create real estate model
                       final realEstateModel = _listingInputController
                           .createRealEstateModel();
-                      print("Real estate model created successfully: $realEstateModel");
 
                       // Lazy initialization of controller only when needed for submission
                       _createListingController ??= Get.put(
@@ -646,8 +545,6 @@ class _ReviewListingState extends State<ReviewListing> {
                         realEstateModel,
                       );
                     } else {
-                      print("=== REAL ESTATE VALIDATION FAILED ===");
-                      print("Real estate submission blocked due to validation errors");
                     }
                   }
                 },
@@ -1545,7 +1442,6 @@ class _ImagePlaceHolderState extends State<ImagePlaceHolder> {
   }
 
   Widget _buildImageWidget(String imagePath) {
-    print('Building image for path: $imagePath'); // Debug print
 
     // Check if it's a URL or local file path
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
@@ -1553,7 +1449,6 @@ class _ImagePlaceHolderState extends State<ImagePlaceHolder> {
         imagePath,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          print('Network image error: $error');
           return Container(
             color: Colors.grey[300],
             child: const Icon(Icons.error, color: Colors.red),
@@ -1572,8 +1467,6 @@ class _ImagePlaceHolderState extends State<ImagePlaceHolder> {
         File(cleanPath),
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          print('File image error: $error');
-          print('Attempted path: $cleanPath');
           return Container(
             color: Colors.grey[300],
             child: const Icon(Icons.error, color: Colors.red),
@@ -1585,7 +1478,6 @@ class _ImagePlaceHolderState extends State<ImagePlaceHolder> {
 
   @override
   Widget build(BuildContext context) {
-    print('ImagePlaceHolder: _images = $_images'); // Debug print
 
     if (_images.isEmpty) {
       return Container(

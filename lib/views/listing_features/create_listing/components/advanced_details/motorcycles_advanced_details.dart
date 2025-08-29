@@ -99,7 +99,6 @@ class _MotorcyclesAdvancedDetailsState
   }
   
   void _loadExistingData() {
-    print('🔄 MotorcyclesAdvancedDetails: Loading existing data');
     
     // Load basic fields
     bodyTypeController.text = _listingInputController.bodyType.value;
@@ -110,13 +109,11 @@ class _MotorcyclesAdvancedDetailsState
     // CRITICAL FIX: Load mileage even if it's "0" - only skip if truly empty
     if (_listingInputController.mileage.value.isNotEmpty) {
       mileageController.text = _listingInputController.mileage.value;
-      print('✅ Mileage loaded: "${mileageController.text}"');
     }
     
     // CRITICAL FIX: Load previous owners even if it's 0 - only skip if truly unset
     if (_listingInputController.previousOwners.value >= 0) {
       previousOwnersController.text = _listingInputController.previousOwners.value.toString();
-      print('✅ Previous owners loaded: "${previousOwnersController.text}"');
     }
     
     // Load other fields
@@ -134,21 +131,11 @@ class _MotorcyclesAdvancedDetailsState
           hex = 'FF' + hex;
         }
         selectedColor = Color(int.parse(hex, radix: 16));
-        print('✅ Color loaded: "${colorController.text}"');
       } catch (e) {
-        print('❌ Error parsing color: $e');
         selectedColor = Colors.grey;
       }
     }
     
-    print('📊 MotorcyclesAdvancedDetails data loaded:');
-    print('   🏍️ Body Type: "${bodyTypeController.text}"');
-    print('   ⛽ Fuel Type: "${fuelTypeController.text}"');
-    print('   🔄 Transmission: "${transmissionTypeController.text}"');
-    print('   📏 Engine Size: "${engineSizeController.text}"');
-    print('   📊 Mileage: "${mileageController.text}"');
-    print('   👥 Previous Owners: "${previousOwnersController.text}"');
-    print('   🎨 Color: "${colorController.text}"');
   }
 
   @override

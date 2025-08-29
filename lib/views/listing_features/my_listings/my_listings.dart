@@ -128,17 +128,8 @@ class MyListings extends StatelessWidget {
                           subCategory: listing.subCategory ?? 'Unknown',
                           listingAction: listing.listingAction ?? 'SALE',
                           price: listing.price ?? 0,
-                          // Vehicle details
-                          fuelType: listing.fuelType,
-                          year: listing.year,
-                          transmission: listing.transmission,
-                          mileage: listing.mileage?.toString(),
-                          // Real estate details
-                          bedrooms: listing.bedrooms,
-                          bathrooms: listing.bathrooms,
-                          yearBuilt: listing.yearBuilt,
-                          totalArea: listing.totalArea,
                           listingId: listing.id ?? '',
+                          location: listing.location,
                         ),
                         // Add edit button
                         Positioned(

@@ -23,67 +23,46 @@ class LanguageController extends GetxController {
 
   @override
   void onInit() {
-    print('🚀 LanguageController.onInit() called');
     super.onInit();
-    print('📱 Current language before loading: ${_currentLanguage.value}');
-    print('🌍 Current locale before loading: ${_currentLocale.value}');
     _loadSavedLanguage();
   }
 
   @override
   void onReady() {
-    print('✅ LanguageController.onReady() called');
     super.onReady();
-    print('📱 Current language in onReady: ${_currentLanguage.value}');
-    print('🌍 Current locale in onReady: ${_currentLocale.value}');
     // Language loading is already handled in onInit, no need to reload in onReady
   }
 
   // Load saved language from storage - for all users
   Future<void> _loadSavedLanguage() async {
     try {
-      print('🔍 Loading saved language preferences for all users');
       String? savedLanguage;
 
       // Try secure storage first
-      print('🔍 Trying to load from secure storage...');
       savedLanguage = await _storage.read(key: _languageKey);
-      print('📱 Secure storage result: $savedLanguage');
 
       // If secure storage is empty, try SharedPreferences
       if (savedLanguage == null) {
-        print('🔍 Secure storage empty, trying SharedPreferences...');
         final prefs = await SharedPreferences.getInstance();
         savedLanguage = prefs.getString(_languageKey);
-        print('📱 SharedPreferences result: $savedLanguage');
       }
 
       if (savedLanguage != null &&
           supportedLanguages.containsKey(savedLanguage)) {
-        print('✅ Found saved language: $savedLanguage, applying...');
         _updateLanguage(savedLanguage, saveToStorage: false);
-        print('✅ Language loaded successfully: $savedLanguage');
       } else {
-        print('ℹ️ No saved language found, using default: Arabic');
         _updateLanguage('العربية', saveToStorage: false);
       }
     } catch (e) {
-      print('❌ Error loading saved language: $e');
-      print('🔄 Falling back to default language: Arabic');
       _updateLanguage('العربية', saveToStorage: false);
     }
   }
 
   // Change language with immediate effect
   Future<void> changeLanguage(String languageName) async {
-    print('🔄 changeLanguage() called with: $languageName');
-    print('📱 Current language before change: ${_currentLanguage.value}');
     if (supportedLanguages.containsKey(languageName)) {
-      print('✅ Language $languageName is supported, updating...');
       await _updateLanguage(languageName, saveToStorage: true);
     } else {
-      print('❌ Language $languageName is NOT supported');
-      print('🔍 Supported languages: ${supportedLanguages.keys}');
     }
   }
 
@@ -92,51 +71,33 @@ class LanguageController extends GetxController {
     String languageName, {
     required bool saveToStorage,
   }) async {
-    print(
-      '🔧 _updateLanguage() called with: $languageName, saveToStorage: $saveToStorage',
-    );
     final locale = supportedLanguages[languageName]!;
-    print('🌍 New locale will be: $locale');
 
     // Update observables immediately
-    print('📝 Updating observables...');
     _currentLanguage.value = languageName;
     _currentLocale.value = locale;
-    print(
-      '✅ Observables updated - Language: ${_currentLanguage.value}, Locale: ${_currentLocale.value}',
-    );
 
     // Update GetX locale immediately
-    print('🔄 Calling Get.updateLocale($locale)...');
     Get.updateLocale(locale);
-    print('✅ Get.updateLocale() completed');
 
     // Save to storage if needed
     if (saveToStorage) {
       try {
-        print('💾 Saving language to secure storage...');
         await _storage.write(key: _languageKey, value: languageName);
-        print('✅ Language saved to secure storage successfully');
 
         // Verify secure storage save
         final saved = await _storage.read(key: _languageKey);
-        print('🔍 Verification - saved language: $saved');
 
         // Also save to SharedPreferences as backup
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString(_languageKey, languageName);
-        print('💾 Also saved to SharedPreferences as backup');
       } catch (e) {
-        print('❌ Error saving to secure storage: $e');
 
         // Fallback to SharedPreferences if secure storage fails
         try {
-          print('🔄 Falling back to SharedPreferences...');
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString(_languageKey, languageName);
-          print('✅ Language saved to SharedPreferences successfully');
         } catch (fallbackError) {
-          print('❌ Fallback storage also failed: $fallbackError');
         }
       }
     }

@@ -75,7 +75,6 @@ class FavouriteListingService {
     required String listingId,
   }) async {
     try {
-      print("We are executing this funtion🔥");
       final response = await _dio.delete(
         removeFavouriteListingRoute(listingId),
         options: Options(headers: {'Authorization': 'Bearer $token'}),

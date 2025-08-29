@@ -71,7 +71,6 @@ class _CarsAdvancedDetailsState extends State<CarsAdvancedDetails> {
           );
         }
       } catch (e) {
-        print('Error parsing color: $e');
         selectedColor = Colors.grey; // Fallback
       }
     }
@@ -79,55 +78,45 @@ class _CarsAdvancedDetailsState extends State<CarsAdvancedDetails> {
     // Add listeners to update the main controller when text changes
     bodyTypeController.addListener(() {
       _listingInputController.bodyType.value = bodyTypeController.text;
-      print('🔧 Body Type updated: ${bodyTypeController.text}');
     });
 
     driveTypeController.addListener(() {
       _listingInputController.driveType.value = driveTypeController.text;
-      print('🔧 Drive Type updated: ${driveTypeController.text}');
     });
 
     fuelTypeController.addListener(() {
       _listingInputController.fuelType.value = fuelTypeController.text;
-      print('⛽ Fuel Type updated: ${fuelTypeController.text}');
     });
 
     transmissionTypeController.addListener(() {
       _listingInputController.transmissionType.value =
           transmissionTypeController.text;
-      print('🔄 Transmission updated: ${transmissionTypeController.text}');
     });
 
     mileageController.addListener(() {
       _listingInputController.mileage.value = mileageController.text;
-      print('📏 Mileage updated: ${mileageController.text}');
     });
 
     previousOwnersController.addListener(() {
       _listingInputController.previousOwners.value =
           int.tryParse(previousOwnersController.text) ?? 0;
-      print('👥 Previous Owners updated: ${previousOwnersController.text}');
     });
 
     accidentalController.addListener(() {
       _listingInputController.accidental.value = accidentalController.text;
-      print('🚗 Accident history updated: ${accidentalController.text}');
     });
 
     serviceHistoryController.addListener(() {
       _listingInputController.serviceHistory.value =
           serviceHistoryController.text;
-      print('📋 Service history updated: ${serviceHistoryController.text}');
     });
 
     importStatusController.addListener(() {
       _listingInputController.importStatus.value = importStatusController.text;
-      print('🌍 Import status updated: ${importStatusController.text}');
     });
 
     engineSizeController.addListener(() {
       _listingInputController.engineSize.value = engineSizeController.text;
-      print('🔧 Engine size updated: ${engineSizeController.text}');
     });
   }
 

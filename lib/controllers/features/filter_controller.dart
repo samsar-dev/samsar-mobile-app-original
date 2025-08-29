@@ -167,19 +167,6 @@ class FilterController extends GetxController {
 
   /// Reset all filters to default values
   void resetFilters() {
-    print('🔧 RESETTING ALL FILTERS:');
-    print('  Before reset:');
-    print('    selectedSort: "${selectedSort.value}"');
-    print('    selectedSubcategory: "${selectedSubcategory.value}"');
-    print('    selectedListingType: "${selectedListingType.value}"');
-    print('    selectedCity: "${selectedCity.value}"');
-    print('    selectedYear: ${selectedYear.value}');
-    print('    minPrice: ${minPrice.value}');
-    print('    maxPrice: ${maxPrice.value}');
-    print('    selectedLocation: ${selectedLocation.value?.name}');
-    print('    radiusKm: ${radiusKm.value}');
-    print('    enableLocationFilter: ${enableLocationFilter.value}');
-    print('    sortByDistance: ${sortByDistance.value}');
 
     selectedSort.value = '';
     selectedSubcategory.value = '';
@@ -214,19 +201,6 @@ class FilterController extends GetxController {
     selectedFloor.value = null;
     selectedSellerType.value = '';
 
-    print('  After reset:');
-    print('    selectedSort: "${selectedSort.value}"');
-    print('    selectedSubcategory: "${selectedSubcategory.value}"');
-    print('    selectedListingType: "${selectedListingType.value}"');
-    print('    selectedCity: "${selectedCity.value}"');
-    print('    selectedYear: ${selectedYear.value}');
-    print('    minPrice: ${minPrice.value}');
-    print('    maxPrice: ${maxPrice.value}');
-    print('    selectedLocation: ${selectedLocation.value?.name}');
-    print('    radiusKm: ${radiusKm.value}');
-    print('    enableLocationFilter: ${enableLocationFilter.value}');
-    print('    sortByDistance: ${sortByDistance.value}');
-    print('🔧 All filters reset to default values');
   }
 
   /// Create SearchQuery with current filter values
@@ -237,24 +211,6 @@ class FilterController extends GetxController {
     int? limit,
   }) {
     // Debug: Print current filter values
-    print('🔧 [SEARCH QUERY DEBUG] createSearchQuery called');
-    print('  selectedSort: "${selectedSort.value}"');
-    print('  selectedSubcategory: "${selectedSubcategory.value}"');
-    print('  selectedSubcategories: $selectedSubcategories');
-    print('  selectedSubcategories.length: ${selectedSubcategories.length}');
-    print('  selectedListingType: "${selectedListingType.value}"');
-    print('  category parameter: $category');
-    print('  selectedCity: "${selectedCity.value}"');
-    print('  selectedYear: ${selectedYear.value}');
-    print('  minPrice: ${minPrice.value}');
-    print('  maxPrice: ${maxPrice.value}');
-    print('  📍 LOCATION FILTER VALUES:');
-    print('    selectedLocation: ${selectedLocation.value?.name}');
-    print('    selectedLocation lat: ${selectedLocation.value?.latitude}');
-    print('    selectedLocation lng: ${selectedLocation.value?.longitude}');
-    print('    radiusKm: ${radiusKm.value}');
-    print('    enableLocationFilter: ${enableLocationFilter.value}');
-    print('    sortByDistance: ${sortByDistance.value}');
 
     // Determine final sort option
     String? finalSort = selectedSort.value.isNotEmpty
@@ -262,20 +218,16 @@ class FilterController extends GetxController {
         : null;
     if (sortByDistance.value && selectedLocation.value != null) {
       finalSort = 'distance_nearest_first';
-      print('  🎯 Using distance-based sorting');
     }
 
     // Determine final subcategory value
     String? finalSubCategory;
     if (selectedSubcategories.isNotEmpty) {
       finalSubCategory = selectedSubcategories.join(',');
-      print('  🎯 Using multiple subcategories: $finalSubCategory');
     } else if (selectedSubcategory.value.isNotEmpty) {
       finalSubCategory = selectedSubcategory.value;
-      print('  🎯 Using single subcategory: $finalSubCategory');
     } else {
       finalSubCategory = null;
-      print('  🎯 No subcategory selected');
     }
 
     return SearchQuery(
@@ -368,10 +320,6 @@ class FilterController extends GetxController {
 
   /// Set location for filtering
   void setLocationFilter(CityInfo? location, {double? radius}) {
-    print('📍 SETTING LOCATION FILTER:');
-    print('  Location: ${location?.name}');
-    print('  Coordinates: ${location?.latitude}, ${location?.longitude}');
-    print('  Radius: ${radius ?? radiusKm.value} km');
 
     selectedLocation.value = location;
     enableLocationFilter.value = location != null;
@@ -379,13 +327,10 @@ class FilterController extends GetxController {
       radiusKm.value = radius;
     }
 
-    print('  enableLocationFilter: ${enableLocationFilter.value}');
-    print('  radiusKm: ${radiusKm.value}');
   }
 
   /// Clear location filter
   void clearLocationFilter() {
-    print('🗑️ CLEARING LOCATION FILTER');
     selectedLocation.value = null;
     enableLocationFilter.value = false;
     sortByDistance.value = false;
@@ -395,14 +340,12 @@ class FilterController extends GetxController {
   void toggleDistanceSorting() {
     if (selectedLocation.value != null) {
       sortByDistance.value = !sortByDistance.value;
-      print('🎯 TOGGLED DISTANCE SORTING: ${sortByDistance.value}');
 
       if (sortByDistance.value) {
         selectedSort.value = 'distance_nearest_first';
         enableLocationFilter.value = true;
       }
     } else {
-      print('⚠️ Cannot enable distance sorting without location');
     }
   }
 
@@ -422,20 +365,12 @@ class FilterController extends GetxController {
 
   /// Add/remove subcategory from multiple selection
   void toggleSubcategory(String subcategory) {
-    print('🔧 [FILTER CONTROLLER DEBUG] toggleSubcategory called');
-    print('  - subcategory: $subcategory');
-    print('  - Before toggle: $selectedSubcategories');
-    print('  - Contains check: ${selectedSubcategories.contains(subcategory)}');
     
     if (selectedSubcategories.contains(subcategory)) {
       selectedSubcategories.remove(subcategory);
-      print('  - REMOVED subcategory: $subcategory');
     } else {
       selectedSubcategories.add(subcategory);
-      print('  - ADDED subcategory: $subcategory');
     }
-    print('  - After toggle: $selectedSubcategories');
-    print('  - Final count: ${selectedSubcategories.length}');
   }
 
   /// Check if subcategory is selected in multiple selection

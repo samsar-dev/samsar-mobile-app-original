@@ -50,7 +50,6 @@ class _ListingFeedViewState extends State<ListingFeedView> {
   }
 
   void exitSearchMode() {
-    print('🚪 EXITING SEARCH MODE');
     setState(() {
       isSearching = false;
       _searchController.clear();
@@ -60,10 +59,6 @@ class _ListingFeedViewState extends State<ListingFeedView> {
       _searchModuleController.searchResults.clear();
     });
 
-    print('  Search mode exited, isSearching: $isSearching');
-    print(
-      '  Note: Filters are not reset as they only affect home page listings',
-    );
   }
 
   void _performSearch(String query) {
@@ -195,16 +190,6 @@ class _ListingFeedViewState extends State<ListingFeedView> {
               final hasValidImage = item.images.isNotEmpty;
 
               // 🔍 COMPREHENSIVE DEBUGGING FOR SEARCH RESULTS
-              print('🔍 [SEARCH RESULTS DEBUG] Item ${index}: ${item.title}');
-              print('🔍 [SEARCH RESULTS DEBUG] Raw item details: ${item.details?.json}');
-              print('🔍 [SEARCH RESULTS DEBUG] Extracted vehicle data:');
-              print('  - FuelType getter: ${item.fuelType}');
-              print('  - Year getter: ${item.year}');
-              print('  - Transmission getter: ${item.transmission}');
-              print('  - Mileage getter: ${item.mileage}');
-              print('  - Make getter: ${item.make}');
-              print('  - Model getter: ${item.model}');
-              print('🔍 [SEARCH RESULTS DEBUG] ================');
 
               return GestureDetector(
                 onTap: () => Get.to(() => ListingDetail(listingId: item.id!)),
@@ -218,16 +203,7 @@ class _ListingFeedViewState extends State<ListingFeedView> {
                   subCategory: item.category?.subCategory ?? '',
                   listingId: item.id ?? 'NA',
                   price: item.price ?? 0,
-                  // Vehicle details
-                  fuelType: item.fuelType,
-                  year: item.year,
-                  transmission: item.transmission,
-                  mileage: item.mileage?.toString(),
-                  // Real estate details
-                  bedrooms: item.bedrooms,
-                  bathrooms: item.bathrooms,
-                  yearBuilt: item.yearBuilt,
-                  totalArea: item.totalArea,
+                  location: item.location,
                 ),
               );
             } else {
@@ -276,16 +252,6 @@ class _ListingFeedViewState extends State<ListingFeedView> {
                     item.images.isNotEmpty && item.images[0].isNotEmpty;
 
                 // 🔍 COMPREHENSIVE DEBUGGING FOR REGULAR LISTINGS
-                print('🔍 [REGULAR LISTINGS DEBUG] Item ${index}: ${item.title}');
-                print('🔍 [REGULAR LISTINGS DEBUG] Item type: ${item.runtimeType}');
-                print('🔍 [REGULAR LISTINGS DEBUG] Vehicle data:');
-                print('  - FuelType: ${item.fuelType}');
-                print('  - Year: ${item.year}');
-                print('  - Transmission: ${item.transmission}');
-                print('  - Mileage: ${item.mileage}');
-                print('  - Make: ${item.make}');
-                print('  - Model: ${item.model}');
-                print('🔍 [REGULAR LISTINGS DEBUG] ================');
 
                 return GestureDetector(
                   onTap: () => Get.to(() => ListingDetail(listingId: item.id!)),
@@ -299,16 +265,7 @@ class _ListingFeedViewState extends State<ListingFeedView> {
                     subCategory: item.subCategory ?? '',
                     listingId: item.id ?? 'NA',
                     price: item.price ?? 0,
-                    // Vehicle details
-                    fuelType: item.fuelType?.toString(),
-                    year: item.year,
-                    transmission: item.transmission?.toString(),
-                    mileage: item.mileage?.toString(),
-                    // Real estate details
-                    bedrooms: item.bedrooms,
-                    bathrooms: item.bathrooms,
-                    yearBuilt: item.yearBuilt,
-                    totalArea: item.totalArea,
+                    location: item.location,
                   ),
                 );
               } else {
@@ -433,15 +390,9 @@ class _ListingFeedViewState extends State<ListingFeedView> {
                       ? null
                       : _searchController.text.trim(),
                   onFiltersApplied: (filterSummary) {
-                    print('🏠 FILTERS APPLIED TO TRENDING LISTINGS');
-                    print('  filterSummary: "$filterSummary"');
-                    print(
-                      '  Filters only affect home page listings, not search mode',
-                    );
 
                     // Show feedback when filters are applied
                     if (filterSummary != null && filterSummary.isNotEmpty) {
-                      print('  Showing snackbar with summary: $filterSummary');
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
@@ -451,7 +402,6 @@ class _ListingFeedViewState extends State<ListingFeedView> {
                         ),
                       );
                     } else {
-                      print('  Showing generic filters applied message');
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('filters_applied'.tr),
@@ -460,7 +410,6 @@ class _ListingFeedViewState extends State<ListingFeedView> {
                       );
                     }
 
-                    print('✅ FILTERS APPLIED - Home page listings updated');
                   },
                 ),
               ],

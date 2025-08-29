@@ -196,7 +196,6 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
     if (protectedTabs.contains(index)) {
       // Wait for session restoration to complete if not already done
       if (!_authController.isSessionReady) {
-        print('⏳ Waiting for session restoration to complete...');
         // Show subtle loading indicator
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -227,10 +226,8 @@ class _HomeViewState extends State<HomeView> with PerformanceOptimizedWidget {
 
       // Show user-friendly login prompt if not authenticated
       if (!_authController.isAuthenticated) {
-        print('🔐 User not authenticated, showing login prompt');
         _showLoginPrompt(index);
       } else {
-        print('✅ User authenticated, full access granted');
       }
     }
   }
@@ -589,46 +586,33 @@ class _HomePageContentState extends State<_HomePageContent> {
   void _onSubCategorySelected(String subCategoryId) {
     final filterController = Get.find<FilterController>();
     
-    print('🔍 [SUBCATEGORY DEBUG] _onSubCategorySelected called');
-    print('  - subCategoryId: $subCategoryId');
-    print('  - selectedMainCategory: $selectedMainCategory');
     
     // Check if this is a real estate category that supports multiple selection
     final isRealEstate = selectedMainCategory?.toLowerCase() == 'real_estate';
-    print('  - isRealEstate: $isRealEstate');
     
     if (isRealEstate) {
-      print('🏠 [REAL ESTATE DEBUG] Using multiple selection');
-      print('  - Before toggle: ${filterController.selectedSubcategories}');
       
       // For real estate, use multiple selection
       filterController.toggleSubcategory(subCategoryId.toUpperCase());
       
-      print('  - After toggle: ${filterController.selectedSubcategories}');
-      print('  - Selected count: ${filterController.selectedSubcategories.length}');
       
       setState(() {
         // Update UI state based on multiple selection
         if (filterController.selectedSubcategories.isNotEmpty) {
           selectedSubCategory = filterController.selectedSubcategories.first;
           showAdvancedFilters = true;
-          print('  - UI State: selectedSubCategory = ${selectedSubCategory}');
-          print('  - UI State: showAdvancedFilters = true');
         } else {
           selectedSubCategory = null;
           showAdvancedFilters = false;
-          print('  - UI State: No subcategories selected, clearing state');
         }
         selectedListingAction = null;
       });
       
       // Load listings for multiple subcategories
-      print('🔄 [REAL ESTATE DEBUG] Loading multiple subcategory listings...');
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _loadMultipleSubcategoryListings(selectedMainCategory!);
       });
     } else {
-      print('🚗 [OTHER CATEGORY DEBUG] Using single selection');
       // For other categories, use single selection (existing behavior)
       setState(() {
         selectedSubCategory = subCategoryId;
@@ -640,7 +624,6 @@ class _HomePageContentState extends State<_HomePageContent> {
       filterController.clearSelectedSubcategories();
       filterController.selectedSubcategory.value = subCategoryId.toUpperCase();
       
-      print('  - Single selection set: ${filterController.selectedSubcategory.value}');
 
       // Load listings immediately for this subcategory
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -683,24 +666,15 @@ class _HomePageContentState extends State<_HomePageContent> {
   }
 
   void _loadMultipleSubcategoryListings(String category) {
-    print('🔄 [MULTIPLE SUBCATEGORY DEBUG] _loadMultipleSubcategoryListings called');
-    print('  - category: $category');
-    print('  - selectedSubcategories: ${filterController.selectedSubcategories}');
-    print('  - selectedSubcategories count: ${filterController.selectedSubcategories.length}');
     
     // Load listings for multiple subcategories (real estate)
     listingController.setCategory(category.toUpperCase());
     filterController.selectedSubcategory.value = ''; // Clear single selection
     filterController.selectedListingType.value = ''; // Clear listing type filter
     
-    print('  - Category set to: ${category.toUpperCase()}');
-    print('  - Single subcategory cleared');
-    print('  - Listing type cleared');
-    print('  - About to call applyFilters()...');
     
     listingController.applyFilters();
     
-    print('  - applyFilters() called');
   }
 
   void _applyListingActionFilter(String action) {
@@ -725,7 +699,6 @@ class _HomePageContentState extends State<_HomePageContent> {
   }
 
   Future<void> _onRefresh() async {
-    print('🔄 HOME VIEW REFRESH TRIGGERED');
 
     // Force refresh from backend using the new refreshListings method
     await listingController.refreshListings();
@@ -744,7 +717,6 @@ class _HomePageContentState extends State<_HomePageContent> {
     // Apply any active filters
     listingController.applyFilters();
 
-    print('✅ HOME VIEW REFRESH COMPLETED');
   }
 
   void _applySimplifiedFilters() {
@@ -1029,16 +1001,7 @@ class _HomePageContentState extends State<_HomePageContent> {
                   subCategory: item.subCategory ?? 'General',
                   listingAction: item.listingAction ?? 'N/A',
                   imageUrl: imageProvider,
-                  // Vehicle details
-                  year: item.year ?? item.yearBuilt,
-                  mileage: item.mileage?.toString(),
-                  fuelType: item.fuelType?.toString(),
-                  transmission: item.transmission?.toString(),
-                  // Real estate details
-                  bedrooms: item.bedrooms,
-                  bathrooms: item.bathrooms,
-                  yearBuilt: item.yearBuilt,
-                  totalArea: item.totalArea,
+                  location: item.location,
                   isDarkTheme: _themeController.isDarkMode.value,
                 );
               } else {

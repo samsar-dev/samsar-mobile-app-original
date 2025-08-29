@@ -33,10 +33,6 @@ class ListingService {
       }
 
       // Debug logging
-      print('🌐 LISTING SERVICE API CALL:');
-      print('  Endpoint: $listingsEndpoint');
-      print('  Query params: $queryParams');
-      print('  Force refresh: $forceRefresh');
 
       final response = await _dio.get(
         listingsEndpoint,
@@ -44,8 +40,6 @@ class ListingService {
       );
 
       if (response.statusCode == 200) {
-        print('✅ LISTINGS SERVICE SUCCESS');
-        print('  Items count: ${response.data['data'].length}');
 
         // Transform the response to match expected format
         final transformedData = {
@@ -54,11 +48,9 @@ class ListingService {
 
         return ApiResponse.success(transformedData);
       } else {
-        print('❌ LISTING SERVICE ERROR: ${response.statusCode}');
         return ApiResponse.failure(ApiError.fromJson(response.data));
       }
     } on DioException catch (dioError) {
-      print('❌ LISTING SERVICE DIO ERROR: ${dioError.message}');
       if (dioError.response != null && dioError.response?.data != null) {
         return ApiResponse.failure(ApiError.fromJson(dioError.response!.data));
       }
@@ -67,7 +59,6 @@ class ListingService {
         ApiError(fastifyErrorResponse: null, errorResponse: null),
       );
     } catch (e) {
-      print('❌ LISTING SERVICE GENERAL ERROR: $e');
       return ApiResponse.failure(
         ApiError(fastifyErrorResponse: null, errorResponse: null),
       );

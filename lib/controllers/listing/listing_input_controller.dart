@@ -234,7 +234,6 @@ class ListingInputController extends GetxController {
   void clearSubcategorySpecificFeatures(String newSubCategory) {
     final newSubCategoryUpper = newSubCategory.toUpperCase();
     
-    print('🧹 Clearing subcategory-specific features for switch to: $newSubCategoryUpper');
     
     // Always clear all subcategory-specific features first
     _clearAllSubcategoryFeatures();
@@ -242,7 +241,6 @@ class ListingInputController extends GetxController {
     // Clear general features list but keep common safety features
     selectedFeatures.clear();
     
-    print('✅ Subcategory-specific features cleared');
   }
   
   // Helper method to clear all subcategory-specific features
@@ -467,26 +465,6 @@ class ListingInputController extends GetxController {
 
   // Method to create CarModel from collected data
   vehicle_listing.VehicleModel createVehicleModel() {
-    print("\n🏗️ === CREATING VEHICLE MODEL ====");
-    print("📋 INPUT DATA COLLECTION:");
-    print("  title: '${title.value}'");
-    print("  description: '${description.value}'");
-    print("  price: ${price.value}");
-    print("  make: '${make.value}'");
-    print("  model: '${model.value}'");
-    print("  year: ${year.value}");
-    print("  mileage: '${mileage.value}'");
-    print("  horsepower: '${horsepower.value}'");
-    print("  transmissionType: '${transmissionType.value}'");
-    print("  fuelType: '${fuelType.value}'");
-    print("  exteriorColor: '${exteriorColor.value}'");
-    print("  bodyType: '${bodyType.value}'");
-    print("  driveType: '${driveType.value}'");
-    print("  condition: '${condition.value}'");
-    print("  sellerType: '${sellerType.value}'");
-    print("  location: '${location.value}'");
-    print("  mainCategory: '${mainCategory.value}'");
-    print("  subCategory: '${subCategory.value}'");
 
     // Create features list from all the boolean features AND selectedFeatures from UI
     List<String> featuresList = [];
@@ -571,12 +549,8 @@ class ListingInputController extends GetxController {
     if (hasSunroof.value) featuresList.add("Sunroof");
     if (hasLeatherSeats.value) featuresList.add("Leather Seats");
 
-    print("\n🔧 BUILDING FEATURES LIST:");
-    print("  Features count: ${featuresList.length}");
-    print("  Features: $featuresList");
 
     // Create Details JSON object with proper nesting for backend
-    print("\n🏗️ BUILDING DETAILS JSON:");
     final detailsJson = {
       "vehicles": {
         "vehicleType": subCategory.value,
@@ -636,21 +610,9 @@ class ListingInputController extends GetxController {
       },
     };
 
-    print("\n📦 FINAL DETAILS JSON STRUCTURE:");
-    print("$detailsJson");
 
     final details = vehicle_listing.Details(json: detailsJson);
 
-    print("\n🚗 CREATING VEHICLE MODEL WITH:");
-    print("  title: '${title.value}'");
-    print("  price: ${price.value.toInt()}");
-    print("  mainCategory: '${mainCategory.value}'");
-    print("  subCategory: '${subCategory.value}'");
-    print("  location: '${location.value}'");
-    print("  condition: '${condition.value}'");
-    print("  listingAction: '${listingAction.value}'");
-    print("  sellerType: '${sellerType.value}'");
-    print("  images count: ${listingImage.length}");
 
     // Create and return CarModel
     final vehicleModel = vehicle_listing.VehicleModel(
@@ -669,36 +631,15 @@ class ListingInputController extends GetxController {
       listingImage: listingImage.toList(),
     );
 
-    print("\n✅ VEHICLE MODEL CREATED SUCCESSFULLY");
-    print("🔍 VERIFYING CREATED MODEL:");
-    print("  Model title: '${vehicleModel.title}'");
-    print("  Model price: ${vehicleModel.price}");
-    print("  Model details type: ${vehicleModel.details.runtimeType}");
-    print(
-      "  Model details.json type: ${vehicleModel.details.json.runtimeType}",
-    );
-    print(
-      "  Model details.json keys: ${vehicleModel.details.json.keys.toList()}",
-    );
 
     if (vehicleModel.details.json.containsKey('vehicles')) {
       final vehiclesData =
           vehicleModel.details.json['vehicles'] as Map<String, dynamic>?;
       if (vehiclesData != null) {
-        print("  vehicles.make: '${vehiclesData['make']}'");
-        print("  vehicles.model: '${vehiclesData['model']}'");
-        print("  vehicles.year: '${vehiclesData['year']}'");
-        print("  vehicles.mileage: '${vehiclesData['mileage']}'");
-        print("  vehicles.horsepower: '${vehiclesData['horsepower']}'");
-        print("  vehicles.fuelType: '${vehiclesData['fuelType']}'");
-        print("  vehicles.transmission: '${vehiclesData['transmission']}'");
       } else {
-        print("  ❌ vehicles data is null!");
       }
     } else {
-      print("  ❌ No 'vehicles' key found in details.json!");
     }
-    print("🏗️ === VEHICLE MODEL CREATION COMPLETE ===\n");
 
     return vehicleModel;
   }
@@ -738,10 +679,8 @@ class ListingInputController extends GetxController {
 
   // Method to clear all data (useful for resetting form)
   void clearAllData() {
-    print("🚨 CLEARING ALL DATA - Current state: ${getDataSummary()}");
 
     if (hasEssentialData()) {
-      print("⚠️ WARNING: Clearing data that contains user input!");
     }
     // Basic fields
     title.value = "";
@@ -839,7 +778,6 @@ class ListingInputController extends GetxController {
     isRearSeatEntertainment.value = false;
     isSummerTires.value = false;
 
-    print("✅ Data cleared successfully");
   }
 
   real_estate_model.RealEstateModel createRealEstateModel() {
@@ -886,7 +824,6 @@ class ListingInputController extends GetxController {
 
   // Method to safely clear data only after successful submission
   void clearDataAfterSubmission() {
-    print("🎉 CLEARING DATA AFTER SUCCESSFUL SUBMISSION");
     clearAllData();
   }
 
@@ -1007,17 +944,14 @@ class ListingInputController extends GetxController {
       'zoning': zoning.value,
       'roadAccess': roadAccess.value,
     };
-    print("💾 Data backed up successfully");
   }
 
   // Method to restore data from backup
   void restoreFromBackup() {
     if (_dataBackup.isEmpty) {
-      print("⚠️ No backup data available to restore");
       return;
     }
 
-    print("🔄 Restoring data from backup...");
 
     // Basic fields
     title.value = _dataBackup['title'] ?? '';
@@ -1121,7 +1055,6 @@ class ListingInputController extends GetxController {
         _dataBackup['isRearSeatEntertainment'] ?? false;
     isSummerTires.value = _dataBackup['isSummerTires'] ?? false;
 
-    print("✅ Data restored successfully from backup");
   }
 
   // Helper method to map Flutter listing action values to backend format

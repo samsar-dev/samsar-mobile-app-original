@@ -34,7 +34,6 @@ class LocationApiService {
         );
       }
     } catch (e) {
-      print('Error searching locations: $e');
       throw Exception('Failed to search locations: $e');
     }
   }
@@ -61,7 +60,6 @@ class LocationApiService {
         );
       }
     } catch (e) {
-      print('Error reverse geocoding: $e');
       throw Exception('Failed to reverse geocode: $e');
     }
   }
@@ -80,7 +78,6 @@ class LocationApiService {
         );
       }
     } catch (e) {
-      print('Error getting cities: $e');
       throw Exception('Failed to get cities: $e');
     }
   }
@@ -117,7 +114,6 @@ class LocationApiService {
         );
       }
     } catch (e) {
-      print('Error getting nearby cities: $e');
       throw Exception('Failed to get nearby cities: $e');
     }
   }

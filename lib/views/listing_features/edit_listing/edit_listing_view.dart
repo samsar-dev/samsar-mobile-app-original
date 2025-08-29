@@ -20,19 +20,16 @@ class _EditListingViewState extends State<EditListingView> {
   @override
   void initState() {
     super.initState();
-    print('🚀 EditListingView initState() called');
 
     // Get existing controller or create new one
     if (Get.isRegistered<ListingInputController>()) {
       _listingInputController = Get.find<ListingInputController>();
-      print('🔄 Found existing ListingInputController, clearing data first');
       _listingInputController.clearAllData();
     } else {
       _listingInputController = Get.put(
         ListingInputController(),
         permanent: true,
       );
-      print('🆕 ListingInputController registered as PERMANENT instance for editing');
     }
 
     // Populate controller with existing listing data AFTER clearing
@@ -44,13 +41,6 @@ class _EditListingViewState extends State<EditListingView> {
   void _populateControllerWithListingData() {
     final listing = widget.listing;
     
-    print('🔄 Starting to populate controller with listing data...');
-    print('   📋 Listing ID: ${listing.id}');
-    print('   📝 Title from DB: "${listing.title}"');
-    print('   🚗 Make from DB: "${listing.make}"');
-    print('   🚗 Model from DB: "${listing.model}"');
-    print('   📍 Location from DB: "${listing.location}"');
-    print('   🖼️ Images from DB: ${listing.images.length} images');
     
     // Basic fields
     _listingInputController.title.value = listing.title ?? '';
@@ -67,11 +57,9 @@ class _EditListingViewState extends State<EditListingView> {
     // Vehicle fields
     if (listing.make != null) {
       _listingInputController.make.value = listing.make!;
-      print('   ✅ Set make: "${listing.make}"');
     }
     if (listing.model != null) {
       _listingInputController.model.value = listing.model!;
-      print('   ✅ Set model: "${listing.model}"');
     }
     if (listing.year != null) _listingInputController.year.value = listing.year!;
     if (listing.fuelType != null) _listingInputController.fuelType.value = listing.fuelType!;
@@ -89,20 +77,8 @@ class _EditListingViewState extends State<EditListingView> {
     // Images - ensure proper assignment
     if (listing.images.isNotEmpty) {
       _listingInputController.listingImage.assignAll(listing.images);
-      print('   ✅ Set images: ${_listingInputController.listingImage.length} images');
     }
     
-    print('✅ Controller populated with listing data');
-    print('   📝 Title: "${_listingInputController.title.value}"');
-    print('   💰 Price: ${_listingInputController.price.value}');
-    print('   🏷️ Category: "${_listingInputController.mainCategory.value}"');
-    print('   🏷️ SubCategory: "${_listingInputController.subCategory.value}"');
-    print('   🚗 Make: "${_listingInputController.make.value}"');
-    print('   🚗 Model: "${_listingInputController.model.value}"');
-    print('   📍 Location: "${_listingInputController.location.value}"');
-    print('   👤 SellerType: "${_listingInputController.sellerType.value}"');
-    print('   🏷️ ListingAction: "${_listingInputController.listingAction.value}"');
-    print('   🖼️ Images: ${_listingInputController.listingImage.length} images');
   }
 
   @override

@@ -85,8 +85,6 @@ class _ImageHolderState extends State<ImageHolder> {
                           );
                         },
                         errorBuilder: (context, error, stackTrace) {
-                          print('❌ Image loading error: $error');
-                          print('🔗 Failed URL: ${widget.imageUrl}');
                           return Icon(
                             Icons.person,
                             size: avatarRadius,
