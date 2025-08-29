@@ -11,6 +11,7 @@ import 'package:samsar/views/settings/settings.dart';
 import 'package:samsar/widgets/app_button/app_button.dart';
 import 'package:samsar/widgets/image_holder/image_holder.dart';
 import 'package:samsar/controllers/auth/auth_controller.dart';
+import 'package:samsar/views/profile_and_settings/contact_support.dart';
 
 class ProfileAndSettings extends StatelessWidget {
   ProfileAndSettings({super.key});
@@ -101,6 +102,10 @@ class ProfileAndSettings extends StatelessWidget {
 
                   _buildOptionTile(Icons.settings, "settings".tr, () {
                     Get.to(Settings());
+                  }),
+
+                  _buildOptionTile(Icons.support_agent, "contact_support".tr, () {
+                    Get.to(const ContactSupport());
                   }),
 
                   SizedBox(height: screenHeight * 0.08),

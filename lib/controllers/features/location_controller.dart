@@ -63,7 +63,9 @@ class LocationController extends GetxController {
       }
 
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
 
       latitude.value = position.latitude.toString();
@@ -145,14 +147,13 @@ class LocationController extends GetxController {
 
       // Debug: Print ALL results for comprehensive debugging
       for (int i = 0; i < searchResults.length; i++) {
-        final result = searchResults[i];
+        // Process search result if needed
       }
 
       if (searchResults.isEmpty) {
         errorMessage.value = 'No cities found for "$query"';
       }
-    } catch (e, stackTrace) {
-
+    } catch (e) {
       searchResults.clear();
       errorMessage.value = 'Connection error: $e';
     } finally {
@@ -182,8 +183,11 @@ class LocationController extends GetxController {
       
       for (var city in cities) {
         if (city.neighbors.isNotEmpty) {
-          city.neighbors.take(3).forEach((neighbor) => 
+          city.neighbors.take(3).forEach((neighbor) => {
+            // Process neighbor if needed
+          });
           if (city.neighbors.length > 3) {
+            // Handle cities with more than 3 neighbors
           }
         }
       }
@@ -194,10 +198,12 @@ class LocationController extends GetxController {
       for (int i = 0; i < sampleSize; i++) {
         final city = allCities[i];
         if (city.neighbors.isNotEmpty) {
+          // Process city with neighbors
         }
       }
 
       if (allCities.length > 10) {
+        // Handle large city list
       }
 
       // Check for specific cities to verify comprehensive data
@@ -205,18 +211,18 @@ class LocationController extends GetxController {
           .where((city) => city.name.toLowerCase().contains('aleppo'))
           .toList();
       for (final variant in aleppoVariants) {
+        // Process Aleppo variant if needed
       }
 
       // Debug: Print major cities specifically
       for (int i = 0; i < majorCities.length && i < 10; i++) {
-        final city = majorCities[i];
+        // Process major city if needed
       }
 
       if (majorCities.isEmpty) {
         errorMessage.value = 'No major cities available from backend';
       }
-    } catch (e, stackTrace) {
-
+    } catch (e) {
       allCities.clear();
       majorCities.clear();
       errorMessage.value = 'Connection error: $e';
@@ -238,8 +244,6 @@ class LocationController extends GetxController {
   }) async {
 
     try {
-      final stopwatch = Stopwatch()..start();
-
       final cities = await LocationApiService.getNearbyCities(
         latitude: lat,
         longitude: lng,
@@ -248,6 +252,8 @@ class LocationController extends GetxController {
       );
       nearbyCities.value = cities;
     } catch (e) {
+      nearbyCities.clear();
+      errorMessage.value = 'Error getting nearby cities: $e';
     }
   }
 
